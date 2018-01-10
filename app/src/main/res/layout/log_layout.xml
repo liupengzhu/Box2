@@ -15,6 +15,11 @@
             android:text="最新日志"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@color/line"
+
+            android:layout_width="match_parent"
+            android:layout_height="1dp"></LinearLayout>
         <android.support.v7.widget.RecyclerView
             android:id="@+id/log_recycler"
             android:layout_width="match_parent"

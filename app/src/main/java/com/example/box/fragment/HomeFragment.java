@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.box.R;
 import com.example.box.adapter.LogAdapter;
+import com.example.box.adapter.MyItemDecoration;
 import com.example.box.gson.Home;
 import com.example.box.gson.LogInfo;
 import com.example.box.recycler.MyLog;
@@ -38,7 +40,7 @@ import okhttp3.Response;
 public class HomeFragment extends Fragment {
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home";
-    public static final String TOKEN = "?_token=1f77f65d705f933df813222b8b80f41a86707abf";
+    public static final String TOKEN = "?_token=c212a5676adcfb1dd30e54a591672dcc06289f75";
     TextView totalView;
     TextView defendView;
     TextView lockedView;
@@ -83,20 +85,21 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());
         adapter = new LogAdapter(myLogList);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout = view.findViewById(R.id.swiper);
 
-        //swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
 
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                queryInfo();
-//
-//            }
-//        });
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+           @Override
+           public void onRefresh() {
+               queryInfo();
+
+           }
+        });
 
 
         queryInfo();
@@ -108,6 +111,15 @@ public class HomeFragment extends Fragment {
         HttpUtil.sendGetRequestWithHttp(BOX_URI  + TOKEN, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -118,13 +130,24 @@ public class HomeFragment extends Fragment {
                          @Override
                          public void run() {
                              showInfo(home);
+                            swipeRefreshLayout.setRefreshing(false);
                          }
 
 
                      });
 
-                 }
-                 //swipeRefreshLayout.setEnabled(false);
+
+                }else {
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+
 
 
 

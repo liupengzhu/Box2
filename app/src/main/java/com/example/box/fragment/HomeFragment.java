@@ -5,6 +5,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +16,16 @@ import android.widget.TextView;
 
 
 import com.example.box.R;
+import com.example.box.adapter.LogAdapter;
 import com.example.box.gson.Home;
-import com.example.box.gson.HomeAlarm;
-import com.example.box.gson.HomeInfo;
+import com.example.box.gson.LogInfo;
+import com.example.box.recycler.MyLog;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,8 +37,8 @@ import okhttp3.Response;
 
 public class HomeFragment extends Fragment {
 
-    public static final String BOX_URI = "http://192.168.1.117:8084/api/app/home";
-    public static final String TOKEN = "?_token=f2e51f0386dddff3f9a8fa283074c86df5429134";
+    public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home";
+    public static final String TOKEN = "?_token=1f77f65d705f933df813222b8b80f41a86707abf";
     TextView totalView;
     TextView defendView;
     TextView lockedView;
@@ -47,6 +53,13 @@ public class HomeFragment extends Fragment {
     TextView memoryText;
     TextView diskText;
 
+    RecyclerView recyclerView;
+
+    List<MyLog> myLogList = new ArrayList<>();
+    private LogAdapter adapter;
+    private LinearLayoutManager manager;
+
+    public SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Nullable
@@ -66,6 +79,26 @@ public class HomeFragment extends Fragment {
         computerState = view.findViewById(R.id.computer_img);
         memoryText = view.findViewById(R.id.memory_text);
         diskText = view.findViewById(R.id.disk_text);
+
+        recyclerView = view.findViewById(R.id.log_recycler);
+        manager = new LinearLayoutManager(getActivity());
+        adapter = new LogAdapter(myLogList);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+
+        swipeRefreshLayout = view.findViewById(R.id.swiper);
+
+        //swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                queryInfo();
+//
+//            }
+//        });
+
+
         queryInfo();
 
         return view;
@@ -80,15 +113,18 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
                 final Home home = Util.handleHomeInfo(content);
-                if(home !=null){
+                if(home !=null &&home.error==null){
                      getActivity().runOnUiThread(new Runnable() {
                          @Override
                          public void run() {
                              showInfo(home);
                          }
+
+
                      });
 
                  }
+                 //swipeRefreshLayout.setEnabled(false);
 
 
 
@@ -101,6 +137,8 @@ public class HomeFragment extends Fragment {
 
 
     private void showInfo(Home home) {
+        initList(home);
+
         totalView.setText(home.info.total_num);
         defendView.setText(home.info.defend_num);
         lockedView.setText(home.info.locked_num);
@@ -119,6 +157,26 @@ public class HomeFragment extends Fragment {
         }else {
             computerState.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.warning));
         }
+
+
+    }
+
+    private void initList(Home home) {
+        myLogList.clear();
+        List<LogInfo> logList= home.logList;
+        for(LogInfo logInfo :logList){
+            if(logInfo.type.equals("0")){
+                MyLog log = new MyLog(R.drawable.message,logInfo.title,logInfo.time,logInfo.info);
+                myLogList.add(log);
+            }else if(logInfo.type.equals("1")){
+                MyLog log = new MyLog(R.drawable.re,logInfo.title,logInfo.time,logInfo.info);
+                myLogList.add(log);
+            }else if(logInfo.type.equals("2")){
+                MyLog log = new MyLog(R.drawable.data,logInfo.title,logInfo.time,logInfo.info);
+                myLogList.add(log);
+            }
+        }
+        adapter.notifyDataSetChanged();
 
 
     }

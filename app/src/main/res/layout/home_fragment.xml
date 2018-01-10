@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment"
-    android:orientation="vertical"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/home_info_item"/>
-    <include layout="@layout/home_alarm_item"/>
-    <include layout="@layout/home_over_view_item"/>
+    android:layout_height="match_parent"
+    android:id="@+id/swiper"
+    >
+    <android.support.v4.widget.NestedScrollView
 
-</LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/fragment"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/home_info_item"/>
+            <include layout="@layout/home_alarm_item"/>
+            <include layout="@layout/home_over_view_item"/>
+            <include layout="@layout/log_layout"/>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

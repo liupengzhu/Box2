@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -60,6 +62,12 @@ public class HomeFragment extends Fragment {
     public SwipeRefreshLayout swipeRefreshLayout;
 
 
+
+    private RelativeLayout loodingErrorLayout;
+
+    private ImageView loodingLayout;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,6 +85,10 @@ public class HomeFragment extends Fragment {
         computerState = view.findViewById(R.id.computer_img);
         memoryText = view.findViewById(R.id.memory_text);
         diskText = view.findViewById(R.id.disk_text);
+
+
+        loodingErrorLayout = view.findViewById(R.id.loading_error_layout);
+        loodingLayout = view.findViewById(R.id.loading_layout);
 
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());
@@ -98,12 +110,17 @@ public class HomeFragment extends Fragment {
         });
 
 
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+
         queryInfo();
 
         return view;
     }
 
     public void queryInfo(){
+        swipeRefreshLayout.setRefreshing(true);
+
         HttpUtil.sendGetRequestWithHttp(BOX_URI  + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -113,6 +130,8 @@ public class HomeFragment extends Fragment {
                     public void run() {
                         //
                         swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
                     }
                 });
 
@@ -128,6 +147,9 @@ public class HomeFragment extends Fragment {
                         public void run() {
                             showInfo(home);
                             swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
                         }
 
 
@@ -141,6 +163,9 @@ public class HomeFragment extends Fragment {
                         public void run() {
                             //
                             swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
                         }
                     });
                 }

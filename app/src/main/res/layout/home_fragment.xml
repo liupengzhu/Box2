@@ -1,24 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/swiper"
     >
-    <android.support.v4.widget.NestedScrollView
-
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:id="@+id/fragment"
-            android:orientation="vertical"
+        android:layout_height="match_parent">
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/home_ok_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/fragment"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <include layout="@layout/home_info_item"/>
+                <include layout="@layout/home_alarm_item"/>
+                <include layout="@layout/home_over_view_item"/>
+                <include layout="@layout/log_layout"/>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+        <RelativeLayout
+            android:background="@color/login_error"
+            android:id="@+id/loading_error_layout"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <include layout="@layout/home_info_item"/>
-            <include layout="@layout/home_alarm_item"/>
-            <include layout="@layout/home_over_view_item"/>
-            <include layout="@layout/log_layout"/>
+            <LinearLayout
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@mipmap/loading_error"
+                    android:layout_gravity="center"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp" />
+                <TextView
+                    android:id="@+id/loading_text"
+                    android:textSize="20sp"
+                    android:text="网络链接异常"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+        </RelativeLayout>
+        <ImageView
+            android:id="@+id/loading_layout"
+            android:background="@color/login_error"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+
+    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>
+
+

@@ -16,4 +16,8 @@
     <color name="login_color">#2181f3</color>
     <color name="login_color_checked">#1a67c2</color>
     <color name="white">#ffffff</color>
+    <color name="white_low">#80ffffff</color>
+    <color name="login_error">#f4f4f6</color>
+    <color name="menu_sz_color">#2181f3</color>
+    <color name="menu_t_color">#1a1c1e</color>
 </resources>

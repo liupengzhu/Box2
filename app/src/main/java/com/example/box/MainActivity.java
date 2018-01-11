@@ -1,16 +1,22 @@
 package com.example.box;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.box.adapter.HomeAdapter;
 import com.example.box.fragment.HomeFragment;
@@ -20,6 +26,8 @@ import com.example.box.fragment.ListFragment3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> fragments = new ArrayList<>();
     private HomeAdapter adapter;
     public static String token = "";
+    //是否退出程序的标志位
+    private boolean isExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
+
         getToken();
         initView();
 
@@ -45,6 +63,52 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
+
+    }
+
+    /**
+     * 按键按下监听事件
+     * @param keyCode
+     * @param event
+     * @return
+     */
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            exitByTwoClick();
+        }
+
+
+        return false;
+    }
+
+    /**
+     * 双击退出方法
+     */
+
+    private void exitByTwoClick() {
+        Timer timer = null;
+        //如果isExit为false 提示再次点击退出
+        if(isExit == false){
+            isExit = true;
+            Toast.makeText(this,"再次点击退出程序",Toast.LENGTH_SHORT).show();
+            //俩秒后没有点击 取消退出
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isExit = false;//取消退出
+                }
+            },2000);
+
+
+        }else {
+            //退出程序
+            finish();
+            System.exit(0);
+        }
+
 
     }
 

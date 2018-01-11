@@ -1,7 +1,10 @@
 package com.example.box;
 
+<<<<<<< HEAD
 
 import android.content.Intent;
+=======
+>>>>>>> a5731baae0bc12c2fe21dc2f517ce84f44b933ca
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -27,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private String[] titles = {"总览", "递送箱列表","远程授权","日志"};
-    private int[] icons = {R.drawable.sy1,R.drawable.dsx1,R.drawable.sq1,R.drawable.rz1};
+    private String[] titles = {"总览", "递送箱列表", "远程授权", "日志"};
+    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.sq1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private HomeAdapter adapter;
     public static String token ="";
@@ -41,13 +44,16 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getToken();
         initView();
+<<<<<<< HEAD
 
 
         adapter = new HomeAdapter(getSupportFragmentManager(),fragments);
+=======
+        adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
+>>>>>>> a5731baae0bc12c2fe21dc2f517ce84f44b933ca
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
-
 
     }
 
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabs() {
-        for (int i = 0; i <tabLayout.getTabCount() ; i++) {
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setCustomView(getView(i));
         }
 
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                switch (tab.getPosition()){
+                switch (tab.getPosition()) {
                     case 0:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy2);
                         break;
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-               TextView textView =  tab.getCustomView().findViewById(R.id.tab_text_view);
+                TextView textView = tab.getCustomView().findViewById(R.id.tab_text_view);
                 textView.setTextColor(getResources().getColor(R.color.normal));
             }
 
@@ -91,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabUnselected(TabLayout.Tab tab) {
 
 
-                switch (tab.getPosition()){
+                switch (tab.getPosition()) {
                     case 0:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy1);
                         break;
@@ -107,12 +113,10 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                TextView textView =  tab.getCustomView().findViewById(R.id.tab_text_view);
+                TextView textView = tab.getCustomView().findViewById(R.id.tab_text_view);
                 textView.setTextColor(getResources().getColor(R.color.ah));
 
             }
-
-
 
 
             @Override
@@ -120,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
 
     }
@@ -136,15 +139,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    public View getView(int position){
-        View view = LayoutInflater.from(this).inflate(R.layout.tab_list,null);
+    public View getView(int position) {
+        View view = LayoutInflater.from(this).inflate(R.layout.tab_list, null);
         ImageView imageView = view.findViewById(R.id.tab_image_view);
         TextView textView = view.findViewById(R.id.tab_text_view);
         imageView.setBackgroundResource(icons[position]);
         textView.setText(titles[position]);
-        if(position==0){
+        if (position == 0) {
             imageView.setBackgroundResource(R.drawable.sy2);
             textView.setTextColor(getResources().getColor(R.color.normal));
         }

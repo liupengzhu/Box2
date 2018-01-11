@@ -142,7 +142,6 @@ public class LoginActivity extends AppCompatActivity {
 
                UserToken userToken = Util.handleLoginInfo(response.body().string());
 
-                //Log.d(userToken.message,"sdf");
 
                if(userToken!=null&&userToken.message==null){
 

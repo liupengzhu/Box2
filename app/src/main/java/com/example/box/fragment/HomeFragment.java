@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.LogAdapter;
 import com.example.box.adapter.MyItemDecoration;
@@ -39,8 +40,8 @@ import okhttp3.Response;
 
 public class HomeFragment extends Fragment {
 
-    public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home";
-    public static final String TOKEN = "?_token=c212a5676adcfb1dd30e54a591672dcc06289f75";
+    public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home?_token=";
+    //public static final String TOKEN = "?_token=c212a5676adcfb1dd30e54a591672dcc06289f75";
     TextView totalView;
     TextView defendView;
     TextView lockedView;
@@ -108,7 +109,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void queryInfo(){
-        HttpUtil.sendGetRequestWithHttp(BOX_URI  + TOKEN, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URI  + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 

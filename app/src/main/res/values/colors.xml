@@ -14,5 +14,6 @@
     <color name="ziblack2">#7c8092</color>
     <color name="ah">#696969</color>
     <color name="login_color">#2181f3</color>
+    <color name="login_color_checked">#1a67c2</color>
     <color name="white">#ffffff</color>
 </resources>

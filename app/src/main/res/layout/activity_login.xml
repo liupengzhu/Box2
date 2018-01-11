@@ -46,16 +46,30 @@
         android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/login_name"
-        android:textCursorDrawable="@drawable/color_cursor"
-        android:textColor="@color/white"
-        android:paddingLeft="20dp"
-        android:background="@drawable/login_name"
-        android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/login_name"
+            android:textCursorDrawable="@drawable/color_cursor"
+            android:textColor="@color/white"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp"
+            android:maxLines="1"
+            android:maxLength="20"
+            android:background="@drawable/login_name"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+        <ImageView
+            android:src="@drawable/name"
+            android:layout_alignRight="@+id/login_name"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+    </RelativeLayout>
     <TextView
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
@@ -65,16 +79,32 @@
         android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/login_password"
-        android:textCursorDrawable="@drawable/color_cursor"
-        android:textColor="@color/white"
-        android:paddingLeft="20dp"
-        android:background="@drawable/login_name"
-        android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/login_password"
+            android:textCursorDrawable="@drawable/color_cursor"
+            android:textColor="@color/white"
+            android:paddingLeft="20dp"
+            android:paddingRight="40dp"
+            android:maxLines="1"
+            android:maxLength="20"
+            android:inputType="textPassword"
+            android:background="@drawable/login_name"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <ImageView
+            android:src="@drawable/password"
+            android:layout_alignRight="@+id/login_password"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+    </RelativeLayout>
     <RelativeLayout
 
         android:layout_width="match_parent"

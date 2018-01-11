@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle"
-    >
-    <solid android:color="@color/login_color"/>
-
-    <stroke android:width="0dp"/>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/login_button_unchecked" android:state_pressed="false"/>
+    <item android:drawable="@drawable/login_button_ischecked" android:state_pressed="true"/>
 
 
-    <corners android:radius="110dp"/>
-
-
-</shape>
+</selector>

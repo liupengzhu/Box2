@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -50,6 +51,7 @@ public class HttpUtil {
         client.newCall(request).enqueue(callback);
 
     }
+
 
 
     public static void sendPutImageWithHttp(String url,String localPath,Callback callback){

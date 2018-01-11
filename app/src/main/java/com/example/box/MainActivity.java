@@ -1,6 +1,7 @@
 package com.example.box;
 
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] icons = {R.drawable.sy1,R.drawable.dsx1,R.drawable.sq1,R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private HomeAdapter adapter;
+    public static String token ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +39,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getToken();
         initView();
+
+
         adapter = new HomeAdapter(getSupportFragmentManager(),fragments);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
+
+
+    }
+
+    private void getToken() {
+        Intent intent = getIntent();
+        token = intent.getStringExtra("token");
 
 
     }

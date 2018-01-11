@@ -103,13 +103,8 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-<<<<<<< HEAD
     public void queryInfo(){
         HttpUtil.sendGetRequestWithHttp(BOX_URI  + MainActivity.token, new Callback() {
-=======
-    public void queryInfo() {
-        HttpUtil.sendGetRequestWithHttp(BOX_URI + TOKEN, new Callback() {
->>>>>>> a5731baae0bc12c2fe21dc2f517ce84f44b933ca
             @Override
             public void onFailure(Call call, IOException e) {
 

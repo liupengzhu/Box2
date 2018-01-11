@@ -1,6 +1,5 @@
 package com.example.box.fragment;
 
-
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,10 +32,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-/**
- * Created by Administrator on 2018/1/8.
- */
-
 public class HomeFragment extends Fragment {
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home";
@@ -67,7 +62,7 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.home_fragment,container,false);
+        View view = inflater.inflate(R.layout.home_fragment, container, false);
         totalView = view.findViewById(R.id.total_text);
         defendView = view.findViewById(R.id.defend_text);
         lockedView = view.findViewById(R.id.locked_text);
@@ -85,7 +80,7 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());
         adapter = new LogAdapter(myLogList);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
@@ -94,11 +89,11 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-           @Override
-           public void onRefresh() {
-               queryInfo();
+            @Override
+            public void onRefresh() {
+                queryInfo();
 
-           }
+            }
         });
 
 
@@ -107,8 +102,8 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    public void queryInfo(){
-        HttpUtil.sendGetRequestWithHttp(BOX_URI  + TOKEN, new Callback() {
+    public void queryInfo() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URI + TOKEN, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -121,23 +116,24 @@ public class HomeFragment extends Fragment {
                 });
 
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
                 final Home home = Util.handleHomeInfo(content);
-                if(home !=null &&home.error==null){
-                     getActivity().runOnUiThread(new Runnable() {
-                         @Override
-                         public void run() {
-                             showInfo(home);
+                if (home != null && home.error == null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showInfo(home);
                             swipeRefreshLayout.setRefreshing(false);
-                         }
+                        }
 
 
-                     });
+                    });
 
 
-                }else {
+                } else {
 
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -149,11 +145,8 @@ public class HomeFragment extends Fragment {
                 }
 
 
-
-
             }
         });
-
 
 
     }
@@ -168,17 +161,17 @@ public class HomeFragment extends Fragment {
         bindView.setText(home.info.bind_num);
         leaving_alarm_view.setText(home.alarm_num.area_alarm);
         area_alarm_view.setText(home.alarm_num.leaving_alarm);
-        memoryText.setText(home.over_view.mem_percent+"%");
-        diskText.setText(home.over_view.hd_usage+"%");
-        if(home.over_view.database.equals("1")){
-            dbState.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.normal));
-        }else {
-            dbState.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.warning));
+        memoryText.setText(home.over_view.mem_percent + "%");
+        diskText.setText(home.over_view.hd_usage + "%");
+        if (home.over_view.database.equals("1")) {
+            dbState.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.normal));
+        } else {
+            dbState.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.warning));
         }
-        if(home.over_view.computer.equals("1")){
-            computerState.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.normal));
-        }else {
-            computerState.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.warning));
+        if (home.over_view.computer.equals("1")) {
+            computerState.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.normal));
+        } else {
+            computerState.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.warning));
         }
 
 
@@ -186,16 +179,16 @@ public class HomeFragment extends Fragment {
 
     private void initList(Home home) {
         myLogList.clear();
-        List<LogInfo> logList= home.logList;
-        for(LogInfo logInfo :logList){
-            if(logInfo.type.equals("0")){
-                MyLog log = new MyLog(R.drawable.message,logInfo.title,logInfo.time,logInfo.info);
+        List<LogInfo> logList = home.logList;
+        for (LogInfo logInfo : logList) {
+            if (logInfo.type.equals("0")) {
+                MyLog log = new MyLog(R.drawable.message, logInfo.title, logInfo.time, logInfo.info);
                 myLogList.add(log);
-            }else if(logInfo.type.equals("1")){
-                MyLog log = new MyLog(R.drawable.re,logInfo.title,logInfo.time,logInfo.info);
+            } else if (logInfo.type.equals("1")) {
+                MyLog log = new MyLog(R.drawable.re, logInfo.title, logInfo.time, logInfo.info);
                 myLogList.add(log);
-            }else if(logInfo.type.equals("2")){
-                MyLog log = new MyLog(R.drawable.data,logInfo.title,logInfo.time,logInfo.info);
+            } else if (logInfo.type.equals("2")) {
+                MyLog log = new MyLog(R.drawable.data, logInfo.title, logInfo.time, logInfo.info);
                 myLogList.add(log);
             }
         }

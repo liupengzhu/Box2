@@ -7,10 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by Administrator on 2018/1/9.
- */
-
 public class ListFragment2 extends Fragment {
     @Nullable
     @Override

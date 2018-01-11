@@ -20,4 +20,5 @@
     <color name="login_error">#f4f4f6</color>
     <color name="menu_sz_color">#2181f3</color>
     <color name="menu_t_color">#1a1c1e</color>
+    <color name="tab_background">#f4f4f6</color>
 </resources>

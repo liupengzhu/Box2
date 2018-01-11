@@ -23,17 +23,34 @@ import com.example.box.fragment.HomeFragment;
 import com.example.box.fragment.ListFragment;
 import com.example.box.fragment.ListFragment2;
 import com.example.box.fragment.ListFragment3;
+import com.example.box.gson.MenuUserInfo;
+import com.example.box.util.HttpUtil;
+import com.example.box.util.Util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+
+    private CircleImageView menu_user_img;
+    private TextView menu_user_id;
+    private TextView menu_user_name;
+    private TextView menu_user_tell;
+
+
+    public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
     private String[] titles = {"总览", "递送箱列表", "远程授权", "日志"};
     private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.sq1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
@@ -41,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     public static String token = "";
     //是否退出程序的标志位
     private boolean isExit = false;
+    private MenuUserInfo menuUserInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-
+        //获取当前的token
         getToken();
         initView();
 
@@ -63,6 +81,47 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
+
+        //请求服务器菜单数据
+        queryMenuInfo();
+
+    }
+
+    private void queryMenuInfo() {
+
+        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                menuUserInfo = Util.handleMenuUserInfo(response.body().string());
+                if(menuUserInfo !=null&& menuUserInfo.error==null){
+                      runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              //显示用户信息
+                              showMenuInfo(menuUserInfo);
+                          }
+                      });
+
+                }
+
+            }
+        });
+
+
+    }
+
+    private void showMenuInfo(MenuUserInfo menuUserInfo) {
+        
+        menu_user_id.setText(menuUserInfo.userId);
+        menu_user_name.setText(menuUserInfo.userName);
+        menu_user_tell.setText(menuUserInfo.userTell);
 
     }
 
@@ -119,11 +178,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //初始化Tab；
     private void initTabs() {
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setCustomView(getView(i));
         }
-
+      //tablayout切换监听事件
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -182,18 +242,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+    //初始化控件
     private void initView() {
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
+        menu_user_img = findViewById(R.id.menu_user_img);
+        menu_user_id = findViewById(R.id.menu_user_id);
+        menu_user_name = findViewById(R.id.menu_user_name);
+        menu_user_tell = findViewById(R.id.menu_user_tell);
+
+
         fragments.add(new HomeFragment());
         fragments.add(new ListFragment());
         fragments.add(new ListFragment2());
         fragments.add(new ListFragment3());
     }
 
-
+    //获取position位置的tab的子控件
     public View getView(int position) {
         View view = LayoutInflater.from(this).inflate(R.layout.tab_list, null);
         ImageView imageView = view.findViewById(R.id.tab_image_view);

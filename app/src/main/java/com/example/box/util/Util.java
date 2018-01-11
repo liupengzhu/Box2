@@ -4,6 +4,7 @@ package com.example.box.util;
 import com.example.box.gson.Home;
 import com.example.box.gson.HomeAlarm;
 import com.example.box.gson.HomeInfo;
+import com.example.box.gson.MenuUserInfo;
 import com.example.box.gson.UserToken;
 import com.google.gson.Gson;
 
@@ -23,6 +24,11 @@ public class Util {
         Gson gson = new Gson();
         UserToken userToken = gson.fromJson(response,UserToken.class);
         return userToken;
+    }
+    public static MenuUserInfo handleMenuUserInfo(String response){
+        Gson gson = new Gson();
+        MenuUserInfo menuUserInfo = gson.fromJson(response,MenuUserInfo.class);
+        return menuUserInfo;
     }
 
 

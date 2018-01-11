@@ -36,8 +36,10 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:background="@color/tab_background"
             app:tabIndicatorHeight="0dp"
+
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/normal"></android.support.design.widget.TabLayout>
 

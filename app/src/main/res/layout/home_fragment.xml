@@ -17,8 +17,11 @@
                 android:id="@+id/fragment"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
+                android:focusableInTouchMode="true"
                 android:layout_height="match_parent">
-                <include layout="@layout/home_info_item"/>
+                <include layout="@layout/home_info_item"
+
+                    />
                 <include layout="@layout/home_alarm_item"/>
                 <include layout="@layout/home_over_view_item"/>
                 <include layout="@layout/log_layout"/>

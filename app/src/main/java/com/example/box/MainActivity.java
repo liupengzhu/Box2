@@ -1,20 +1,14 @@
 package com.example.box;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -28,7 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.box.adapter.HomeAdapter;
 import com.example.box.fragment.HomeFragment;
-import com.example.box.fragment.ListFragment;
+import com.example.box.fragment.DListFragment;
 import com.example.box.fragment.ListFragment2;
 import com.example.box.fragment.ListFragment3;
 import com.example.box.gson.MenuUserInfo;
@@ -38,7 +32,6 @@ import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -379,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         fragments.add(new HomeFragment());
-        fragments.add(new ListFragment());
+        fragments.add(new DListFragment());
         fragments.add(new ListFragment2());
         fragments.add(new ListFragment3());
     }

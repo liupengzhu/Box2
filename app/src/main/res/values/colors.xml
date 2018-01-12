@@ -21,4 +21,7 @@
     <color name="menu_sz_color">#2181f3</color>
     <color name="menu_t_color">#1a1c1e</color>
     <color name="tab_background">#f4f4f6</color>
+    <color name="list_text_h">#1a1c1e</color>
+    <color name="list_text_n">#696e83</color>
+    <color name="list_text_l">#b1b1bb</color>
 </resources>

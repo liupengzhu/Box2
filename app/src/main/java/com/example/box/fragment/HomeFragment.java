@@ -26,6 +26,7 @@ import com.example.box.gson.LogInfo;
 import com.example.box.recycler.MyLog;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
+import com.example.titlebar.TitleBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ import okhttp3.Response;
 public class HomeFragment extends Fragment {
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home?_token=";
-    //public static final String TOKEN = "?_token=c212a5676adcfb1dd30e54a591672dcc06289f75";
     TextView totalView;
     TextView defendView;
     TextView lockedView;
@@ -68,6 +68,8 @@ public class HomeFragment extends Fragment {
     private ImageView loodingLayout;
 
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -89,6 +91,11 @@ public class HomeFragment extends Fragment {
 
         loodingErrorLayout = view.findViewById(R.id.loading_error_layout);
         loodingLayout = view.findViewById(R.id.loading_layout);
+
+
+
+
+
 
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());

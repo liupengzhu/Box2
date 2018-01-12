@@ -40,7 +40,7 @@
                 android:layout_centerVertical="true"
                 />
             <TextView
-                android:text="取消"
+                android:text="确定"
                 android:textSize="20sp"
                 android:textColor="@color/menu_sz_color"
                 android:layout_centerVertical="true"

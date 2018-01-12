@@ -3,4 +3,5 @@
     <color name="high">#6bc241</color>
     <color name="normal">#ff7948</color>
     <color name="low">#ff0000</color>
+    <color name="isnull">#c5c4ca</color>
 </resources>

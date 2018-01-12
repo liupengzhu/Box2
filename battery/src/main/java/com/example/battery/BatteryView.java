@@ -88,9 +88,12 @@ public class BatteryView extends View{
         }else if(battery >= 33&&battery<66){
             strokepaint.setColor(getResources().getColor(R.color.normal));
             paint.setColor(getResources().getColor(R.color.normal));
-        }else {
+        }else if(battery>=0&&battery<33){
             strokepaint.setColor(getResources().getColor(R.color.low));
             paint.setColor(getResources().getColor(R.color.low));
+        }else {
+            strokepaint.setColor(getResources().getColor(R.color.isnull));
+            paint.setColor(getResources().getColor(R.color.isnull));
         }
         if(battery==100){
             Log.d(battery+"",battery+"");

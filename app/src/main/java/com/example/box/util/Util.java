@@ -13,6 +13,7 @@ import com.example.box.gson.HomeAlarm;
 import com.example.box.gson.HomeInfo;
 import com.example.box.gson.MenuUserInfo;
 import com.example.box.gson.SqInfo;
+import com.example.box.gson.SqLsInfo;
 import com.example.box.gson.UserToken;
 import com.google.gson.Gson;
 
@@ -52,6 +53,13 @@ public class Util {
         Gson gson = new Gson();
         SqInfo sqInfo = gson.fromJson(response,SqInfo.class);
         return sqInfo;
+    }
+
+
+    public static SqLsInfo handleSqLsInfo(String response){
+        Gson gson = new Gson();
+        SqLsInfo sqLsInfo = gson.fromJson(response,SqLsInfo.class);
+        return sqLsInfo;
     }
 
 

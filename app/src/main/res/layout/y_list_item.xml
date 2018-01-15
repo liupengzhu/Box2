@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
     >
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/y_list_img"
         android:src="@mipmap/user_img"
         android:layout_width="40dp"

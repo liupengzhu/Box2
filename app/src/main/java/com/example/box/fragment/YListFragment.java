@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ public class YListFragment extends Fragment {
 
     public static final String YCSQ_URI = "http://safebox.dsmcase.com:90/api/authorize?_token=";
 
+    public static final String IMG_URI = "http://safebox.dsmcase.com:90";
     RecyclerView recyclerView;
     SqAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -56,11 +58,8 @@ public class YListFragment extends Fragment {
         adapter = new SqAdapter(sqList);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new MyItemDecoration());
-        swipeRefreshLayout.setColorSchemeColors(R.color.menu_sz_color);
-
-
-
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary);
         return view;
     }
 
@@ -116,8 +115,8 @@ public class YListFragment extends Fragment {
 
         sqList.clear();
         for(SqData sqData :sqInfo.sqDataList){
-
-            MySq mySq = new MySq(sqData.user,sqData.user,sqData.code,sqData.date);
+            String img_uri = sqData.user_pic.replace('\\',' ');
+            MySq mySq = new MySq(IMG_URI+img_uri,sqData.user,sqData.code,sqData.date);
             sqList.add(mySq);
 
         }

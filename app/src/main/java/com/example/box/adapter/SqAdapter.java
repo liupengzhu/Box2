@@ -24,7 +24,7 @@ public class SqAdapter extends RecyclerView.Adapter<SqAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView userImg;
+        de.hdodenhof.circleimageview.CircleImageView userImg;
         TextView userName;
         TextView xlh;
         TextView date;
@@ -57,7 +57,7 @@ public class SqAdapter extends RecyclerView.Adapter<SqAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MySq sq = sqList.get(position);
-       /* Glide.with(MyApplication.getContext()).load(sq.getUserImg()).into(holder.userImg);*/
+        Glide.with(MyApplication.getContext()).load(sq.getUserImg()).into(holder.userImg);
         holder.userName.setText(sq.getUserName());
         holder.xlh.setText(sq.getUserXLH());
         holder.date.setText(sq.getDate());

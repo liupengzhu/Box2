@@ -42,9 +42,6 @@ public class BatteryView extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mWidth = getWidth();
-        mHeight = getHeight();
-
         strokePath.moveTo(1,1);
         strokePath.lineTo(mWidth-(mHeight-2)/3/2,1);
         strokePath.lineTo(mWidth-(mHeight-2)/3/2,(mHeight-2)/3 +1);
@@ -60,7 +57,22 @@ public class BatteryView extends View{
 
     }
 
-
+    /**
+     * 得到控件正确的宽高
+     * @param w
+     * @param h
+     * @param oldw
+     * @param oldhmWidth = getWidth();mWidth =mWidth = getWidth();
+        mHeight = getHeight(); getWidth();
+        mHeight = getHeight();
+        mHeight = getHeight();
+     */
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mWidth = getWidth();
+        mHeight = getHeight();
+    }
 
     private void init() {
         paintColor = Color.GREEN;

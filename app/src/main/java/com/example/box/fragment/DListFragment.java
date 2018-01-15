@@ -55,9 +55,8 @@ public class DListFragment extends Fragment {
        adapter = new BoxAdapter(myBoxList);
        recyclerView.setLayoutManager(manager);
        recyclerView.setAdapter(adapter);
-        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+       refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+       refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 sendRequest();

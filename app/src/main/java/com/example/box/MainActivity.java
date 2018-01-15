@@ -23,7 +23,7 @@ import com.bumptech.glide.Glide;
 import com.example.box.adapter.HomeAdapter;
 import com.example.box.fragment.HomeFragment;
 import com.example.box.fragment.DListFragment;
-import com.example.box.fragment.ListFragment2;
+import com.example.box.fragment.SListFragment;
 import com.example.box.fragment.ListFragment3;
 import com.example.box.gson.MenuUserInfo;
 import com.example.box.util.HttpUtil;
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragments.add(new HomeFragment());
         fragments.add(new DListFragment());
-        fragments.add(new ListFragment2());
+        fragments.add(new SListFragment());
         fragments.add(new ListFragment3());
     }
 

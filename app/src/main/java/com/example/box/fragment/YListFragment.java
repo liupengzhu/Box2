@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.example.box.MainActivity;
 import com.example.box.R;
@@ -46,21 +48,32 @@ public class YListFragment extends Fragment {
     private List<MySq> sqList = new ArrayList<>();
     private LinearLayoutManager manager;
 
-    @SuppressLint("ResourceAsColor")
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.y_list_fragment,container,false);
+        initView(view);
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        return view;
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void initView(View view) {
+
         recyclerView = view.findViewById(R.id.y_recycler_view);
         swipeRefreshLayout = view.findViewById(R.id.yc_swipe);
 
-        manager = new LinearLayoutManager(container.getContext());
+        loodingErrorLayout = view.findViewById(R.id.y_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.y_loading_layout);
+        manager = new LinearLayoutManager(getContext());
         adapter = new SqAdapter(sqList);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary);
-        return view;
     }
 
     @Override
@@ -72,7 +85,6 @@ public class YListFragment extends Fragment {
                 sendRequest();
             }
         });
-
         sendRequest();
     }
 
@@ -80,11 +92,20 @@ public class YListFragment extends Fragment {
      * 发送请求数据
      */
     private void sendRequest() {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(YCSQ_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
-                swipeRefreshLayout.setRefreshing(false);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -97,10 +118,21 @@ public class YListFragment extends Fragment {
                         public void run() {
                             initSqList(sqInfo);
                             swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
                 }else {
-                    swipeRefreshLayout.setRefreshing(false);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
+                        }
+                    });
                 }
 
             }

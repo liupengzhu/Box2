@@ -49,6 +49,7 @@
         android:layout_toRightOf="@id/ls_list_img"
         android:layout_below="@+id/ls_text"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         />
 
 

@@ -12,12 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.example.box.MainActivity;
 import com.example.box.R;
-import com.example.box.adapter.MyItemDecoration;
 import com.example.box.adapter.SqLsAdapter;
-import com.example.box.gson.SqInfo;
 import com.example.box.gson.SqLsData;
 import com.example.box.gson.SqLsInfo;
 import com.example.box.recycler.MySqLs;
@@ -44,6 +44,9 @@ public class LsListFragment extends Fragment {
     LinearLayoutManager manager;
     SwipeRefreshLayout swipeRefreshLayout;
 
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
     public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/authorize/history?_token=";
 
     @Nullable
@@ -51,6 +54,8 @@ public class LsListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.ls_list_fragment,container,false);
         initView(view);
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -71,10 +76,19 @@ public class LsListFragment extends Fragment {
      */
     private void sendRequest() {
 
+        swipeRefreshLayout.setRefreshing(false);
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                swipeRefreshLayout.setRefreshing(false);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
 
             }
 
@@ -87,11 +101,22 @@ public class LsListFragment extends Fragment {
                         public void run() {
                             showInfo(sqLsInfo);
                             swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
 
                 }else {
-                    swipeRefreshLayout.setRefreshing(false);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
+                        }
+                    });
                 }
 
 
@@ -123,6 +148,8 @@ public class LsListFragment extends Fragment {
     private void initView(View view) {
         swipeRefreshLayout = view.findViewById(R.id.ls_swipe);
         recyclerView = view.findViewById(R.id.ls_recycler_view);
+        loodingErrorLayout = view.findViewById(R.id.ls_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.ls_loading_layout);
         adapter = new SqLsAdapter(sqLsList);
         manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);

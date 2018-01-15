@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.box.MainActivity;
@@ -43,15 +44,20 @@ public class DListFragment extends Fragment {
     private BoxAdapter adapter;
     private LinearLayoutManager manager;
     private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
        View view = inflater.inflate(R.layout.d_list_fragment,container,false);
        recyclerView = view.findViewById(R.id.dsx_list);
        refreshLayout = view.findViewById(R.id.box_list_swiper);
+
+        loodingErrorLayout = view.findViewById(R.id.d_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.d_loading_layout);
+
        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
        manager = new LinearLayoutManager(container.getContext());
-
        adapter = new BoxAdapter(myBoxList);
        recyclerView.setLayoutManager(manager);
        recyclerView.setAdapter(adapter);
@@ -64,17 +70,29 @@ public class DListFragment extends Fragment {
             }
         });
 
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+
         sendRequest();
         return view;
     }
 
     //发送网络请求
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(BOX_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
-                refreshLayout.setRefreshing(false);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -87,10 +105,21 @@ public class DListFragment extends Fragment {
                         public void run() {
                             initBoxList(boxInfo);
                             refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
                 }else {
-                    refreshLayout.setRefreshing(false);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
+                        }
+                    });
                 }
 
             }

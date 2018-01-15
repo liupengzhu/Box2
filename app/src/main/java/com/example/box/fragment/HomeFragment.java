@@ -74,6 +74,16 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
+        initView(view);
+        return view;
+    }
+
+    /**
+     * 初始化View
+     * @param view
+     */
+    private void initView(View view) {
+
         totalView = view.findViewById(R.id.total_text);
         defendView = view.findViewById(R.id.defend_text);
         lockedView = view.findViewById(R.id.locked_text);
@@ -87,27 +97,24 @@ public class HomeFragment extends Fragment {
         computerState = view.findViewById(R.id.computer_img);
         memoryText = view.findViewById(R.id.memory_text);
         diskText = view.findViewById(R.id.disk_text);
-
-
         loodingErrorLayout = view.findViewById(R.id.loading_error_layout);
         loodingLayout = view.findViewById(R.id.loading_layout);
-
-
-
-
-
-
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());
         adapter = new LogAdapter(myLogList);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
-
         swipeRefreshLayout = view.findViewById(R.id.swiper);
-
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
 
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -116,13 +123,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-
         queryInfo();
-
-        return view;
     }
 
     public void queryInfo(){

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true">
+
+    <android.support.v4.widget.CircleImageView
+        android:id="@+id/user_info_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:src="@mipmap/user_img" />
+
+    <TextView
+        android:id="@+id/user_info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/user_info_img"
+        android:text="张三"
+        android:textColor="@color/list_text_h"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/user_info_qx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/user_info_name"
+        android:background="@drawable/user_qx"
+        android:text="一般用户"
+        android:textColor="@color/log_wdu"
+        android:textSize="12sp" />
+
+
+    <TextView
+        android:id="@+id/user_info_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_info_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/user_info_img"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="zq053694"
+        android:textColor="@color/list_text_n"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/right_jian" />
+
+
+</RelativeLayout>

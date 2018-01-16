@@ -1,8 +1,10 @@
 package com.example.box.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -65,6 +67,8 @@ public class HomeFragment extends Fragment {
     private RelativeLayout loodingErrorLayout;
 
     private ImageView loodingLayout;
+
+
 
 
     @Nullable
@@ -170,6 +174,7 @@ public class HomeFragment extends Fragment {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token",null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }

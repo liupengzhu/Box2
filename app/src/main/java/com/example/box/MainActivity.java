@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isExit = false;
     private MenuUserInfo menuUserInfo;
 
-    SharedPreferences preferences;
+    public static SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

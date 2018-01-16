@@ -113,6 +113,7 @@ public class UserLogFragment extends Fragment {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token",null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }

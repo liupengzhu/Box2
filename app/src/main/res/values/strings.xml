@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Box</string>
+    <item type="id" name="tag_first"></item>
+    <item type="id" name="tag_second"></item>
 </resources>

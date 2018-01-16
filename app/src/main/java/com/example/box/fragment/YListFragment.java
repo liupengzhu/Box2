@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.example.box.MainActivity;
 import com.example.box.R;
-import com.example.box.adapter.MyItemDecoration;
 import com.example.box.adapter.SqAdapter;
 import com.example.box.gson.SqData;
 import com.example.box.gson.SqInfo;
@@ -60,7 +59,7 @@ public class YListFragment extends Fragment {
         return view;
     }
 
-    @SuppressLint("ResourceAsColor")
+
     private void initView(View view) {
 
         recyclerView = view.findViewById(R.id.y_recycler_view);
@@ -73,7 +72,7 @@ public class YListFragment extends Fragment {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
     }
 
     @Override
@@ -100,7 +99,7 @@ public class YListFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //
+
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.INVISIBLE);
@@ -126,7 +125,7 @@ public class YListFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //
+
                             swipeRefreshLayout.setRefreshing(false);
                             loodingErrorLayout.setVisibility(View.VISIBLE);
                             loodingLayout.setVisibility(View.INVISIBLE);

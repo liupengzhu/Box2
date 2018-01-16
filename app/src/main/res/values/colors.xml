@@ -24,4 +24,5 @@
     <color name="list_text_h">#1a1c1e</color>
     <color name="list_text_n">#696e83</color>
     <color name="list_text_l">#b1b1bb</color>
+    <color name="log_wdu">#ff5b1f</color>
 </resources>

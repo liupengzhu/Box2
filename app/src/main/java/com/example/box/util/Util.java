@@ -9,11 +9,10 @@ import android.widget.LinearLayout;
 
 import com.example.box.gson.BoxInfo;
 import com.example.box.gson.Home;
-import com.example.box.gson.HomeAlarm;
-import com.example.box.gson.HomeInfo;
 import com.example.box.gson.MenuUserInfo;
 import com.example.box.gson.SqInfo;
 import com.example.box.gson.SqLsInfo;
+import com.example.box.gson.TotalLogInfo;
 import com.example.box.gson.UserToken;
 import com.google.gson.Gson;
 
@@ -62,6 +61,13 @@ public class Util {
         return sqLsInfo;
     }
 
+
+    public static TotalLogInfo handleTotalLogInfo(String response){
+        Gson gson = new Gson();
+        TotalLogInfo totalLogInfo = gson.fromJson(response,TotalLogInfo.class);
+        return totalLogInfo;
+
+    }
 
     /**
      * 设置tablayout下划线宽度的方法

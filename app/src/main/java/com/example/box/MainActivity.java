@@ -24,7 +24,7 @@ import com.example.box.adapter.HomeAdapter;
 import com.example.box.fragment.HomeFragment;
 import com.example.box.fragment.DListFragment;
 import com.example.box.fragment.SListFragment;
-import com.example.box.fragment.ListFragment3;
+import com.example.box.fragment.TotalLogFragment;
 import com.example.box.gson.MenuUserInfo;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new HomeFragment());
         fragments.add(new DListFragment());
         fragments.add(new SListFragment());
-        fragments.add(new ListFragment3());
+        fragments.add(new TotalLogFragment());
     }
 
     //获取position位置的tab的子控件

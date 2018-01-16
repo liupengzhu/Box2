@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,13 +19,12 @@ import android.widget.TextView;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.LogAdapter;
-import com.example.box.adapter.MyItemDecoration;
+
 import com.example.box.gson.Home;
 import com.example.box.gson.LogInfo;
 import com.example.box.recycler.MyLog;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
-import com.example.titlebar.TitleBar;
 
 import java.io.IOException;
 import java.util.ArrayList;

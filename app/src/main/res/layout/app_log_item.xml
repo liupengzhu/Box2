@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    >
+    <ImageView
+        android:id="@+id/app_log_list_img"
+        android:src="@drawable/message"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        />
+    <TextView
+        android:id="@+id/app_log_text"
+        android:textColor="@color/list_text_h"
+        android:text="授权历史记录"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/app_log_list_img"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        />
+    <TextView
+        android:id="@+id/app_log_time_text"
+        android:textColor="@color/list_text_l"
+        android:text="2017-11-13"
+        android:textSize="10sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <TextView
+        android:id="@+id/app_log_data_text"
+        android:textColor="@color/list_text_n"
+        android:text="管理员驳回张三于2017/11/06对xxxx00001的开箱请求"
+        android:maxLines="1"
+        android:textSize="15sp"
+        android:ellipsize="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/app_log_list_img"
+        android:layout_below="@+id/app_log_text"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+
+</RelativeLayout>

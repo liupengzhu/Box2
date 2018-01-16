@@ -8,22 +8,27 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.example.box.R;
+import com.example.box.adapter.LogFragmentAdapter;
 import com.example.box.adapter.SqFragmentAdapter;
 import com.example.box.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SListFragment extends Fragment {
+/**
+ * Created by sddt on 18-1-16.
+ */
+
+public class TotalLogFragment extends Fragment {
+
+
     List<String> titleList = new ArrayList<>();
     List<Fragment> fragmentList = new ArrayList<>();
     TabLayout tabLayout;
     ViewPager viewPager;
-    SqFragmentAdapter fragmentAdapter;
+    LogFragmentAdapter fragmentAdapter;
     private View view;
 
     @Override
@@ -35,12 +40,15 @@ public class SListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(container.getTag(R.id.tag_first) == null){
-            view = inflater.inflate(R.layout.s_list_fragment,container,false);
+        /**
+         * 保存子布局
+         */
+        if(container.getTag(R.id.tag_second) == null){
+            view = inflater.inflate(R.layout.total_log_fragment,container,false);
             initView(view);
-            container.setTag(R.id.tag_first,view);
+            container.setTag(R.id.tag_second,view);
         }else {
-            view = (View) container.getTag(R.id.tag_first);
+            view = (View) container.getTag(R.id.tag_second);
         }
 
         return view;
@@ -58,15 +66,17 @@ public class SListFragment extends Fragment {
      */
     private void initView(View view) {
 
-        titleList.add("远程授权");
-        titleList.add("授权历史");
-        fragmentList.add(new YListFragment());
-        fragmentList.add(new LsListFragment());
+        titleList.add("用户日志");
+        titleList.add("箱体日志");
+        titleList.add("应用程序日志");
+        fragmentList.add(new UserLogFragment());
+        fragmentList.add(new BoxLogFragment());
+        fragmentList.add(new AppLogFragment());
 
-        tabLayout = view.findViewById(R.id.s_list_tabLayout);
-        viewPager = view.findViewById(R.id.s_list_viewPager);
+        tabLayout = view.findViewById(R.id.total_log_list_tabLayout);
+        viewPager = view.findViewById(R.id.total_log_list_viewPager);
 
-        fragmentAdapter = new SqFragmentAdapter(getChildFragmentManager(),fragmentList,titleList);
+        fragmentAdapter = new LogFragmentAdapter(getChildFragmentManager(),fragmentList,titleList);
         viewPager.setAdapter(fragmentAdapter);
         tabLayout.setupWithViewPager(viewPager);
         //设置tabLayout下划线长度
@@ -74,7 +84,7 @@ public class SListFragment extends Fragment {
             @Override
             public void run() {
 
-                Util.setIndicator(tabLayout,50,50);
+                Util.setIndicator(tabLayout,20,20);
             }
         });
 

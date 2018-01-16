@@ -1,6 +1,5 @@
 package com.example.box.fragment;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,10 +16,10 @@ import android.widget.RelativeLayout;
 
 import com.example.box.MainActivity;
 import com.example.box.R;
-import com.example.box.adapter.SqLsAdapter;
-import com.example.box.gson.SqLsData;
-import com.example.box.gson.SqLsInfo;
-import com.example.box.recycler.MySqLs;
+import com.example.box.adapter.UserLogAdapter;
+import com.example.box.gson.TotalLogData;
+import com.example.box.gson.TotalLogInfo;
+import com.example.box.recycler.UserLog;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
 
@@ -33,26 +32,26 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 /**
- * Created by sddt on 18-1-15.
+ * Created by sddt on 18-1-16.
  */
 
-public class LsListFragment extends Fragment {
-
-    List<MySqLs> sqLsList = new ArrayList<>();
+public class UserLogFragment extends Fragment {
+    List<UserLog> userLogList = new ArrayList<>();
     RecyclerView recyclerView;
-    SqLsAdapter adapter;
+    UserLogAdapter adapter;
     LinearLayoutManager manager;
     SwipeRefreshLayout swipeRefreshLayout;
 
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
-    public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/authorize/history?_token=";
+    public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/log?_token=";
+    public static final String TYPE = "&type=0";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.ls_list_fragment,container,false);
+        View view = inflater.inflate(R.layout.user_log_fragment,container,false);
         initView(view);
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -77,7 +76,7 @@ public class LsListFragment extends Fragment {
     private void sendRequest() {
 
         swipeRefreshLayout.setRefreshing(false);
-        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token+TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -94,12 +93,12 @@ public class LsListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final SqLsInfo sqLsInfo = Util.handleSqLsInfo(response.body().string());
-                if(sqLsInfo!=null&&sqLsInfo.error==null){
+                final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(response.body().string());
+                if(totalLogInfo!=null&&totalLogInfo.error==null){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showInfo(sqLsInfo);
+                            showInfo(totalLogInfo);
                             swipeRefreshLayout.setRefreshing(false);
                             loodingErrorLayout.setVisibility(View.INVISIBLE);
                             loodingLayout.setVisibility(View.INVISIBLE);
@@ -127,14 +126,14 @@ public class LsListFragment extends Fragment {
 
     /**
      * 通知view更新信息
-     * @param sqLsInfo
+     * @param totalLogInfo
      */
-    private void showInfo(SqLsInfo sqLsInfo) {
+    private void showInfo(TotalLogInfo totalLogInfo) {
 
-        sqLsList.clear();
-        for(SqLsData sqLsData : sqLsInfo.sqLsDataList){
-            MySqLs mySqLs = new MySqLs(sqLsData.date,sqLsData.content);
-            sqLsList.add(mySqLs);
+        userLogList.clear();
+        for(TotalLogData totalLogData : totalLogInfo.totalLogData){
+            UserLog userLog = new UserLog(totalLogData.created_at,totalLogData.info,totalLogData.title);
+            userLogList.add(userLog);
         }
         adapter.notifyDataSetChanged();
 
@@ -145,11 +144,11 @@ public class LsListFragment extends Fragment {
      * @param view
      */
     private void initView(View view) {
-        swipeRefreshLayout = view.findViewById(R.id.ls_swipe);
-        recyclerView = view.findViewById(R.id.ls_recycler_view);
-        loodingErrorLayout = view.findViewById(R.id.ls_loading_error_layout);
-        loodingLayout = view.findViewById(R.id.ls_loading_layout);
-        adapter = new SqLsAdapter(sqLsList);
+        swipeRefreshLayout = view.findViewById(R.id.user_log_swipe);
+        recyclerView = view.findViewById(R.id.user_log_recycler_view);
+        loodingErrorLayout = view.findViewById(R.id.user_log_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.user_log_loading_layout);
+        adapter = new UserLogAdapter(userLogList);
         manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);

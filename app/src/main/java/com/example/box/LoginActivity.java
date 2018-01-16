@@ -53,21 +53,37 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         //初始化界面控件
         initView();
-        //从数据库获取登录名和密码并设置到界面
-        String login_Name = preferences.getString(LOGIN_NAME,null);
-        String login_Password = preferences.getString(LOGIN_PASSWORD,null);
 
-        if(login_Name!=null&&login_Password!=null){
+        //若果token不为空 则直接进入主界面
+        if (preferences.getString("token", null) != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        //从数据库获取登录名和密码并设置到界面
+        String login_Name = preferences.getString(LOGIN_NAME, null);
+        String login_Password = preferences.getString(LOGIN_PASSWORD, null);
+
+        String token_time = getIntent().getStringExtra("token_timeout");
+
+
+        if (login_Name != null && login_Password != null) {
             checkBox.setChecked(true);
             loginName.setText(login_Name);
             loginPassword.setText(login_Password);
             loginName.setSelection(login_Name.length());
             loginPassword.setSelection(login_Password.length());
 
-        } else if(login_Name!=null){
+        } else if (login_Name != null) {
             loginName.setText(login_Name);
             loginName.setSelection(login_Name.length());
         }
+        if (token_time != null) {
+            Toast.makeText(this, "登录超时,请重新登录", Toast.LENGTH_SHORT).show();
+        }
+
+
         //登录按钮监听
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,12 +93,9 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-
-
     }
 
     /**
-     *
      * 登录方法
      */
 
@@ -90,27 +103,26 @@ public class LoginActivity extends AppCompatActivity {
         String username = loginName.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
-        if(!TextUtils.isEmpty(username)&&
-                !TextUtils.isEmpty(password)){
+        if (!TextUtils.isEmpty(username) &&
+                !TextUtils.isEmpty(password)) {
 
-            if(checkBox.isChecked()){
-                editor.putString(LOGIN_NAME,username );
-                editor.putString(LOGIN_PASSWORD,password);
+            if (checkBox.isChecked()) {
+                editor.putString(LOGIN_NAME, username);
+                editor.putString(LOGIN_PASSWORD, password);
                 editor.apply();
-                loginServer(username,password);
+                loginServer(username, password);
 
-            }else {
+            } else {
                 editor.clear().commit();
-                editor.putString(LOGIN_NAME,username);
+                editor.putString(LOGIN_NAME, username);
                 editor.apply();
-                loginServer(username,password);
+                loginServer(username, password);
 
             }
 
-        }else {
-            Toast.makeText(this,"账号或者密码不能为空",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "账号或者密码不能为空", Toast.LENGTH_SHORT).show();
         }
-
 
 
     }
@@ -121,8 +133,8 @@ public class LoginActivity extends AppCompatActivity {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("user",name);
-            jsonObject.put("pwd",password);
+            jsonObject.put("user", name);
+            jsonObject.put("pwd", password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -139,30 +151,29 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
 
 
-
-               UserToken userToken = Util.handleLoginInfo(response.body().string());
-
-
-               if(userToken!=null&&userToken.message==null){
+                UserToken userToken = Util.handleLoginInfo(response.body().string());
 
 
-                   Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                   intent.putExtra("token",userToken.token);
-                   startActivity(intent);
-                   finish();
-               }else {
+                if (userToken != null && userToken.message == null) {
 
-                   runOnUiThread(new Runnable() {
-                       @Override
-                       public void run() {
-                           Toast.makeText(LoginActivity.this,"账号或者密码不正确！",Toast.LENGTH_SHORT).show();
-                       }
-                   });
-               }
+
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    editor.putString("token", userToken.token);
+                    editor.apply();
+                    startActivity(intent);
+                    finish();
+                } else {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
 
             }
         });
-
 
 
     }

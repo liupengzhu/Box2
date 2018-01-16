@@ -1,5 +1,6 @@
 package com.example.box.fragment;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.LogAdapter;
@@ -60,12 +62,9 @@ public class HomeFragment extends Fragment {
     public SwipeRefreshLayout swipeRefreshLayout;
 
 
-
     private RelativeLayout loodingErrorLayout;
 
     private ImageView loodingLayout;
-
-
 
 
     @Nullable
@@ -78,6 +77,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * 初始化View
+     *
      * @param view
      */
     private void initView(View view) {
@@ -124,10 +124,10 @@ public class HomeFragment extends Fragment {
         queryInfo();
     }
 
-    public void queryInfo(){
+    public void queryInfo() {
         swipeRefreshLayout.setRefreshing(true);
 
-        HttpUtil.sendGetRequestWithHttp(BOX_URI  + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -164,14 +164,14 @@ public class HomeFragment extends Fragment {
 
                 } else {
 
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
-
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                     });
                 }

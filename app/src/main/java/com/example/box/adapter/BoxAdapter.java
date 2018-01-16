@@ -25,12 +25,13 @@ import java.util.List;
 public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     private List<MyBox> myBoxList;
+
     public BoxAdapter(List<MyBox> myBoxList) {
         super();
-        this.myBoxList=myBoxList;
+        this.myBoxList = myBoxList;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView boxImg;
         TextView boxName;
         ImageView box_one;
@@ -65,7 +66,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dsx_list_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dsx_list_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -75,41 +76,41 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         MyBox box = myBoxList.get(position);
         Glide.with(MyApplication.getContext()).load(box.getBox_img()).into(holder.boxImg);
         holder.boxName.setText(box.getBox_name());
-        if(box.getBox_qx() == 3){
+        if (box.getBox_qx() == 3) {
             holder.box_one.setVisibility(View.VISIBLE);
             holder.box_two.setVisibility(View.VISIBLE);
             holder.box_three.setVisibility(View.VISIBLE);
-        }else if(box.getBox_qx()==2){
+        } else if (box.getBox_qx() == 2) {
             holder.box_one.setVisibility(View.VISIBLE);
             holder.box_two.setVisibility(View.VISIBLE);
             holder.box_three.setVisibility(View.INVISIBLE);
-        }else if(box.getBox_qx()==1){
+        } else if (box.getBox_qx() == 1) {
             holder.box_one.setVisibility(View.VISIBLE);
             holder.box_two.setVisibility(View.INVISIBLE);
             holder.box_three.setVisibility(View.INVISIBLE);
         }
-        if(box.isIs_bf()){
+        if (box.isIs_bf()) {
             holder.box_isbf_img.setImageResource(R.mipmap.list_ybf);
             holder.box_isbf_text.setText("已布防");
-            holder.box_isbf_text.setTextColor( R.color.list_text_h);
-        }else {
+            holder.box_isbf_text.setTextColor(R.color.list_text_h);
+        } else {
             holder.box_isbf_img.setImageResource(R.mipmap.list_wbf);
             holder.box_isbf_text.setText("未布防");
-            holder.box_isbf_text.setTextColor( R.color.list_text_l);
+            holder.box_isbf_text.setTextColor(R.color.list_text_l);
         }
-        if(box.isIs_sd()){
+        if (box.isIs_sd()) {
             holder.box_issd_img.setImageResource(R.mipmap.list_ys);
             holder.box_issd_text.setText("已锁定");
-            holder.box_issd_text.setTextColor( R.color.list_text_h);
-        }else {
+            holder.box_issd_text.setTextColor(R.color.list_text_h);
+        } else {
             holder.box_issd_img.setImageResource(R.mipmap.list_ws);
             holder.box_issd_text.setText("未锁定");
-            holder.box_issd_text.setTextColor( R.color.list_text_l);
+            holder.box_issd_text.setTextColor(R.color.list_text_l);
         }
-        if(box.getBox_dl()!=null) {
+        if (box.getBox_dl() != null) {
             holder.box_dl_img.setPaintColor(Integer.parseInt(box.getBox_dl()));
-            holder.box_dl_text.setText(box.getBox_dl()+"%");
-        }else {
+            holder.box_dl_text.setText(box.getBox_dl() + "%");
+        } else {
             holder.box_dl_img.setPaintColor(-1);
             holder.box_dl_text.setText("null");
         }

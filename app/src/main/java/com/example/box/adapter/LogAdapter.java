@@ -19,12 +19,13 @@ import java.util.List;
 public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
 
     private List<MyLog> myLogList;
+
     public LogAdapter(List<MyLog> myLogList) {
         super();
-        this.myLogList=myLogList;
+        this.myLogList = myLogList;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView titleText;
         TextView timeText;
@@ -42,7 +43,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.log_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.log_item, parent, false);
         return new ViewHolder(view);
     }
 

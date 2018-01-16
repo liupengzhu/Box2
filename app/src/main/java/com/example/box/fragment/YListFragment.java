@@ -1,6 +1,7 @@
 package com.example.box.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.SqAdapter;
@@ -49,10 +51,11 @@ public class YListFragment extends Fragment {
 
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.y_list_fragment,container,false);
+        View view = inflater.inflate(R.layout.y_list_fragment, container, false);
         initView(view);
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -110,8 +113,8 @@ public class YListFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                final SqInfo sqInfo = Util.handleSqInfo(response.body().string()) ;
-                if(sqInfo!=null&&sqInfo.error == null){
+                final SqInfo sqInfo = Util.handleSqInfo(response.body().string());
+                if (sqInfo != null && sqInfo.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -121,15 +124,14 @@ public class YListFragment extends Fragment {
                             loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
-                }else {
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
-
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                     });
                 }
@@ -140,14 +142,15 @@ public class YListFragment extends Fragment {
 
     /**
      * 解析数据 并通知view刷新
+     *
      * @param sqInfo
      */
     private void initSqList(SqInfo sqInfo) {
 
         sqList.clear();
-        for(SqData sqData :sqInfo.sqDataList){
-            String img_uri = sqData.user_pic.replace('\\',' ');
-            MySq mySq = new MySq(IMG_URI+img_uri,sqData.user,sqData.code,sqData.date);
+        for (SqData sqData : sqInfo.sqDataList) {
+            String img_uri = sqData.user_pic.replace('\\', ' ');
+            MySq mySq = new MySq(IMG_URI + img_uri, sqData.user, sqData.code, sqData.date);
             sqList.add(mySq);
 
         }

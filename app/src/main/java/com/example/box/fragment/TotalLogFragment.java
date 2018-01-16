@@ -43,11 +43,11 @@ public class TotalLogFragment extends Fragment {
         /**
          * 保存子布局
          */
-        if(container.getTag(R.id.tag_second) == null){
-            view = inflater.inflate(R.layout.total_log_fragment,container,false);
+        if (container.getTag(R.id.tag_second) == null) {
+            view = inflater.inflate(R.layout.total_log_fragment, container, false);
             initView(view);
-            container.setTag(R.id.tag_second,view);
-        }else {
+            container.setTag(R.id.tag_second, view);
+        } else {
             view = (View) container.getTag(R.id.tag_second);
         }
 
@@ -62,6 +62,7 @@ public class TotalLogFragment extends Fragment {
 
     /**
      * 初始化控件
+     *
      * @param view
      */
     private void initView(View view) {
@@ -76,7 +77,7 @@ public class TotalLogFragment extends Fragment {
         tabLayout = view.findViewById(R.id.total_log_list_tabLayout);
         viewPager = view.findViewById(R.id.total_log_list_viewPager);
 
-        fragmentAdapter = new LogFragmentAdapter(getChildFragmentManager(),fragmentList,titleList);
+        fragmentAdapter = new LogFragmentAdapter(getChildFragmentManager(), fragmentList, titleList);
         viewPager.setAdapter(fragmentAdapter);
         tabLayout.setupWithViewPager(viewPager);
         //设置tabLayout下划线长度
@@ -84,7 +85,7 @@ public class TotalLogFragment extends Fragment {
             @Override
             public void run() {
 
-                Util.setIndicator(tabLayout,20,20);
+                Util.setIndicator(tabLayout, 20, 20);
             }
         });
 

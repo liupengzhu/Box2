@@ -1,14 +1,17 @@
 package com.example.box;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -68,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isExit = false;
     private MenuUserInfo menuUserInfo;
 
+    SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         //获取当前的token
         getToken();
         initView();
@@ -112,14 +117,14 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
 
                 menuUserInfo = Util.handleMenuUserInfo(response.body().string());
-                if(menuUserInfo !=null&& menuUserInfo.error==null){
-                      runOnUiThread(new Runnable() {
-                          @Override
-                          public void run() {
-                              //显示用户信息
-                              showMenuInfo(menuUserInfo);
-                          }
-                      });
+                if (menuUserInfo != null && menuUserInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //显示用户信息
+                            showMenuInfo(menuUserInfo);
+                        }
+                    });
 
                 }
 
@@ -131,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 显示menu页面信息
+     *
      * @param menuUserInfo
      */
 
@@ -139,15 +145,15 @@ public class MainActivity extends AppCompatActivity {
         menu_user_id.setText(menuUserInfo.userId);
         menu_user_name.setText(menuUserInfo.userName);
         menu_user_tell.setText(menuUserInfo.userTell);
-        String img_uri = menuUserInfo.userImg.replace('\\',' ');
-        Glide.with(this).load(IMG_URI+img_uri).into(menu_user_img);
+        String img_uri = menuUserInfo.userImg.replace('\\', ' ');
+        Glide.with(this).load(IMG_URI + img_uri).into(menu_user_img);
 
     }
 
 
-
     /**
      * 按键按下监听事件
+     *
      * @param keyCode
      * @param event
      * @return
@@ -155,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitByTwoClick();
         }
 
@@ -170,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
     private void exitByTwoClick() {
         Timer timer = null;
         //如果isExit为false 提示再次点击退出
-        if(isExit == false){
+        if (isExit == false) {
             isExit = true;
-            Toast.makeText(this,"再次点击退出程序",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "再次点击退出程序", Toast.LENGTH_SHORT).show();
             //俩秒后没有点击 取消退出
             timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -180,10 +186,10 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     isExit = false;//取消退出
                 }
-            },2000);
+            }, 2000);
 
 
-        }else {
+        } else {
             //退出程序
             finish();
             System.exit(0);
@@ -193,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getToken() {
-        Intent intent = getIntent();
-        token = intent.getStringExtra("token");
+        token = preferences.getString("token", null);
 
 
     }
@@ -204,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setCustomView(getView(i));
         }
-      //tablayout切换监听事件
+        //tablayout切换监听事件
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -263,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
 
 
-
             }
         });
 
@@ -272,10 +276,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 根据tablayout返回值重置titlebar信息
+     *
      * @param i
      */
     private void setTitleInfo(int i) {
-        switch (i){
+        switch (i) {
             case 0:
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");
@@ -307,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onRightButtonClickListener(View v) {
 
-                        Toast.makeText(MainActivity.this,"点击了递送箱列表添加",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "点击了递送箱列表添加", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -326,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onRightButtonClickListener(View v) {
 
-                        Toast.makeText(MainActivity.this,"点击了授权处理添加",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "点击了授权处理添加", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -343,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onRightButtonClickListener(View v) {
-                        Toast.makeText(MainActivity.this,"点击了日志列表添加",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "点击了日志列表添加", Toast.LENGTH_SHORT).show();
 
                     }
                 });

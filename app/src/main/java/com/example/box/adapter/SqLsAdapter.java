@@ -19,7 +19,8 @@ import java.util.List;
 public class SqLsAdapter extends RecyclerView.Adapter<SqLsAdapter.ViewHolder> {
 
     private List<MySqLs> sqLsList = new ArrayList<>();
-    static class ViewHolder extends RecyclerView.ViewHolder{
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
         TextView date;
         TextView data;
 
@@ -36,7 +37,7 @@ public class SqLsAdapter extends RecyclerView.Adapter<SqLsAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ls_list_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ls_list_item, parent, false);
         return new ViewHolder(view);
     }
 

@@ -1,5 +1,6 @@
 package com.example.box.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.AppLogAdapter;
@@ -54,7 +56,7 @@ public class AppLogFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.app_log_fragment,container,false);
+        View view = inflater.inflate(R.layout.app_log_fragment, container, false);
         initView(view);
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -79,7 +81,7 @@ public class AppLogFragment extends Fragment {
     private void sendRequest() {
 
         swipeRefreshLayout.setRefreshing(false);
-        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token+TYPE, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -97,7 +99,7 @@ public class AppLogFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(response.body().string());
-                if(totalLogInfo!=null&&totalLogInfo.error==null){
+                if (totalLogInfo != null && totalLogInfo.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -108,15 +110,14 @@ public class AppLogFragment extends Fragment {
                         }
                     });
 
-                }else {
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
-
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                     });
                 }
@@ -129,13 +130,14 @@ public class AppLogFragment extends Fragment {
 
     /**
      * 通知view更新信息
+     *
      * @param totalLogInfo
      */
     private void showInfo(TotalLogInfo totalLogInfo) {
 
         appLogList.clear();
-        for(TotalLogData totalLogData : totalLogInfo.totalLogData){
-            AppLog appLog = new AppLog(totalLogData.created_at,totalLogData.info,totalLogData.title);
+        for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
+            AppLog appLog = new AppLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             appLogList.add(appLog);
         }
         adapter.notifyDataSetChanged();
@@ -144,6 +146,7 @@ public class AppLogFragment extends Fragment {
 
     /**
      * 初始化view
+     *
      * @param view
      */
     private void initView(View view) {

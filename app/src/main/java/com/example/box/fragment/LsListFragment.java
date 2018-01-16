@@ -1,6 +1,7 @@
 package com.example.box.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.SqLsAdapter;
@@ -52,7 +54,7 @@ public class LsListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.ls_list_fragment,container,false);
+        View view = inflater.inflate(R.layout.ls_list_fragment, container, false);
         initView(view);
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -95,7 +97,7 @@ public class LsListFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final SqLsInfo sqLsInfo = Util.handleSqLsInfo(response.body().string());
-                if(sqLsInfo!=null&&sqLsInfo.error==null){
+                if (sqLsInfo != null && sqLsInfo.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -106,15 +108,14 @@ public class LsListFragment extends Fragment {
                         }
                     });
 
-                }else {
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
-
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                     });
                 }
@@ -127,13 +128,14 @@ public class LsListFragment extends Fragment {
 
     /**
      * 通知view更新信息
+     *
      * @param sqLsInfo
      */
     private void showInfo(SqLsInfo sqLsInfo) {
 
         sqLsList.clear();
-        for(SqLsData sqLsData : sqLsInfo.sqLsDataList){
-            MySqLs mySqLs = new MySqLs(sqLsData.date,sqLsData.content);
+        for (SqLsData sqLsData : sqLsInfo.sqLsDataList) {
+            MySqLs mySqLs = new MySqLs(sqLsData.date, sqLsData.content);
             sqLsList.add(mySqLs);
         }
         adapter.notifyDataSetChanged();
@@ -142,6 +144,7 @@ public class LsListFragment extends Fragment {
 
     /**
      * 初始化view
+     *
      * @param view
      */
     private void initView(View view) {

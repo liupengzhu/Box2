@@ -1,5 +1,6 @@
 package com.example.box.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.adapter.BoxAdapter;
@@ -49,20 +51,20 @@ public class DListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View view = inflater.inflate(R.layout.d_list_fragment,container,false);
-       recyclerView = view.findViewById(R.id.dsx_list);
-       refreshLayout = view.findViewById(R.id.box_list_swiper);
+        View view = inflater.inflate(R.layout.d_list_fragment, container, false);
+        recyclerView = view.findViewById(R.id.dsx_list);
+        refreshLayout = view.findViewById(R.id.box_list_swiper);
 
         loodingErrorLayout = view.findViewById(R.id.d_loading_error_layout);
         loodingLayout = view.findViewById(R.id.d_loading_layout);
 
-       recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-       manager = new LinearLayoutManager(container.getContext());
-       adapter = new BoxAdapter(myBoxList);
-       recyclerView.setLayoutManager(manager);
-       recyclerView.setAdapter(adapter);
-       refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-       refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        manager = new LinearLayoutManager(container.getContext());
+        adapter = new BoxAdapter(myBoxList);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 sendRequest();
@@ -97,9 +99,9 @@ public class DListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                 final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
 
-                if(boxInfo!=null&&boxInfo.error==null) {
+                if (boxInfo != null && boxInfo.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -109,15 +111,14 @@ public class DListFragment extends Fragment {
                             loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
-                }else {
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
-
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            startActivity(intent);
+                            getActivity().finish();
                         }
                     });
                 }
@@ -131,23 +132,23 @@ public class DListFragment extends Fragment {
     //解析BoxInfo
     private void initBoxList(BoxInfo boxInfo) {
         myBoxList.clear();
-        for (BoxData boxData :boxInfo.boxDataList){
+        for (BoxData boxData : boxInfo.boxDataList) {
 
 
-            String img_uri = boxData.f_pic.replace('\\',' ');
+            String img_uri = boxData.f_pic.replace('\\', ' ');
             MyBox box = new MyBox();
             box.setBox_name(boxData.name);
             box.setBox_dl(boxData.electricity);
-            box.setBox_img(IMG_URI+img_uri);
+            box.setBox_img(IMG_URI + img_uri);
             box.setBox_qx(Integer.parseInt(boxData.level));
-            if(boxData.is_defence=="0"){
+            if (boxData.is_defence == "0") {
                 box.setIs_bf(false);
-            }else {
+            } else {
                 box.setIs_bf(true);
             }
-            if(boxData.is_locked=="0"){
+            if (boxData.is_locked == "0") {
                 box.setIs_sd(false);
-            }else {
+            } else {
                 box.setIs_sd(true);
             }
             myBoxList.add(box);

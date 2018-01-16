@@ -35,11 +35,11 @@ public class SListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(container.getTag(R.id.tag_first) == null){
-            view = inflater.inflate(R.layout.s_list_fragment,container,false);
+        if (container.getTag(R.id.tag_first) == null) {
+            view = inflater.inflate(R.layout.s_list_fragment, container, false);
             initView(view);
-            container.setTag(R.id.tag_first,view);
-        }else {
+            container.setTag(R.id.tag_first, view);
+        } else {
             view = (View) container.getTag(R.id.tag_first);
         }
 
@@ -54,6 +54,7 @@ public class SListFragment extends Fragment {
 
     /**
      * 初始化控件
+     *
      * @param view
      */
     private void initView(View view) {
@@ -66,7 +67,7 @@ public class SListFragment extends Fragment {
         tabLayout = view.findViewById(R.id.s_list_tabLayout);
         viewPager = view.findViewById(R.id.s_list_viewPager);
 
-        fragmentAdapter = new SqFragmentAdapter(getChildFragmentManager(),fragmentList,titleList);
+        fragmentAdapter = new SqFragmentAdapter(getChildFragmentManager(), fragmentList, titleList);
         viewPager.setAdapter(fragmentAdapter);
         tabLayout.setupWithViewPager(viewPager);
         //设置tabLayout下划线长度
@@ -74,7 +75,7 @@ public class SListFragment extends Fragment {
             @Override
             public void run() {
 
-                Util.setIndicator(tabLayout,50,50);
+                Util.setIndicator(tabLayout, 50, 50);
             }
         });
 

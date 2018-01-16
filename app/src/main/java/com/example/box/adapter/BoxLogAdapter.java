@@ -20,7 +20,8 @@ import java.util.List;
 public class BoxLogAdapter extends RecyclerView.Adapter<BoxLogAdapter.ViewHolder> {
 
     private List<BoxLog> boxLogList = new ArrayList<>();
-    static class ViewHolder extends RecyclerView.ViewHolder{
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
         TextView date;
         TextView data;
         TextView title;
@@ -39,7 +40,7 @@ public class BoxLogAdapter extends RecyclerView.Adapter<BoxLogAdapter.ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_log_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_log_item, parent, false);
         return new ViewHolder(view);
     }
 

@@ -16,12 +16,11 @@ public class SqFragmentAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
 
-    public SqFragmentAdapter(FragmentManager fm, List<Fragment> fragmentList,List<String> titleList) {
+    public SqFragmentAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> titleList) {
         super(fm);
         this.fragmentList = fragmentList;
         this.titleList = titleList;
     }
-
 
 
     @Override

@@ -52,7 +52,7 @@ public class SoundActivity extends AppCompatActivity {
             @Override
             public void onRightButtonClickListener(View v) {
 
-                
+
             }
         });
     }

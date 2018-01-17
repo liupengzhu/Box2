@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private MenuUserInfo menuUserInfo;
 
     public static SharedPreferences preferences;
+    private LinearLayout enclosure;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +105,17 @@ public class MainActivity extends AppCompatActivity {
         //请求服务器菜单数据
         queryMenuInfo();
 
+        setMenuClick();
+
+
+    }
+
+    /**
+     * 菜单页面的点击事件
+     */
+
+    private void setMenuClick() {
+
         user_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        enclosure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, EnclosureActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -162,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         String img_uri = menuUserInfo.userImg.replace('\\', ' ');
         Glide.with(this).load(IMG_URI + img_uri).into(menu_user_img);
 
-        if(menuUserInfo.level.equals("2")) {
+        if (menuUserInfo.level.equals("2")) {
             user_info.setVisibility(View.GONE);
         }
 
@@ -406,6 +424,8 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
 
         user_info = findViewById(R.id.user_info_layout);
+        enclosure = findViewById(R.id.enclosure_layout);
+
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
         menu_user_img = findViewById(R.id.menu_user_img);

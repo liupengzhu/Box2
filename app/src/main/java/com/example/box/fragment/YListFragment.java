@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,7 +131,7 @@ public class YListFragment extends Fragment {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token",null).commit();
+                            MainActivity.preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }
@@ -150,6 +151,8 @@ public class YListFragment extends Fragment {
 
         sqList.clear();
         for (SqData sqData : sqInfo.sqDataList) {
+
+            //Log.d("main",MainActivity.token);
             String img_uri = sqData.user_pic.replace('\\', ' ');
             MySq mySq = new MySq(IMG_URI + img_uri, sqData.user, sqData.code, sqData.date);
             sqList.add(mySq);

@@ -1,31 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:background="@drawable/action_bar_backgroound"
     android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@drawable/action_bar_backgroound"
+    android:orientation="horizontal"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="35dp"
-    android:layout_height="90dp">
-    <Button
-        android:id="@+id/left_button"
-        android:background="@drawable/menu"
-        android:layout_width="35dp"
-        android:layout_height="20dp" />
+    android:paddingTop="35dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+        <Button
+
+            android:id="@+id/left_button"
+            android:layout_width="35dp"
+            android:layout_height="20dp"
+            android:background="@drawable/menu" />
+
+        <Button
+            android:id="@+id/left_back_button"
+            android:layout_width="50dp"
+            android:layout_height="22dp"
+            android:background="@drawable/back"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
     <TextView
         android:id="@+id/title_text"
-        android:text="编辑用户"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:textColor="#FFFFFF"
         android:layout_width="0dp"
+        android:layout_height="25dp"
         android:layout_weight="1"
-        android:layout_height="25dp" />
+        android:gravity="center"
+        android:text="编辑用户"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp" />
+
     <Button
         android:id="@+id/right_button"
-        android:background="@drawable/add"
         android:layout_width="30dp"
-        android:layout_height="30dp" />
+        android:layout_height="30dp"
+        android:background="@drawable/add" />
 
 
 </LinearLayout>

@@ -19,16 +19,19 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.box.adapter.HomeAdapter;
+import com.example.box.adapter.UserInfoAdapter;
 import com.example.box.fragment.HomeFragment;
 import com.example.box.fragment.DListFragment;
 import com.example.box.fragment.SListFragment;
 import com.example.box.fragment.TotalLogFragment;
 import com.example.box.gson.MenuUserInfo;
+import com.example.box.recycler.UserInfo;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
 import com.example.titlebar.TitleBar;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private TitleBar titleBar;
 
     private DrawerLayout drawerLayout;
+
+    private LinearLayout user_info;
 
 
     public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
@@ -98,6 +103,15 @@ public class MainActivity extends AppCompatActivity {
 
         //请求服务器菜单数据
         queryMenuInfo();
+
+        user_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
     }
 
@@ -147,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
         menu_user_tell.setText(menuUserInfo.userTell);
         String img_uri = menuUserInfo.userImg.replace('\\', ' ');
         Glide.with(this).load(IMG_URI + img_uri).into(menu_user_img);
+
+        if(menuUserInfo.level.equals("2")) {
+            user_info.setVisibility(View.GONE);
+        }
 
     }
 
@@ -286,9 +304,15 @@ public class MainActivity extends AppCompatActivity {
                 titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(0);
                 titleBar.setOnClickListener(new TitleListener() {
+
                     @Override
                     public void onLeftButtonClickListener(View v) {
                         drawerLayout.openDrawer(Gravity.START);
+
+                    }
+
+                    @Override
+                    public void onLeftBackButtonClickListener(View v) {
 
                     }
 
@@ -306,6 +330,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onLeftButtonClickListener(View v) {
                         drawerLayout.openDrawer(Gravity.START);
+
+                    }
+
+                    @Override
+                    public void onLeftBackButtonClickListener(View v) {
 
                     }
 
@@ -329,6 +358,11 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void onLeftBackButtonClickListener(View v) {
+
+                    }
+
+                    @Override
                     public void onRightButtonClickListener(View v) {
 
                         Toast.makeText(MainActivity.this, "点击了授权处理添加", Toast.LENGTH_SHORT).show();
@@ -343,6 +377,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onLeftButtonClickListener(View v) {
                         drawerLayout.openDrawer(Gravity.START);
+
+                    }
+
+                    @Override
+                    public void onLeftBackButtonClickListener(View v) {
 
                     }
 
@@ -366,6 +405,7 @@ public class MainActivity extends AppCompatActivity {
     //初始化控件
     private void initView() {
 
+        user_info = findViewById(R.id.user_info_layout);
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
         menu_user_img = findViewById(R.id.menu_user_img);
@@ -400,6 +440,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onLeftButtonClickListener(View v) {
                     drawerLayout.openDrawer(Gravity.START);
+
+                }
+
+                @Override
+                public void onLeftBackButtonClickListener(View v) {
 
                 }
 

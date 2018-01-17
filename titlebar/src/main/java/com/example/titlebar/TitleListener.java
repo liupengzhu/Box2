@@ -9,6 +9,9 @@ import android.view.View;
 public interface TitleListener {
 
     void onLeftButtonClickListener(View v);
+
+    void onLeftBackButtonClickListener(View v);
+
     void onRightButtonClickListener(View v);
 
 }

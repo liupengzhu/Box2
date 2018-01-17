@@ -11,6 +11,10 @@ public class UserInfo {
     private String userQx;
     private String userImg;
 
+    public UserInfo() {
+
+    }
+
     public UserInfo(String userName, String userId, String userQx, String userImg) {
         this.userName = userName;
         this.userId = userId;

@@ -19,6 +19,9 @@ public class MenuUserInfo {
 
     @SerializedName("f_pic")
     public String userImg;
+    @SerializedName("f_level")
+    public String level;
+
 
     public String error;
 }

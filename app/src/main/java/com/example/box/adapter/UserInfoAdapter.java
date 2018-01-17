@@ -56,10 +56,10 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         UserInfo userInfo = userInfoList.get(position);
-        Glide.with(MyApplication.getContext()).load(userInfo.getUserImg()).into(holder.userImg);
+        //Glide.with(MyApplication.getContext()).load(userInfo.getUserImg()).into(holder.userImg);
         holder.userName.setText(userInfo.getUserName());
-        holder.userId.setText(userInfo.getUserId());
-        holder.userQx.setText(userInfo.getUserQx());
+        /*holder.userId.setText(userInfo.getUserId());
+        holder.userQx.setText(userInfo.getUserQx());*/
     }
 
     @Override

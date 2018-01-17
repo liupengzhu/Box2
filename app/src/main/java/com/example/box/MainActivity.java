@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
 
     private LinearLayout user_info;
+    private LinearLayout enclosure;
+    private LinearLayout leaving_alram;
 
 
     public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private MenuUserInfo menuUserInfo;
 
     public static SharedPreferences preferences;
-    private LinearLayout enclosure;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +133,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        leaving_alram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LeavingAlarmActivity
+                        .class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     /**
@@ -425,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
 
         user_info = findViewById(R.id.user_info_layout);
         enclosure = findViewById(R.id.enclosure_layout);
+        leaving_alram = findViewById(R.id.leaving_alarm_layout);
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);

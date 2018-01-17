@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".UserInfoActivity" />
-        <activity android:name=".EnclosureActivity"></activity>
+        <activity android:name=".EnclosureActivity" />
+        <activity android:name=".LeavingAlarmActivity"></activity>
     </application>
 
 </manifest>

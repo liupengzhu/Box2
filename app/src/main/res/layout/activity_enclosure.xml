@@ -89,6 +89,7 @@
 
                 </android.support.v7.widget.RecyclerView>
 
+                <include layout="@layout/enclosure_item"/>
                 <RelativeLayout
                     android:id="@+id/enclosure_loading_error_layout"
                     android:layout_width="match_parent"

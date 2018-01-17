@@ -34,6 +34,7 @@ public class SoundActivity extends AppCompatActivity {
 
         titleBar = findViewById(R.id.sound_title_bar);
         titleBar.setTextViewText("录音列表");
+        titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         titleBar.setOnClickListener(new TitleListener() {
@@ -51,7 +52,7 @@ public class SoundActivity extends AppCompatActivity {
             @Override
             public void onRightButtonClickListener(View v) {
 
-                Toast.makeText(SoundActivity.this, "你点击了录音列表", Toast.LENGTH_SHORT).show();
+                
             }
         });
     }

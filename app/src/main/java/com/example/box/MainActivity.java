@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout enclosure;
     private LinearLayout leaving_alram;
     private LinearLayout sound;
+
+    private Button systemSettingButton;
 
 
     public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
@@ -147,6 +150,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SoundActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        systemSettingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SystemSettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -447,6 +458,8 @@ public class MainActivity extends AppCompatActivity {
         enclosure = findViewById(R.id.enclosure_layout);
         leaving_alram = findViewById(R.id.leaving_alarm_layout);
         sound = findViewById(R.id.sound_layout);
+
+        systemSettingButton = findViewById(R.id.menu_set_button);
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);

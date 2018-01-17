@@ -12,14 +12,14 @@ import android.widget.Toast;
 import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
-public class LeavingAlarmActivity extends AppCompatActivity {
+public class SystemSettingActivity extends AppCompatActivity {
 
     private TitleBar titleBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_leaving_alarm);
+        setContentView(R.layout.activity_system_setting);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -35,16 +35,14 @@ public class LeavingAlarmActivity extends AppCompatActivity {
      */
     private void initView() {
 
-        titleBar = findViewById(R.id.leaving_alarm_title_bar);
-        titleBar.setTextViewText("离位报警");
-        titleBar.setRightButtonSrc(0);
+        titleBar = findViewById(R.id.system_setting_title_bar);
+        titleBar.setTextViewText("");
         titleBar.setLeftButtonVisible(View.GONE);
+        titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
-
-
             }
 
             @Override

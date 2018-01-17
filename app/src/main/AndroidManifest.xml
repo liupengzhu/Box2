@@ -25,7 +25,8 @@
         </activity>
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".EnclosureActivity" />
-        <activity android:name=".LeavingAlarmActivity"></activity>
+        <activity android:name=".LeavingAlarmActivity" />
+        <activity android:name=".SoundActivity"></activity>
     </application>
 
 </manifest>

@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout user_info;
     private LinearLayout enclosure;
     private LinearLayout leaving_alram;
+    private LinearLayout sound;
 
 
     public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
@@ -137,8 +138,15 @@ public class MainActivity extends AppCompatActivity {
         leaving_alram.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LeavingAlarmActivity
-                        .class);
+                Intent intent = new Intent(MainActivity.this, LeavingAlarmActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        sound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SoundActivity.class);
                 startActivity(intent);
             }
         });
@@ -438,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
         user_info = findViewById(R.id.user_info_layout);
         enclosure = findViewById(R.id.enclosure_layout);
         leaving_alram = findViewById(R.id.leaving_alarm_layout);
+        sound = findViewById(R.id.sound_layout);
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);

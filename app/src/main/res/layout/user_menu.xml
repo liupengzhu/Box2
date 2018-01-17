@@ -161,6 +161,7 @@
             android:background="@color/line" />
 
         <LinearLayout
+            android:id="@+id/sound_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal">

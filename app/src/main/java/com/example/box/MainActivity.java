@@ -428,8 +428,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onRightButtonClickListener(View v) {
-
-                        Toast.makeText(MainActivity.this, "点击了递送箱列表添加", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, BoxAddActivity.class);
+                        startActivity(intent);
                     }
                 });
                 break;

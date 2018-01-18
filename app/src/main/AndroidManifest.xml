@@ -27,7 +27,8 @@
         <activity android:name=".EnclosureActivity" />
         <activity android:name=".LeavingAlarmActivity" />
         <activity android:name=".SoundActivity" />
-        <activity android:name=".SystemSettingActivity"></activity>
+        <activity android:name=".SystemSettingActivity" />
+        <activity android:name=".EditUserActivity"></activity>
     </application>
 
 </manifest>

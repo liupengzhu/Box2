@@ -26,6 +26,7 @@ import com.example.box.gson.SqInfo;
 import com.example.box.recycler.MySq;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
+import com.example.selfdialog.ConfirmDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,10 +74,60 @@ public class YListFragment extends Fragment {
         loodingLayout = view.findViewById(R.id.y_loading_layout);
         manager = new LinearLayoutManager(getContext());
         adapter = new SqAdapter(sqList);
+        setAdapterClick(adapter);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+    }
+
+    /**
+     * 设置点击事件
+     *
+     * @param adapter
+     */
+    private void setAdapterClick(SqAdapter adapter) {
+
+        //确定按钮的点击事件
+        adapter.setQrOnClickListener(new SqAdapter.QrOnClickListener() {
+            @Override
+            public void onClick(View v, MySq sq) {
+
+                final ConfirmDialog dialog = new ConfirmDialog(getContext());
+                String content = sq.getUserName() + "于" + sq.getDate() + "对递送箱序列号为" + sq.getUserXLH() +
+                        "发起远程授权开箱，是否授权!";
+
+                dialog.setContentText(content);
+                dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+                    @Override
+                    public void onNoClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+        //取消按钮的点击事件
+        adapter.setQxOnClickListener(new SqAdapter.QxOnClickListener() {
+            @Override
+            public void onClick(View v, MySq sq) {
+
+                final ConfirmDialog dialog = new ConfirmDialog(getContext());
+                String content = "驳回" + sq.getUserName() + "于" + sq.getDate() + "对递送箱序列号为" + sq.getUserXLH() +
+                        "发起远程授权开箱请求！";
+
+                dialog.setContentText(content);
+                dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+                    @Override
+                    public void onNoClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
     }
 
     @Override

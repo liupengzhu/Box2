@@ -10,10 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
-/**
- * 创建自定义的dialog，主要学习其实现原理
- * Created by chengguo on 2016/3/22.
- */
+
 public class SelfDialog extends Dialog {
 
     private LinearLayout yes;//确定按钮

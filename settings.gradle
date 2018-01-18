@@ -1,1 +1,1 @@
-include ':app', ':titlebar', ':battery'
+include ':app', ':titlebar', ':battery', ':selfdialog'

@@ -35,6 +35,7 @@ import com.example.box.gson.MenuUserInfo;
 import com.example.box.recycler.UserInfo;
 import com.example.box.util.HttpUtil;
 import com.example.box.util.Util;
+import com.example.selfdialog.SelfDialog;
 import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private MenuUserInfo menuUserInfo;
 
     public static SharedPreferences preferences;
+    private Button systemBackButton;
+    private SelfDialog selfDialog;
 
 
     @Override
@@ -159,6 +162,35 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SystemSettingActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        systemBackButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                selfDialog = new SelfDialog(MainActivity.this);
+                selfDialog.setNoOnclickListener(new SelfDialog.onNoOnclickListener() {
+                    @Override
+                    public void onNoClick() {
+
+                        //退出程序
+                        finish();
+                        System.exit(0);
+                    }
+                });
+                selfDialog.setYesOnclickListener(new SelfDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick() {
+                        preferences.edit().putString("token", null).commit();
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    }
+                });
+                selfDialog.show();
+
             }
         });
 
@@ -460,6 +492,8 @@ public class MainActivity extends AppCompatActivity {
         sound = findViewById(R.id.sound_layout);
 
         systemSettingButton = findViewById(R.id.menu_set_button);
+        systemBackButton = findViewById(R.id.menu_back_button);
+
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);

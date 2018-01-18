@@ -59,6 +59,7 @@
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
+                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -95,6 +96,7 @@
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
+                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -133,6 +135,7 @@
                 android:textOn=""
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
+                android:checked="true"
 
                 />
 
@@ -167,6 +170,7 @@
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
+                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -203,6 +207,7 @@
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
+                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 

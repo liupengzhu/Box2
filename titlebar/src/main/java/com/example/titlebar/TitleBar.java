@@ -24,7 +24,6 @@ public class TitleBar extends LinearLayout {
     private TextView textView;
     private TitleListener mTitleListener;
     private Context mcontext;
-    private boolean isSetClick = false;
 
     public TitleBar(@NonNull Context context) {
         this(context, null, 0);
@@ -45,7 +44,7 @@ public class TitleBar extends LinearLayout {
         leftButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isSetClick) {
+                if (mTitleListener != null) {
                     mTitleListener.onLeftButtonClickListener(v);
                 }
             }
@@ -53,7 +52,7 @@ public class TitleBar extends LinearLayout {
         rightButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isSetClick) {
+                if (mTitleListener != null) {
                     mTitleListener.onRightButtonClickListener(v);
                 }
             }
@@ -61,7 +60,7 @@ public class TitleBar extends LinearLayout {
         leftBackButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isSetClick) {
+                if (mTitleListener != null) {
                     mTitleListener.onLeftBackButtonClickListener(v);
                 }
             }
@@ -108,7 +107,6 @@ public class TitleBar extends LinearLayout {
 
     public void setOnClickListener(TitleListener titleListener) {
         mTitleListener = titleListener;
-        isSetClick = true;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.box;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -105,7 +106,8 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void onRightButtonClickListener(View v) {
 
-                Toast.makeText(UserInfoActivity.this, "你点击了用户管理", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(UserInfoActivity.this, AddUserActivity.class);
+                startActivity(intent);
             }
         });
         manager = new LinearLayoutManager(this);

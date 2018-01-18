@@ -31,7 +31,8 @@
         <activity android:name=".EditUserActivity" />
         <activity android:name=".LoginOrRegisterActivity" />
         <activity android:name=".BoxAddActivity" />
-        <activity android:name=".BoxActivity"></activity>
+        <activity android:name=".BoxActivity" />
+        <activity android:name=".AddUserActivity"></activity>
     </application>
 
 </manifest>

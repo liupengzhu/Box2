@@ -1,16 +1,21 @@
 package com.example.box.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.battery.BatteryView;
+import com.example.box.BoxActivity;
+import com.example.box.MainActivity;
 import com.example.box.MyApplication;
 import com.example.box.R;
 import com.example.box.recycler.MyBox;
@@ -25,6 +30,7 @@ import java.util.List;
 public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     private List<MyBox> myBoxList;
+    private Context context;
 
     public BoxAdapter(List<MyBox> myBoxList) {
         super();
@@ -32,6 +38,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        RelativeLayout box_layout;
         ImageView boxImg;
         TextView boxName;
         ImageView box_one;
@@ -59,6 +66,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             box_issd_text = itemView.findViewById(R.id.dsx_sd_text);
             box_dl_img = itemView.findViewById(R.id.dsx_dl_img);
             box_dl_text = itemView.findViewById(R.id.dsx_dl_text);
+            box_layout = itemView.findViewById(R.id.dsx_layout);
 
         }
     }
@@ -67,13 +75,25 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dsx_list_item, parent, false);
-        return new ViewHolder(view);
+        context = parent.getContext();
+        final ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.box_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = viewHolder.getAdapterPosition();
+                MyBox box = myBoxList.get(position);
+                Intent intent = new Intent(context, BoxActivity.class);
+                context.startActivity(intent);
+            }
+        });
+        return viewHolder;
     }
 
     @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MyBox box = myBoxList.get(position);
+
         Glide.with(MyApplication.getContext()).load(box.getBox_img()).into(holder.boxImg);
         holder.boxName.setText(box.getBox_name());
         if (box.getBox_qx() == 3) {

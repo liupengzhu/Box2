@@ -46,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences preferences;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +54,6 @@ public class LoginActivity extends AppCompatActivity {
         //初始化界面控件
         initView();
 
-        //若果token不为空 则直接进入主界面
-        if (preferences.getString("token", null) != null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
         //从数据库获取登录名和密码并设置到界面
         String login_Name = preferences.getString(LOGIN_NAME, null);

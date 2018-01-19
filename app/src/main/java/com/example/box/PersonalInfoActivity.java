@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import com.example.selfdialog.PhotoDialog;
 import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
@@ -18,6 +19,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private TitleBar titleBar;
 
     RelativeLayout settingButton;
+    RelativeLayout photoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         titleBar = findViewById(R.id.personal_info_title_bar);
         settingButton = findViewById(R.id.personal_info_setting);
         settingButton.setOnClickListener(this);
+        photoButton = findViewById(R.id.personal_info_setting_photo);
+        photoButton.setOnClickListener(this);
         titleBar.setTextViewText("个人信息");
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
@@ -77,6 +81,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             case R.id.personal_info_setting:
                 Intent settingIntent = new Intent(this, PersonalSettingActivity.class);
                 startActivity(settingIntent);
+                break;
+            case R.id.personal_info_setting_photo:
+                PhotoDialog photoDialog = new PhotoDialog(this);
+                photoDialog.show();
                 break;
             default:
                 break;

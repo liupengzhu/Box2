@@ -12,12 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imageView"
+        <Button
+            android:id="@+id/back_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_margin="30dp"
-            android:src="@drawable/delete" />
+            android:background="@drawable/delete" />
 
         <TextView
             android:id="@+id/login_textinfo"
@@ -164,6 +164,7 @@
         android:layout_marginTop="10dp">
 
         <LinearLayout
+            android:id="@+id/login_register_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true">

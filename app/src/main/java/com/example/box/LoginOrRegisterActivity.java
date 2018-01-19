@@ -53,4 +53,5 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.register_register_button);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
+
 }

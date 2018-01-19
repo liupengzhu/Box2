@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.box.gson.UserToken;
@@ -33,7 +34,7 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     SharedPreferences.Editor editor;
     SharedPreferences preferences;
+    LinearLayout registerButton;
+    Button backButton;
 
 
     @Override
@@ -79,12 +82,11 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //登录按钮监听
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
+        loginButton.setOnClickListener(this);
+        //注册按钮监听
+        registerButton.setOnClickListener(this);
+
+        backButton.setOnClickListener(this);
 
 
     }
@@ -179,5 +181,37 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
+
+        registerButton = findViewById(R.id.login_register_layout);
+        backButton = findViewById(R.id.back_button);
+    }
+
+    /**
+     * 监听点击事件的方法
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login_register_layout:
+                Intent registerIntent = new Intent(this, RegisterActivity.class);
+                startActivity(registerIntent);
+                break;
+
+            case R.id.login_button:
+                login();
+                break;
+
+            case R.id.back_button:
+                finish();
+                break;
+
+            default:
+                break;
+
+        }
+
+
     }
 }

@@ -461,11 +461,11 @@ public class MainActivity extends AppCompatActivity {
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("日志列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
+                titleBar.setRightButtonSrc(0);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {
                         drawerLayout.openDrawer(Gravity.START);
-
                     }
 
                     @Override

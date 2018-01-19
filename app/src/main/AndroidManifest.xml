@@ -33,7 +33,8 @@
         <activity android:name=".BoxAddActivity" />
         <activity android:name=".BoxActivity" />
         <activity android:name=".AddUserActivity" />
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".AddEnclosureActivity"></activity>
     </application>
 
 </manifest>

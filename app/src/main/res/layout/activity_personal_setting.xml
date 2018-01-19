@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <com.example.titlebar.TitleBar
-        android:id="@+id/personal_info_title_bar"
+        android:id="@+id/personal_setting_title_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp">
 
@@ -19,12 +19,6 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:orientation="vertical" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -35,26 +29,24 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="个人头像"
+                android:text="允许更改用户名"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:src="@drawable/touxiang" />
+                android:layout_marginRight="20dp"
+                android:checked="true"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/right_jian" />
+                />
 
         </RelativeLayout>
 
@@ -74,21 +66,24 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="用户名"
+                android:text="允许更改密码"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="zq053694"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:checked="true"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
+                />
 
         </RelativeLayout>
 
@@ -108,64 +103,24 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="姓名"
+                android:text="允许更改手机号码"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="张三"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:checked="true"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
-
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:orientation="vertical" />
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:text="手机号"
-                android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
-
-            <TextView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="18962541522"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/right_jian" />
-
+                />
 
         </RelativeLayout>
 
@@ -185,29 +140,24 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="邮箱"
+                android:text="允许更改邮箱"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="189526155612@163.com"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:checked="true"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/right_jian" />
-
+                />
 
         </RelativeLayout>
 
@@ -227,21 +177,24 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="单位"
+                android:text="允许更改单位"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="化工厂"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:checked="true"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
+                />
 
         </RelativeLayout>
 
@@ -261,21 +214,23 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="部门"
+                android:text="允许更改部门"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="生产一部"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
+                />
 
         </RelativeLayout>
 
@@ -295,21 +250,23 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="权限等级"
+                android:text="允许上传指纹"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
-            <TextView
-
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="一般用户"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:layout_marginRight="20dp"
+                android:switchMinWidth="0dp"
+                android:textOff=""
+                android:textOn=""
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track"
 
+                />
 
         </RelativeLayout>
 
@@ -324,63 +281,29 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/rl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:text="指纹录入"
+                android:text="允许人脸识别"
                 android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
+                android:textSize="18sp" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="50dp"
-                android:text="未录入"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
-
-
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:orientation="vertical" />
-
-        <RelativeLayout
-            android:id="@+id/personal_info_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:text="设置"
-                android:textColor="@color/list_text_h"
-                android:textSize="15sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/right_jian" />
+                android:layout_toRightOf="@id/rl"
+                android:background="@drawable/rlsb"
+                android:text="暂未开放"
+                android:textColor="@color/white" />
 
         </RelativeLayout>
 
 
     </LinearLayout>
-
-
 </LinearLayout>
 

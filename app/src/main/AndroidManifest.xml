@@ -35,7 +35,8 @@
         <activity android:name=".AddUserActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AddEnclosureActivity" />
-        <activity android:name=".PersonalInfoActivity"></activity>
+        <activity android:name=".PersonalInfoActivity" />
+        <activity android:name=".PersonalSettingActivity"></activity>
     </application>
 
 </manifest>

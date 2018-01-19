@@ -12,6 +12,8 @@ public class MyBox {
     private boolean is_sd;
     private String box_dl;
 
+    private boolean imgIsChecked = false;
+
     public MyBox(String box_img, String box_name, int box_qx, boolean is_bf, boolean is_sd, String box_dl) {
         this.box_img = box_img;
         this.box_name = box_name;
@@ -20,10 +22,18 @@ public class MyBox {
         this.is_sd = is_sd;
         this.box_dl = box_dl;
     }
+
     public MyBox() {
 
     }
 
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
+    }
 
     public String getBox_img() {
         return box_img;

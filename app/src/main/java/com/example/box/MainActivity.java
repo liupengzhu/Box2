@@ -53,7 +53,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
-    private TabLayout tabLayout;
+    public static TabLayout tabLayout;
 
     private CircleImageView menu_user_img;
     private TextView menu_user_id;
@@ -268,7 +268,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitByTwoClick();
+            //判断递送箱列表是否是多选状态
+            if (DListFragment.isLongClick) {
+
+                DListFragment.cancleLongClick();
+            } else {
+                exitByTwoClick();
+            }
         }
 
 
@@ -388,6 +394,7 @@ public class MainActivity extends AppCompatActivity {
     private void setTitleInfo(int i) {
         switch (i) {
             case 0:
+                tabLayout.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(0);
@@ -411,6 +418,11 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case 1:
+                if (DListFragment.isLongClick) {
+                    tabLayout.setVisibility(View.GONE);
+                } else {
+                    tabLayout.setVisibility(View.VISIBLE);
+                }
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("递送箱列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
@@ -434,6 +446,8 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case 2:
+
+                tabLayout.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("授权处理");
                 titleBar.setRightButtonSrc(R.drawable.add);
@@ -458,6 +472,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case 3:
+                tabLayout.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("日志列表");
                 titleBar.setRightButtonSrc(R.drawable.add);

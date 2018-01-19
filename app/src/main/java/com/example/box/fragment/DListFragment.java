@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,27 +37,34 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class DListFragment extends Fragment {
+public class DListFragment extends Fragment implements View.OnClickListener {
 
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/box?_token=";
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
     private List<MyBox> myBoxList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private BoxAdapter adapter;
+    private static BoxAdapter adapter;
     private LinearLayoutManager manager;
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
+    private ImageView allCheckedImage;
+    private TextView allCheckedText;
+
+    private static CardView top_layout;
+    private static LinearLayout bottom_layout;
+
+    public static boolean isLongClick = false;
+
+    private boolean isAllChecked = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
-        recyclerView = view.findViewById(R.id.dsx_list);
-        refreshLayout = view.findViewById(R.id.box_list_swiper);
 
-        loodingErrorLayout = view.findViewById(R.id.d_loading_error_layout);
-        loodingLayout = view.findViewById(R.id.d_loading_layout);
+        initView(view);
 
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         manager = new LinearLayoutManager(container.getContext());
@@ -75,9 +83,59 @@ public class DListFragment extends Fragment {
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
 
+        initEvent();
+
+        if (isLongClick) {
+            adapter.setCheckedLayout(true);
+            adapter.notifyDataSetChanged();
+            top_layout.setVisibility(View.GONE);
+            bottom_layout.setVisibility(View.VISIBLE);
+            MainActivity.tabLayout.setVisibility(View.GONE);
+        }
         sendRequest();
         return view;
     }
+
+    /**
+     * 初始化view
+     *
+     * @param view
+     */
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.dsx_list);
+        refreshLayout = view.findViewById(R.id.box_list_swiper);
+
+        loodingErrorLayout = view.findViewById(R.id.d_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.d_loading_layout);
+
+        top_layout = view.findViewById(R.id.top_layout);
+        bottom_layout = view.findViewById(R.id.bottom_layout);
+
+        allCheckedImage = view.findViewById(R.id.all_checked_image);
+        allCheckedText = view.findViewById(R.id.all_checked_text);
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+    }
+
+    /**
+     * recyclerview的监听事件
+     */
+    private void initEvent() {
+
+        adapter.setOnLongClickListener(new BoxAdapter.DsxLongClickListener() {
+            @Override
+            public void onLongClick(View v) {
+                isLongClick = true;
+                adapter.setCheckedLayout(true);
+                adapter.notifyDataSetChanged();
+                top_layout.setVisibility(View.GONE);
+                bottom_layout.setVisibility(View.VISIBLE);
+                MainActivity.tabLayout.setVisibility(View.GONE);
+            }
+        });
+    }
+
 
     //发送网络请求
     private void sendRequest() {
@@ -117,7 +175,7 @@ public class DListFragment extends Fragment {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token",null).commit();
+                            MainActivity.preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }
@@ -157,6 +215,63 @@ public class DListFragment extends Fragment {
         }
         adapter.notifyDataSetChanged();
 
+
+    }
+
+    /**
+     * 取消多选状态
+     */
+    public static void cancleLongClick() {
+        isLongClick = false;
+        adapter.setCheckedLayout(false);
+        adapter.notifyDataSetChanged();
+        top_layout.setVisibility(View.VISIBLE);
+        bottom_layout.setVisibility(View.GONE);
+        MainActivity.tabLayout.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.all_checked_image:
+            case R.id.all_checked_text:
+                allCheckedClick();
+                break;
+        }
+
+    }
+
+    /**
+     * 处理全选按钮的点击事件
+     */
+    private void allCheckedClick() {
+        //判断当前全选是否是选中状态
+        if (isAllChecked) {
+            isAllChecked = false;
+            allCheckedImage.setImageResource(R.mipmap.unchecked);
+            List<MyBox> boxes = adapter.getMyBoxList();
+            for (MyBox box : boxes) {
+                box.setImgIsChecked(false);
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            isAllChecked = true;
+            allCheckedImage.setImageResource(R.mipmap.checked);
+            List<MyBox> boxes = adapter.getMyBoxList();
+            for (MyBox box : boxes) {
+                box.setImgIsChecked(true);
+            }
+            adapter.notifyDataSetChanged();
+
+        }
 
     }
 }

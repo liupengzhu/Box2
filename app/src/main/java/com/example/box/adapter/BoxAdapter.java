@@ -31,6 +31,9 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     private List<MyBox> myBoxList;
     private Context context;
+    private DsxLongClickListener dsxLongClickListener;
+
+    private boolean isCheckedLayout = false;
 
     public BoxAdapter(List<MyBox> myBoxList) {
         super();
@@ -50,6 +53,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         TextView box_issd_text;
         BatteryView box_dl_img;
         TextView box_dl_text;
+        ImageView checked_button;
 
 
         public ViewHolder(View itemView) {
@@ -67,6 +71,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             box_dl_img = itemView.findViewById(R.id.dsx_dl_img);
             box_dl_text = itemView.findViewById(R.id.dsx_dl_text);
             box_layout = itemView.findViewById(R.id.dsx_layout);
+            checked_button = itemView.findViewById(R.id.dsx_check_button);
 
         }
     }
@@ -86,6 +91,32 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
                 context.startActivity(intent);
             }
         });
+        viewHolder.box_layout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (dsxLongClickListener != null) {
+                    dsxLongClickListener.onLongClick(v);
+                    return true;
+                }
+                return false;
+            }
+        });
+        viewHolder.checked_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = viewHolder.getAdapterPosition();
+                MyBox box = myBoxList.get(position);
+                if (box.isImgIsChecked()) {
+                    box.setImgIsChecked(false);
+                    viewHolder.checked_button.setImageResource(R.mipmap.unchecked);
+                } else {
+                    box.setImgIsChecked(true);
+                    viewHolder.checked_button.setImageResource(R.mipmap.checked);
+                }
+            }
+        });
+
+
         return viewHolder;
     }
 
@@ -96,6 +127,16 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
         Glide.with(MyApplication.getContext()).load(box.getBox_img()).into(holder.boxImg);
         holder.boxName.setText(box.getBox_name());
+        if (isCheckedLayout) {
+            holder.checked_button.setVisibility(View.VISIBLE);
+        } else {
+            holder.checked_button.setVisibility(View.GONE);
+        }
+        if (box.isImgIsChecked()) {
+            holder.checked_button.setImageResource(R.mipmap.checked);
+        } else {
+            holder.checked_button.setImageResource(R.mipmap.unchecked);
+        }
         if (box.getBox_qx() == 3) {
             holder.box_one.setVisibility(View.VISIBLE);
             holder.box_two.setVisibility(View.VISIBLE);
@@ -141,5 +182,26 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return myBoxList.size();
+    }
+
+
+    public void setOnLongClickListener(DsxLongClickListener dsxLongClickListener) {
+        this.dsxLongClickListener = dsxLongClickListener;
+    }
+
+    public interface DsxLongClickListener {
+        void onLongClick(View v);
+    }
+
+    public boolean isCheckedLayout() {
+        return isCheckedLayout;
+    }
+
+    public void setCheckedLayout(boolean checkedLayout) {
+        isCheckedLayout = checkedLayout;
+    }
+
+    public List<MyBox> getMyBoxList() {
+        return myBoxList;
     }
 }

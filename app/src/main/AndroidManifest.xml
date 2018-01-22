@@ -51,7 +51,8 @@
         </provider>
 
         <activity android:name=".SettingQxActivity" />
-        <activity android:name=".SettingStatesActivity"></activity>
+        <activity android:name=".SettingStatesActivity" />
+        <activity android:name=".BindingUserActivity"></activity>
     </application>
 
 </manifest>

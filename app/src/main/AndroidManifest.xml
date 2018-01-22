@@ -55,7 +55,8 @@
         <activity android:name=".BindingUserActivity" />
         <activity android:name=".DynamicPasswordActivity" />
         <activity android:name=".BoxAddUserActivity" />
-        <activity android:name=".BoxInfoLogActivity"></activity>
+        <activity android:name=".BoxInfoLogActivity" />
+        <activity android:name=".BoxInfoSoundActivity"></activity>
     </application>
 
 </manifest>

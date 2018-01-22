@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/box_info_sound_list_img"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:src="@drawable/point_l"
+
+        />
+
+    <TextView
+        android:id="@+id/box_info_sound_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/box_info_sound_list_img"
+        android:text="新录音"
+        android:textColor="@color/list_text_h"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/box_info_sound_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:text="2017-11-13"
+        android:textColor="@color/list_text_l"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/box_info_sound_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/box_info_sound_text"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/box_info_sound_list_img"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="00:00:30"
+        android:textColor="@color/list_text_n"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/box_info_sound_text"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/box_info_sound_time_text"
+        android:orientation="horizontal">
+
+
+        <CheckBox
+            android:layout_width="17dp"
+            android:layout_height="20dp"
+            android:background="@drawable/play_button"
+            android:button="@null" />
+
+        <TextView
+            android:id="@+id/box_info_sound_current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:text="0:00"
+            android:textColor="@color/list_text_l"
+            android:textSize="10sp" />
+
+        <com.example.horizontalprogressbar.HorizontalProgressBarWithNunber
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            app:progress_reached_bar_height="5dp"
+            app:progress_reached_color="@color/login_color"
+            app:progress_text_visibility="invisible"
+            app:progress_unreached_bar_height="5dp"
+            app:progress_unreached_color="@color/line" />
+
+        <TextView
+            android:id="@+id/box_info_sound_total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="0:30"
+            android:textColor="@color/list_text_l"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:background="@color/line" />
+
+</RelativeLayout>

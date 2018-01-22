@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 
 import com.example.box.BoxAddUserActivity;
 import com.example.box.BoxInfoLogActivity;
+import com.example.box.BoxInfoSoundActivity;
 import com.example.box.DynamicPasswordActivity;
 import com.example.box.R;
 
@@ -24,6 +25,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     RelativeLayout bindingUser_Button;
     RelativeLayout password_Button;
     RelativeLayout log_Button;
+    RelativeLayout sound_Button;
 
     @Nullable
     @Override
@@ -42,10 +44,12 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         bindingUser_Button = view.findViewById(R.id.box_message_binding_user);
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);
+        sound_Button = view.findViewById(R.id.box_message_sound);
 
         bindingUser_Button.setOnClickListener(this);
         password_Button.setOnClickListener(this);
         log_Button.setOnClickListener(this);
+        sound_Button.setOnClickListener(this);
     }
 
     /**
@@ -67,6 +71,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             case R.id.box_message_log:
                 Intent logIntent = new Intent(getContext(), BoxInfoLogActivity.class);
                 startActivity(logIntent);
+                break;
+            case R.id.box_message_sound:
+                Intent soundIntent = new Intent(getContext(), BoxInfoSoundActivity.class);
+                startActivity(soundIntent);
                 break;
             default:
                 break;

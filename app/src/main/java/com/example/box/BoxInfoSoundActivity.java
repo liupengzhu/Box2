@@ -1,36 +1,24 @@
 package com.example.box;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.example.box.adapter.UserInfoAdapter;
-import com.example.box.recycler.UserInfo;
 import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
-import java.util.ArrayList;
-import java.util.List;
+public class BoxInfoSoundActivity extends AppCompatActivity {
 
-public class EnclosureActivity extends AppCompatActivity {
-
-    TitleBar titleBar;
-
+    private TitleBar titleBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enclosure);
-
+        setContentView(R.layout.activity_box_info_sound);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -39,20 +27,21 @@ public class EnclosureActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         initView();
-
-
     }
 
+    /**
+     * 初始化View
+     */
     private void initView() {
 
-        titleBar = findViewById(R.id.enclosure_title_bar);
-        titleBar.setTextViewText("地理围栏");
+        titleBar = findViewById(R.id.box_info_sound_title_bar);
+        titleBar.setTextViewText("");
+        titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
-
 
             }
 
@@ -66,8 +55,6 @@ public class EnclosureActivity extends AppCompatActivity {
 
             }
         });
+
     }
-
 }
-
-

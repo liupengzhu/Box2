@@ -54,7 +54,8 @@
         <activity android:name=".SettingStatesActivity" />
         <activity android:name=".BindingUserActivity" />
         <activity android:name=".DynamicPasswordActivity" />
-        <activity android:name=".BoxAddUserActivity"></activity>
+        <activity android:name=".BoxAddUserActivity" />
+        <activity android:name=".BoxInfoLogActivity"></activity>
     </application>
 
 </manifest>

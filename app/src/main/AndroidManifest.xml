@@ -50,7 +50,8 @@
                 android:resource="@xml/file_path" />
         </provider>
 
-        <activity android:name=".SettingQxActivity"></activity>
+        <activity android:name=".SettingQxActivity" />
+        <activity android:name=".SettingStatesActivity"></activity>
     </application>
 
 </manifest>

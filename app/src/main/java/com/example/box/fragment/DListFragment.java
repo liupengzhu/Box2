@@ -23,6 +23,7 @@ import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
 import com.example.box.SettingQxActivity;
+import com.example.box.SettingStatesActivity;
 import com.example.box.adapter.BoxAdapter;
 import com.example.box.gson.BoxData;
 import com.example.box.gson.BoxInfo;
@@ -120,10 +121,12 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         allCheckedText = view.findViewById(R.id.all_checked_text);
 
         settingQx_Button = view.findViewById(R.id.dsx_list_setting_qx);
+        settingState_Button = view.findViewById(R.id.dsx_list_setting_state);
 
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
         settingQx_Button.setOnClickListener(this);
+        settingState_Button.setOnClickListener(this);
     }
 
     /**
@@ -255,6 +258,9 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 Intent settingQxIntent = new Intent(getContext(), SettingQxActivity.class);
                 startActivity(settingQxIntent);
                 break;
+            case R.id.dsx_list_setting_state:
+                Intent settingStatesIntent = new Intent(getContext(), SettingStatesActivity.class);
+                startActivity(settingStatesIntent);
         }
 
     }

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.box.BindingUserActivity;
+import com.example.box.BoxAddUserActivity;
 import com.example.box.DynamicPasswordActivity;
 import com.example.box.R;
 
@@ -53,7 +54,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_message_binding_user:
-                Intent bindingUserIntent = new Intent(getContext(), BindingUserActivity.class);
+                Intent bindingUserIntent = new Intent(getContext(), BoxAddUserActivity.class);
                 startActivity(bindingUserIntent);
                 break;
             case R.id.box_message_password:

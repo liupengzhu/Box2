@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.box.BindingUserActivity;
+import com.example.box.DynamicPasswordActivity;
 import com.example.box.R;
 
 /**
@@ -20,6 +21,7 @@ import com.example.box.R;
 public class BoxMessageInfoFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout bindingUser_Button;
+    RelativeLayout password_Button;
 
     @Nullable
     @Override
@@ -36,9 +38,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
      */
     private void initView(View view) {
         bindingUser_Button = view.findViewById(R.id.box_message_binding_user);
-
+        password_Button = view.findViewById(R.id.box_message_password);
 
         bindingUser_Button.setOnClickListener(this);
+        password_Button.setOnClickListener(this);
     }
 
     /**
@@ -53,6 +56,9 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 Intent bindingUserIntent = new Intent(getContext(), BindingUserActivity.class);
                 startActivity(bindingUserIntent);
                 break;
+            case R.id.box_message_password:
+                Intent passwordIntent = new Intent(getContext(), DynamicPasswordActivity.class);
+                startActivity(passwordIntent);
             default:
                 break;
 

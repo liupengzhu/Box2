@@ -52,7 +52,8 @@
 
         <activity android:name=".SettingQxActivity" />
         <activity android:name=".SettingStatesActivity" />
-        <activity android:name=".BindingUserActivity"></activity>
+        <activity android:name=".BindingUserActivity" />
+        <activity android:name=".DynamicPasswordActivity"></activity>
     </application>
 
 </manifest>

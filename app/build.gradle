@@ -38,4 +38,5 @@ dependencies {
     implementation project(':titlebar')
     implementation project(':battery')
     implementation project(':selfdialog')
+    implementation project(':horizontalprogressbar')
 }

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.example.box.LoginActivity;
 import com.example.box.MainActivity;
 import com.example.box.R;
+import com.example.box.SettingQxActivity;
 import com.example.box.adapter.BoxAdapter;
 import com.example.box.gson.BoxData;
 import com.example.box.gson.BoxInfo;
@@ -55,6 +57,9 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
     private static CardView top_layout;
     private static LinearLayout bottom_layout;
+
+    private Button settingQx_Button;
+    private Button settingState_Button;
 
     public static boolean isLongClick = false;
 
@@ -114,8 +119,11 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         allCheckedImage = view.findViewById(R.id.all_checked_image);
         allCheckedText = view.findViewById(R.id.all_checked_text);
 
+        settingQx_Button = view.findViewById(R.id.dsx_list_setting_qx);
+
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
+        settingQx_Button.setOnClickListener(this);
     }
 
     /**
@@ -243,6 +251,10 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             case R.id.all_checked_text:
                 allCheckedClick();
                 break;
+            case R.id.dsx_list_setting_qx:
+                Intent settingQxIntent = new Intent(getContext(), SettingQxActivity.class);
+                startActivity(settingQxIntent);
+                break;
         }
 
     }
@@ -273,5 +285,10 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
         }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

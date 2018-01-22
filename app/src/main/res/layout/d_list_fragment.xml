@@ -146,6 +146,7 @@
             android:text="全选" />
 
         <Button
+            android:id="@+id/dsx_list_setting_qx"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -155,6 +156,7 @@
             android:textColor="@color/menu_sz_color" />
 
         <Button
+            android:id="@+id/dsx_list_setting_state"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

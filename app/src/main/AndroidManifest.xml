@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".MyApplication"
@@ -38,17 +38,19 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AddEnclosureActivity" />
         <activity android:name=".PersonalInfoActivity" />
-        <activity android:name=".PersonalSettingActivity"></activity>
+        <activity android:name=".PersonalSettingActivity" />
+
         <provider
+            android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.cameraalbumtest.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            android:name="android.support.v4.content.FileProvider">
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_path"/>
-
+                android:resource="@xml/file_path" />
         </provider>
+
+        <activity android:name=".SettingQxActivity"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.box;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -140,6 +141,14 @@ public class LeavingAlarmActivity extends AppCompatActivity implements View.OnCl
                 bottom_layout.setVisibility(View.VISIBLE);
             }
         });
+        adapter.setOnClickListener(new LeavingAlarmAdapter.LeavingAlarmOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LeavingAlarmActivity.this, LeavingInfoActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     /**

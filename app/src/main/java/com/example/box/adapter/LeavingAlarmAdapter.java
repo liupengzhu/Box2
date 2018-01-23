@@ -24,16 +24,17 @@ public class LeavingAlarmAdapter extends RecyclerView.Adapter<LeavingAlarmAdapte
 
     private boolean isCheckedLayout = false;
     private LeavingAlarmLongClickListener leavingAlarmLongClickListener;
+    private LeavingAlarmOnClickListener leavingAlarmOnClickListener;
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView boxName;
 
         TextView distance;
+
         TextView name;
         TextView isLeaving;
         ImageView checked_button;
-
         LinearLayout layout;
 
         public ViewHolder(View itemView) {
@@ -73,6 +74,19 @@ public class LeavingAlarmAdapter extends RecyclerView.Adapter<LeavingAlarmAdapte
                 return false;
             }
         });
+        /**
+         * 设置子条目的单击事件
+         */
+        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (leavingAlarmOnClickListener != null) {
+                    leavingAlarmOnClickListener.onClick(v);
+                }
+            }
+        });
+
+
         /**
          * 设置多选按钮的单击事件 改变当前条目的选中状态
          */
@@ -127,13 +141,21 @@ public class LeavingAlarmAdapter extends RecyclerView.Adapter<LeavingAlarmAdapte
         return leavingAlarms.size();
     }
 
-
     public void setOnLongClickListener(LeavingAlarmLongClickListener leavingAlarmLongClickListener) {
         this.leavingAlarmLongClickListener = leavingAlarmLongClickListener;
     }
 
+
+    public void setOnClickListener(LeavingAlarmOnClickListener leavingAlarmOnClickListener) {
+        this.leavingAlarmOnClickListener = leavingAlarmOnClickListener;
+    }
+
     public interface LeavingAlarmLongClickListener {
         void onLongClick(View v);
+    }
+
+    public interface LeavingAlarmOnClickListener {
+        void onClick(View v);
     }
 
     public boolean isCheckedLayout() {

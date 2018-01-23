@@ -57,7 +57,8 @@
         <activity android:name=".BoxAddUserActivity" />
         <activity android:name=".BoxInfoLogActivity" />
         <activity android:name=".BoxInfoSoundActivity" />
-        <activity android:name=".DetailedSoundActivity"></activity>
+        <activity android:name=".DetailedSoundActivity" />
+        <activity android:name=".LeavingInfoActivity"></activity>
     </application>
 
 </manifest>

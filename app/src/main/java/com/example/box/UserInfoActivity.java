@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.box.adapter.UserInfoAdapter;
@@ -31,17 +32,17 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class UserInfoActivity extends AppCompatActivity {
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String USER_INFO_URI = "http://safebox.dsmcase.com:90/api/user/lists?_token=";
 
     TitleBar titleBar;
+    RelativeLayout editUserInfoButton;
 
     List<UserInfo> userInfoList = new ArrayList<>();
     LinearLayoutManager manager;
     RecyclerView recyclerView;
     UserInfoAdapter adapter;
-
     SwipeRefreshLayout swipeRefreshLayout;
 
 
@@ -117,6 +118,23 @@ public class UserInfoActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        editUserInfoButton = findViewById(R.id.user_info_item);
+        editUserInfoButton.setOnClickListener(this);
 
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.user_info_item:
+                Intent intent = new Intent(this, EditUserActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 }

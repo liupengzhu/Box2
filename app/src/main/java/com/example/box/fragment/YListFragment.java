@@ -65,6 +65,10 @@ public class YListFragment extends Fragment {
     }
 
 
+    /**
+     * 初始化view
+     * @param view
+     */
     private void initView(View view) {
 
         recyclerView = view.findViewById(R.id.y_recycler_view);

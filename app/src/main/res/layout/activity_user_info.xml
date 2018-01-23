@@ -88,7 +88,10 @@
                     android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
-                <include layout="@layout/user_info_item"/>
+
+                <include
+                    android:id="@+id/user_info_item"
+                    layout="@layout/user_info_item" />
 
 
                 <RelativeLayout

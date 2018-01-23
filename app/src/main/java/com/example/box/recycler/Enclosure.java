@@ -7,6 +7,15 @@ package com.example.box.recycler;
 public class Enclosure {
 
     private String name;
+    private boolean imgIsChecked = false;
+
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
+    }
 
     public Enclosure(String name) {
         this.name = name;

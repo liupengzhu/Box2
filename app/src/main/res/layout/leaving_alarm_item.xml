@@ -1,102 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/leaving_alarm_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="15dp"
-    android:paddingLeft="20dp"
-    android:paddingTop="15dp">
+    android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/box_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_centerVertical="true"
-        android:background="@mipmap/box" />
+        android:id="@+id/leaving_alarm_check_button"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:src="@mipmap/unchecked"
+        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/leaving_alarm_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_toRightOf="@+id/box_img"
-        android:maxLines="1"
-        android:text="xxxxxxx"
-        android:textColor="@color/list_text_h"
-        android:textSize="20sp" />
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp">
+
+        <ImageView
+            android:id="@+id/box_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:background="@mipmap/box" />
+
+        <TextView
+            android:id="@+id/leaving_alarm_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/box_img"
+            android:maxLines="1"
+            android:text="xxxxxxx"
+            android:textColor="@color/list_text_h"
+            android:textSize="18sp" />
 
 
-    <ImageView
-        android:id="@+id/leaving_alarm_location_img"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@+id/box_img"
-        android:src="@mipmap/location" />
+        <ImageView
+            android:id="@+id/leaving_alarm_location_img"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/box_img"
+            android:src="@mipmap/location" />
 
-    <TextView
-        android:id="@+id/leaving_alarm_location_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="2dp"
-        android:layout_toRightOf="@id/leaving_alarm_location_img"
-        android:text="10.0m"
-        android:textColor="@color/list_text_n"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/leaving_alarm_location_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@id/leaving_alarm_location_img"
+            android:text="10.0m"
+            android:textColor="@color/list_text_n"
+            android:textSize="12sp" />
 
-    <ImageView
-        android:id="@+id/leaving_alarm_message_img"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@+id/leaving_alarm_location_text"
-        android:src="@mipmap/sendmessage" />
+        <ImageView
+            android:id="@+id/leaving_alarm_message_img"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/leaving_alarm_location_text"
+            android:src="@mipmap/sendmessage" />
 
-    <TextView
-        android:id="@+id/leaving_alarm_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="2dp"
-        android:layout_toRightOf="@id/leaving_alarm_message_img"
-        android:text="张三"
-        android:textColor="@color/list_text_n"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/leaving_alarm_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@id/leaving_alarm_message_img"
+            android:text="张三"
+            android:textColor="@color/list_text_n"
+            android:textSize="12sp" />
 
-    <ImageView
-        android:id="@+id/leaving_alarm_distance_img"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@+id/leaving_alarm_name_text"
-        android:src="@mipmap/distance" />
+        <ImageView
+            android:id="@+id/leaving_alarm_distance_img"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/leaving_alarm_name_text"
+            android:src="@mipmap/distance" />
 
-    <TextView
-        android:id="@+id/leaving_alarm_is_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/leaving_alarm_name"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/leaving_alarm_distance_img"
-        android:text="否"
-        android:textColor="@color/list_text_n"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/leaving_alarm_is_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/leaving_alarm_name"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/leaving_alarm_distance_img"
+            android:text="否"
+            android:textColor="@color/list_text_n"
+            android:textSize="12sp" />
 
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/right_jian" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/right_jian" />
 
-</RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -9,52 +9,65 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.box.R;
-import com.example.box.recycler.Enclosure;
+import com.example.box.recycler.LeavingAlarm;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by sddt on 18-1-17.
+ * Created by sddt on 18-1-23.
  */
 
-public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.ViewHolder> {
+public class LeavingAlarmAdapter extends RecyclerView.Adapter<LeavingAlarmAdapter.ViewHolder> {
 
-    private List<Enclosure> enclosureList = new ArrayList<>();
+    List<LeavingAlarm> leavingAlarms = new ArrayList<>();
 
-    private EnclosureLongClickListener enclosureLongClickListener;
     private boolean isCheckedLayout = false;
+    private LeavingAlarmLongClickListener leavingAlarmLongClickListener;
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        TextView boxName;
+
+        TextView distance;
         TextView name;
+        TextView isLeaving;
         ImageView checked_button;
+
         LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.enclosure_name);
-            checked_button = itemView.findViewById(R.id.enclosure_check_button);
-            layout = itemView.findViewById(R.id.enclosure_item_layout);
+            boxName = itemView.findViewById(R.id.leaving_alarm_name);
+            distance = itemView.findViewById(R.id.leaving_alarm_location_text);
+            name = itemView.findViewById(R.id.leaving_alarm_name_text);
+            isLeaving = itemView.findViewById(R.id.leaving_alarm_is_text);
+
+            checked_button = itemView.findViewById(R.id.leaving_alarm_check_button);
+            layout = itemView.findViewById(R.id.leaving_alarm_item_layout);
+
         }
+
     }
 
-    public EnclosureAdapter(List<Enclosure> enclosureList) {
-        this.enclosureList = enclosureList;
+    public LeavingAlarmAdapter(List<LeavingAlarm> leavingAlarms) {
+        this.leavingAlarms = leavingAlarms;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.enclosure_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.leaving_alarm_item,
+                parent, false);
         final ViewHolder viewHolder = new ViewHolder(view);
+
         /**
          * 设置子条目的长按点击事件
          */
         viewHolder.layout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (enclosureLongClickListener != null) {
-                    enclosureLongClickListener.onLongClick(v);
+                if (leavingAlarmLongClickListener != null) {
+                    leavingAlarmLongClickListener.onLongClick(v);
                     return true;
                 }
                 return false;
@@ -67,12 +80,12 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
             @Override
             public void onClick(View v) {
                 int position = viewHolder.getAdapterPosition();
-                Enclosure enclosure = enclosureList.get(position);
-                if (enclosure.isImgIsChecked()) {
-                    enclosure.setImgIsChecked(false);
+                LeavingAlarm leavingAlarm = leavingAlarms.get(position);
+                if (leavingAlarm.isImgIsChecked()) {
+                    leavingAlarm.setImgIsChecked(false);
                     viewHolder.checked_button.setImageResource(R.mipmap.unchecked);
                 } else {
-                    enclosure.setImgIsChecked(true);
+                    leavingAlarm.setImgIsChecked(true);
                     viewHolder.checked_button.setImageResource(R.mipmap.checked);
                 }
             }
@@ -84,8 +97,12 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Enclosure enclosure = enclosureList.get(position);
-        holder.name.setText(enclosure.getName());
+        LeavingAlarm leavingAlarm = leavingAlarms.get(position);
+        holder.boxName.setText(leavingAlarm.getBoxName());
+        holder.distance.setText(leavingAlarm.getDistance());
+        holder.name.setText(leavingAlarm.getName());
+        holder.isLeaving.setText(leavingAlarm.getIsLeaving());
+
         /**
          * 判断当前是否是长按状态设置多选按钮是否可见
          */
@@ -97,23 +114,25 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
         /**
          * 判断当前按钮是否是选中状态 改变图标
          */
-        if (enclosure.isImgIsChecked()) {
+        if (leavingAlarm.isImgIsChecked()) {
             holder.checked_button.setImageResource(R.mipmap.checked);
         } else {
             holder.checked_button.setImageResource(R.mipmap.unchecked);
         }
+
     }
 
     @Override
     public int getItemCount() {
-        return enclosureList.size();
+        return leavingAlarms.size();
     }
 
-    public void setOnLongClickListener(EnclosureLongClickListener enclosureLongClickListener) {
-        this.enclosureLongClickListener = enclosureLongClickListener;
+
+    public void setOnLongClickListener(LeavingAlarmLongClickListener leavingAlarmLongClickListener) {
+        this.leavingAlarmLongClickListener = leavingAlarmLongClickListener;
     }
 
-    public interface EnclosureLongClickListener {
+    public interface LeavingAlarmLongClickListener {
         void onLongClick(View v);
     }
 
@@ -125,7 +144,7 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
         isCheckedLayout = checkedLayout;
     }
 
-    public List<Enclosure> getEnclosureList() {
-        return enclosureList;
+    public List<LeavingAlarm> getLeavingAlarms() {
+        return leavingAlarms;
     }
 }

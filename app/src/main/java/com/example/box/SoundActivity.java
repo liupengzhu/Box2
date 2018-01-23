@@ -1,5 +1,6 @@
 package com.example.box;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -7,14 +8,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.titlebar.TitleBar;
 import com.example.titlebar.TitleListener;
 
-public class SoundActivity extends AppCompatActivity {
+public class SoundActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
+    private RelativeLayout soundButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,5 +58,24 @@ public class SoundActivity extends AppCompatActivity {
 
             }
         });
+
+        soundButton = findViewById(R.id.sound_item);
+        soundButton.setOnClickListener(this);
+    }
+
+    /**
+     * 点击事件拦截
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.sound_item:
+                Intent intent = new Intent(this,DetailedSoundActivity.class);
+                startActivity(intent);
+                break;
+
+        }
+
     }
 }

@@ -58,7 +58,8 @@
         <activity android:name=".BoxInfoLogActivity" />
         <activity android:name=".BoxInfoSoundActivity" />
         <activity android:name=".DetailedSoundActivity" />
-        <activity android:name=".LeavingInfoActivity"></activity>
+        <activity android:name=".LeavingInfoActivity" />
+        <activity android:name=".LeavingBindPersonActivity"></activity>
     </application>
 
 </manifest>

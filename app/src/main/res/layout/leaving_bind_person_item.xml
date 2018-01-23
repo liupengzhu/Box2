@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingBottom="15dp"
+    android:paddingTop="15dp">
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:text="手环编号:"
+        android:textColor="@color/list_text_h" />
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/leaving_bind_person_item_text"
+        android:text="SH0001"
+        android:textColor="@color/list_text_h" />
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leaving_bind_person_item_text"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:text="姓名:"
+        android:textColor="@color/list_text_n"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leaving_bind_person_item_text"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/leaving_bind_person_item_name_text"
+        android:text="阿呆"
+        android:textColor="@color/list_text_n"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_phone_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leaving_bind_person_item_text"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/leaving_bind_person_item_name"
+        android:text="电话:"
+        android:textColor="@color/list_text_n"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/leaving_bind_person_item_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leaving_bind_person_item_text"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/leaving_bind_person_item_phone_text"
+        android:text="1888888888881"
+        android:textColor="@color/list_text_n"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/right_jian" />
+
+
+</RelativeLayout>

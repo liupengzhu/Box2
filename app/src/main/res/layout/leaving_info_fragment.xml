@@ -189,6 +189,7 @@
             android:orientation="vertical" />
 
         <RelativeLayout
+            android:id="@+id/leaving_info_bind_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

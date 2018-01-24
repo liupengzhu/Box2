@@ -169,28 +169,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                selfDialog = new SelfDialog(MainActivity.this);
-                selfDialog.setNoOnclickListener(new SelfDialog.onNoOnclickListener() {
-                    @Override
-                    public void onNoClick() {
-
-                        //退出程序
-                        finish();
-                        System.exit(0);
-                    }
-                });
-                selfDialog.setYesOnclickListener(new SelfDialog.onYesOnclickListener() {
-                    @Override
-                    public void onYesClick() {
-                        preferences.edit().putString("token", null).commit();
-                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-
-                    }
-                });
-                selfDialog.show();
-
+                preferences.edit().putString("token", null).commit();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         menu_user_img.setOnClickListener(new View.OnClickListener() {

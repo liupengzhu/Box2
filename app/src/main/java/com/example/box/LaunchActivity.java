@@ -26,7 +26,7 @@ public class LaunchActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         //跳转至 MainActivity
-                        Intent intent = new Intent(LaunchActivity.this, LoginOrRegisterActivity.class);
+                        Intent intent = new Intent(LaunchActivity.this, LoginActivity.class);
                         startActivity(intent);
                         //结束当前的 Activity
                         LaunchActivity.this.finish();

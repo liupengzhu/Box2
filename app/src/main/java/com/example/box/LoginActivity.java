@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button loginButton;
     SharedPreferences.Editor editor;
     SharedPreferences preferences;
-    LinearLayout registerButton;
     Button backButton;
 
 
@@ -57,6 +56,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //初始化界面控件
         initView();
 
+        //若果token不为空 则直接进入主界面
+        if (preferences.getString("token", null) != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         //从数据库获取登录名和密码并设置到界面
         String login_Name = preferences.getString(LOGIN_NAME, null);
@@ -83,8 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         //登录按钮监听
         loginButton.setOnClickListener(this);
-        //注册按钮监听
-        registerButton.setOnClickListener(this);
+
 
         backButton.setOnClickListener(this);
 
@@ -182,7 +186,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
 
-        registerButton = findViewById(R.id.login_register_layout);
         backButton = findViewById(R.id.back_button);
     }
 
@@ -194,10 +197,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.login_register_layout:
-                Intent registerIntent = new Intent(this, RegisterActivity.class);
-                startActivity(registerIntent);
-                break;
 
             case R.id.login_button:
                 login();

@@ -3,6 +3,8 @@ package com.example.box;
 import android.app.Application;
 import android.content.Context;
 
+import com.baidu.mapapi.SDKInitializer;
+
 import org.litepal.LitePal;
 
 public class MyApplication extends Application {
@@ -12,8 +14,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LitePal.initialize(this);
+
         context = getApplicationContext();
+        LitePal.initialize(context);
+        SDKInitializer.initialize(context);
     }
 
     public static Context getContext() {

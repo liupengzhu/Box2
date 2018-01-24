@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.example.box.AddEnclosureActivity;
 import com.example.box.EnclosureActivity;
 import com.example.box.R;
+import com.example.box.TrackActivity;
 
 /**
  * Created by sddt on 18-1-18.
@@ -21,6 +22,7 @@ import com.example.box.R;
 public class BoxMessageSafeFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout enclosureButton;
+    RelativeLayout trackButton;
 
     @Nullable
     @Override
@@ -37,7 +39,9 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
      */
     private void initView(View view) {
         enclosureButton = view.findViewById(R.id.box_message_enclosure);
+        trackButton = view.findViewById(R.id.box_message_track);
 
+        trackButton.setOnClickListener(this);
         enclosureButton.setOnClickListener(this);
     }
 
@@ -52,6 +56,10 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
             case R.id.box_message_enclosure:
                 Intent intent = new Intent(getContext(), AddEnclosureActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.box_message_track:
+                Intent trackIntent = new Intent(getContext(), TrackActivity.class);
+                startActivity(trackIntent);
                 break;
             default:
                 break;

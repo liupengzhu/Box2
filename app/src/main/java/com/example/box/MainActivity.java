@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     tabLayout.setVisibility(View.VISIBLE);
                 }
                 titleBar.setRightButtonSrc(R.drawable.menu);
-                titleBar.setTextViewText("递送箱列表");
+                titleBar.setTextViewText("箱体列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
@@ -450,6 +450,7 @@ public class MainActivity extends AppCompatActivity {
                 tabLayout.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("授权处理");
+                titleBar.setRightButtonSrc(0);
                 titleBar.setRightButtonSrc(R.drawable.add);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
@@ -467,7 +468,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onRightButtonClickListener(View v) {
 
-                        Toast.makeText(MainActivity.this, "点击了授权处理添加", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;

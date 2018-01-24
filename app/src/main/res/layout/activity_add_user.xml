@@ -460,9 +460,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/line"
-                android:orientation="vertical" />
+                android:layout_height="10dp"
+                android:background="@color/login_error" />
+
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

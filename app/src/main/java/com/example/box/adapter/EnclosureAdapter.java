@@ -25,6 +25,8 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
     private EnclosureLongClickListener enclosureLongClickListener;
     private boolean isCheckedLayout = false;
 
+    private EnclosureOnClickListener enclosureOnClickListener;
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
@@ -60,6 +62,19 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
                 return false;
             }
         });
+        /**
+         * 子条目的单击事件
+         */
+        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (enclosureOnClickListener != null) {
+                    enclosureOnClickListener.onClick(v);
+                }
+            }
+        });
+
+
         /**
          * 设置多选按钮的单击事件 改变当前条目的选中状态
          */
@@ -117,6 +132,10 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
         void onLongClick(View v);
     }
 
+    public interface EnclosureOnClickListener {
+        void onClick(View v);
+    }
+
     public boolean isCheckedLayout() {
         return isCheckedLayout;
     }
@@ -127,5 +146,9 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
 
     public List<Enclosure> getEnclosureList() {
         return enclosureList;
+    }
+
+    public void setEnclosureOnClickListener(EnclosureOnClickListener enclosureOnClickListener) {
+        this.enclosureOnClickListener = enclosureOnClickListener;
     }
 }

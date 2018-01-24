@@ -177,7 +177,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             holder.box_dl_text.setText(box.getBox_dl() + "%");
         } else {
             holder.box_dl_img.setPaintColor(-1);
-            holder.box_dl_text.setText("null");
+            holder.box_dl_text.setText("");
         }
 
 

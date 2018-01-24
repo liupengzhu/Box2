@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:orientation="horizontal">
 
     <ImageView
@@ -23,8 +24,8 @@
 
         <ImageView
             android:id="@+id/dsx_img"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
             android:layout_centerVertical="true"
             android:background="@drawable/box_null" />
 
@@ -81,67 +82,69 @@
             android:layout_toRightOf="@+id/dsx_x2"
             android:src="@mipmap/list_x" />
 
-        <ImageView
-            android:id="@+id/dsx_bf_img"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/dsx_qxdj"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="3dp"
             android:layout_toRightOf="@+id/dsx_img"
-            android:src="@mipmap/list_ybf" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/dsx_bf_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dsx_qxdj"
-            android:layout_marginLeft="2dp"
-            android:layout_toRightOf="@id/dsx_bf_img"
-            android:text="已布防"
-            android:textColor="@color/list_text_l"
-            android:textSize="12sp" />
 
-        <ImageView
-            android:id="@+id/dsx_sd_img"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_below="@+id/dsx_qxdj"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@+id/dsx_bf_text"
-            android:src="@mipmap/list_ys" />
+            <ImageView
+                android:id="@+id/dsx_bf_img"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/list_ybf" />
 
-        <TextView
-            android:id="@+id/dsx_sd_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dsx_qxdj"
-            android:layout_marginLeft="2dp"
-            android:layout_toRightOf="@id/dsx_sd_img"
-            android:text="已锁定"
-            android:textColor="@color/list_text_l"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/dsx_bf_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:text="已布防"
+                android:textColor="@color/list_text_l"
+                android:textSize="12sp" />
 
-        <com.example.battery.BatteryView
-            android:id="@+id/dsx_dl_img"
-            android:layout_width="20dp"
-            android:layout_height="10dp"
-            android:layout_below="@+id/dsx_qxdj"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="3dp"
-            android:layout_toRightOf="@+id/dsx_sd_text" />
+            <ImageView
+                android:id="@+id/dsx_sd_img"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
 
-        <TextView
-            android:id="@+id/dsx_dl_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/dsx_qxdj"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/dsx_dl_img"
-            android:text="100%"
-            android:textColor="@color/list_text_l"
-            android:textSize="12sp" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:src="@mipmap/list_ys" />
+
+            <TextView
+                android:id="@+id/dsx_sd_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:text="已锁定"
+                android:textColor="@color/list_text_l"
+                android:textSize="12sp" />
+
+            <com.example.battery.BatteryView
+                android:id="@+id/dsx_dl_img"
+                android:layout_width="20dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp" />
+
+            <TextView
+                android:id="@+id/dsx_dl_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:text="100%"
+                android:textColor="@color/list_text_l"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </RelativeLayout>
 </LinearLayout>

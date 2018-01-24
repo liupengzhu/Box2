@@ -451,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("授权处理");
                 titleBar.setRightButtonSrc(0);
-                titleBar.setRightButtonSrc(R.drawable.add);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {

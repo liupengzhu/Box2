@@ -91,6 +91,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         titleBar = findViewById(R.id.enclosure_title_bar);
         titleBar.setTextViewText("地理围栏");
         titleBar.setLeftButtonVisible(View.GONE);
+        titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         titleBar.setOnClickListener(new TitleListener() {
             @Override
@@ -143,6 +144,14 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                 adapter.notifyDataSetChanged();
                 top_layout.setVisibility(View.GONE);
                 bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        adapter.setEnclosureOnClickListener(new EnclosureAdapter.EnclosureOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EnclosureActivity.this,TrackActivity.class);
+                startActivity(intent);
             }
         });
 

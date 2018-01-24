@@ -56,7 +56,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     private ImageView allCheckedImage;
     private TextView allCheckedText;
 
-    private static CardView top_layout;
+    private static RelativeLayout top_layout;
     private static LinearLayout bottom_layout;
 
     private Button settingQx_Button;

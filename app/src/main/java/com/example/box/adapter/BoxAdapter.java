@@ -149,6 +149,10 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             holder.box_one.setVisibility(View.VISIBLE);
             holder.box_two.setVisibility(View.INVISIBLE);
             holder.box_three.setVisibility(View.INVISIBLE);
+        } else {
+            holder.box_one.setVisibility(View.INVISIBLE);
+            holder.box_two.setVisibility(View.INVISIBLE);
+            holder.box_three.setVisibility(View.INVISIBLE);
         }
         if (box.isIs_bf()) {
             holder.box_isbf_img.setImageResource(R.mipmap.list_ybf);

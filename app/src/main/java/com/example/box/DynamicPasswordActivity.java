@@ -9,14 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 
 import com.example.horizontalprogressbar.HorizontalProgressBarWithNunber;
 
 
-public class DynamicPasswordActivity extends AppCompatActivity {
+public class DynamicPasswordActivity extends AppCompatActivity implements View.OnClickListener {
 
     HorizontalProgressBarWithNunber progressBar;
+    Button backButton;
     public static final int MSG_PROGRESS_UPDATE = 0x110;
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -44,8 +46,32 @@ public class DynamicPasswordActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
-        progressBar = findViewById(R.id.progress_bar);
+        initView();
+
         mHandler.sendEmptyMessage(MSG_PROGRESS_UPDATE);
 
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+        backButton = findViewById(R.id.dt_back_button);
+        progressBar = findViewById(R.id.progress_bar);
+        backButton.setOnClickListener(this);
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.dt_back_button:
+                finish();
+                break;
+        }
     }
 }

@@ -204,22 +204,29 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         myBoxList.clear();
         for (BoxData boxData : boxInfo.boxDataList) {
 
+            String img_uri = null;
+            if (boxData.f_pic != null) {
+                img_uri = boxData.f_pic.replace('\\', ' ');
+            }
 
-            String img_uri = boxData.f_pic.replace('\\', ' ');
             MyBox box = new MyBox();
             box.setBox_name(boxData.name);
             box.setBox_dl(boxData.electricity);
             box.setBox_img(IMG_URI + img_uri);
-            box.setBox_qx(Integer.parseInt(boxData.level));
-            if (boxData.is_defence == "0") {
-                box.setIs_bf(false);
+            if (boxData.level != null) {
+                box.setBox_qx(Integer.parseInt(boxData.level));
             } else {
-                box.setIs_bf(true);
+                box.setBox_qx(0);
             }
-            if (boxData.is_locked == "0") {
-                box.setIs_sd(false);
+            if (boxData.is_defence == "1") {
+                box.setIs_bf(true);
             } else {
+                box.setIs_bf(false);
+            }
+            if (boxData.is_locked == "1") {
                 box.setIs_sd(true);
+            } else {
+                box.setIs_sd(false);
             }
             myBoxList.add(box);
 

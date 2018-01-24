@@ -16,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +39,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     SwipeRefreshLayout swipeRefreshLayout;
     LinearLayoutManager manager;
     List<Enclosure> enclosureList = new ArrayList<>();
-    private CardView top_layout;
+    private RelativeLayout top_layout;
     private LinearLayout bottom_layout;
 
     /**

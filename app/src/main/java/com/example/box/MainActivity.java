@@ -52,7 +52,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPager viewPager;
+    public static ViewPager viewPager;
     public static TabLayout tabLayout;
 
     private CircleImageView menu_user_img;

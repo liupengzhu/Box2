@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home?_token=";
     TextView totalView;
@@ -68,6 +69,8 @@ public class HomeFragment extends Fragment {
 
     private ImageView loodingLayout;
 
+    private Button logButton;
+
 
 
 
@@ -93,6 +96,9 @@ public class HomeFragment extends Fragment {
 
         leaving_alarm_view = view.findViewById(R.id.leaving_alarm_text);
         area_alarm_view = view.findViewById(R.id.area_alarm_text);
+
+        logButton = view.findViewById(R.id.home_button);
+        logButton.setOnClickListener(this);
 
         serverState = view.findViewById(R.id.server_img);
         dbState = view.findViewById(R.id.db_img);
@@ -234,4 +240,16 @@ public class HomeFragment extends Fragment {
 
     }
 
+    /**
+     * 点击事件监听
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.home_button:
+                MainActivity.viewPager.setCurrentItem(3);
+                break;
+        }
+    }
 }

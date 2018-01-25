@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -37,7 +38,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     public static final String USER_INFO_URI = "http://safebox.dsmcase.com:90/api/user/lists?_token=";
 
     TitleBar titleBar;
-    RelativeLayout editUserInfoButton;
 
     List<UserInfo> userInfoList = new ArrayList<>();
     LinearLayoutManager manager;
@@ -59,9 +59,53 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
 
         }
+        initData();
         initView();
+        initEvent();
 
         sendRequest();
+    }
+
+    /**
+     * 初始化点击事件
+     */
+    private void initEvent() {
+        adapter.setUserInfoOnClickListener(new UserInfoAdapter.UserInfoOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserInfoActivity.this, EditUserActivity.class);
+                startActivity(intent);
+            }
+        });
+        titleBar.setOnClickListener(new TitleListener() {
+            @Override
+            public void onLeftButtonClickListener(View v) {
+
+
+            }
+
+            @Override
+            public void onLeftBackButtonClickListener(View v) {
+                finish();
+            }
+
+            @Override
+            public void onRightButtonClickListener(View v) {
+
+                Intent intent = new Intent(UserInfoActivity.this, AddUserActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    /**
+     * 测试方法
+     */
+    private void initData() {
+        for (int i = 0; i < 20; i++) {
+            UserInfo userInfo = new UserInfo("张三" + i, "zq024502" + i, "一般用户", null);
+            userInfoList.add(userInfo);
+        }
     }
 
     /**
@@ -92,25 +136,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         titleBar.setTextViewText("用户管理");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
-        titleBar.setOnClickListener(new TitleListener() {
-            @Override
-            public void onLeftButtonClickListener(View v) {
 
-
-            }
-
-            @Override
-            public void onLeftBackButtonClickListener(View v) {
-                finish();
-            }
-
-            @Override
-            public void onRightButtonClickListener(View v) {
-
-                Intent intent = new Intent(UserInfoActivity.this, AddUserActivity.class);
-                startActivity(intent);
-            }
-        });
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(userInfoList);
 
@@ -118,8 +144,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
-        editUserInfoButton = findViewById(R.id.user_info_item);
-        editUserInfoButton.setOnClickListener(this);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
     }
 
@@ -130,11 +155,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      */
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.user_info_item:
-                Intent intent = new Intent(this, EditUserActivity.class);
-                startActivity(intent);
-                break;
-        }
+
     }
 }

@@ -71,9 +71,9 @@
         android:layout_weight="1">
 
         <FrameLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/white">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/user_info_recycler"
@@ -81,11 +81,6 @@
                 android:layout_height="wrap_content">
 
             </android.support.v7.widget.RecyclerView>
-
-            <include
-                android:id="@+id/user_info_item"
-                layout="@layout/user_info_item" />
-
 
             <RelativeLayout
                 android:id="@+id/user_info_loading_error_layout"

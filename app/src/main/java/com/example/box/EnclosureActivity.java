@@ -151,7 +151,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         adapter.setEnclosureOnClickListener(new EnclosureAdapter.EnclosureOnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EnclosureActivity.this,TrackActivity.class);
+                Intent intent = new Intent(EnclosureActivity.this, EnclosureInfoActivity.class);
                 startActivity(intent);
             }
         });

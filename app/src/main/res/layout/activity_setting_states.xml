@@ -11,6 +11,7 @@
         android:layout_height="80dp"></com.example.titlebar.TitleBar>
 
     <RelativeLayout
+        android:id="@+id/setting_lock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -27,7 +28,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/setting_lock_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -52,9 +53,9 @@
         android:orientation="vertical" />
 
     <RelativeLayout
+        android:id="@+id/setting_bf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:background="@color/white">
 
         <TextView
@@ -68,7 +69,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/setting_bf_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

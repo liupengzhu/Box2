@@ -85,7 +85,8 @@
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".TrackActivity"></activity>
+        <activity android:name=".TrackActivity" />
+        <activity android:name=".EnclosureInfoActivity"></activity>
     </application>
 
 </manifest>

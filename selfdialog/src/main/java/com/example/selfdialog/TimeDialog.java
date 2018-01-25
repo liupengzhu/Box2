@@ -64,7 +64,13 @@ public class TimeDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (onOkClickListener != null) {
-                    String date = datePicker.getYear() + "-" + datePicker.getMonth() + 1 + "-" + datePicker.getDayOfMonth();
+                    long moth = datePicker.getMonth()+1;
+                    String date = "";
+                    if(moth<10) {
+                        date = datePicker.getYear() + "-0" + moth + "-" + datePicker.getDayOfMonth();
+                    }else {
+                        date = datePicker.getYear() + "-" + moth + "-" + datePicker.getDayOfMonth();
+                    }
                     String time = timePicker.getHour() + ":" + timePicker.getMinute() + ":00";
                     onOkClickListener.OnClick(v, date, time);
                 }

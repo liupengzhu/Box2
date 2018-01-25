@@ -12,10 +12,11 @@
         android:orientation="vertical">
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
+            android:id="@+id/box_message_level"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
                 android:textSize="15sp" />
 
             <TextView
-
+                android:id="@+id/box_message_level_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -56,10 +57,10 @@
             android:orientation="vertical" />
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -71,15 +72,79 @@
                 android:textColor="@color/list_text_h"
                 android:textSize="15sp" />
 
-            <TextView
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="50dp"
-                android:text="开始时间 —— 结束时间"
-                android:textColor="@color/list_text_l"
-                android:textSize="15sp" />
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/box_message_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/box_message_start_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="开始日期"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/box_message_start_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="开始时间"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="——"
+                    android:textColor="@color/list_text_l"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/box_message_end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/box_message_end_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="开始日期"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/box_message_end_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="开始时间"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="20dp"
@@ -99,12 +164,14 @@
             android:orientation="vertical" />
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
+            android:id="@+id/box_message_lock"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -115,6 +182,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/box_message_lock_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -142,10 +210,11 @@
             android:orientation="vertical" />
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
+            android:id="@+id/box_message_bf"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -158,7 +227,7 @@
                 android:textSize="15sp" />
 
             <TextView
-
+                android:id="@+id/box_message_bf_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -185,11 +254,11 @@
             android:orientation="vertical" />
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:id="@+id/box_message_enclosure"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -229,11 +298,11 @@
             android:orientation="vertical" />
 
         <RelativeLayout
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:id="@+id/box_message_track"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <TextView
 

@@ -81,10 +81,6 @@
 
             </android.support.v7.widget.RecyclerView>
 
-            <include
-                android:id="@+id/sound_item"
-                layout="@layout/sound_item" />
-
 
             <RelativeLayout
                 android:id="@+id/sound_loading_error_layout"

@@ -4,6 +4,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -11,11 +14,20 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
+import com.example.box.adapter.DetailedSoundAdapter;
+import com.example.box.recycler.DetailedSound;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailedSoundActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button back_Button;
-    CheckBox play_Button;
     ImageView imageView;
+    RecyclerView recyclerView;
+    DetailedSoundAdapter adapter;
+    LinearLayoutManager manager;
+    List<DetailedSound> detailedSoundList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +40,33 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
 
+            intData();
             initView();
+            iniEvent();
 
+        }
+    }
+
+    /**
+     * 初始化点击事件
+     */
+    private void iniEvent() {
+        back_Button.setOnClickListener(this);
+        adapter.setDetailedSoundOnClickListener(new DetailedSoundAdapter.DetailedSoundOnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+    }
+
+    /**
+     * 测试方法
+     */
+    private void intData() {
+        for (int i = 0; i < 20; i++) {
+            DetailedSound detailedSound = new DetailedSound("录音ID",
+                    "2017/11/21 12:00:00", false);
+            detailedSoundList.add(detailedSound);
         }
     }
 
@@ -38,11 +75,15 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void initView() {
         back_Button = findViewById(R.id.detailed_sound_back);
-        play_Button = findViewById(R.id.detailed_sound_item_play);
         imageView = findViewById(R.id.detailed_sound_item_play_img);
+        recyclerView = findViewById(R.id.detailed_sound_recycler);
+        adapter = new DetailedSoundAdapter(this, detailedSoundList);
+        manager = new LinearLayoutManager(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        back_Button.setOnClickListener(this);
-        play_Button.setOnClickListener(this);
+
     }
 
     /**
@@ -56,8 +97,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             case R.id.detailed_sound_back:
                 finish();
                 break;
-            case R.id.detailed_sound_item_play:
-                imageView.setVisibility(View.GONE);
+            default:
                 break;
 
 

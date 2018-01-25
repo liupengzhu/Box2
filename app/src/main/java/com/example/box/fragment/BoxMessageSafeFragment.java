@@ -31,6 +31,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
 
     RelativeLayout enclosureButton;
     RelativeLayout trackButton;
+
     RelativeLayout levelButton;
     TextView levelText;
 

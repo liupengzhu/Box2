@@ -111,8 +111,13 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
         companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
             @Override
             public void OnClick(View v, int positon) {
-                companyText.setText(companyData.get(positon));
-                companyDialog.cancel();
+                if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
+                    companyDialog.cancel();
+                } else {
+                    companyText.setText(companyData.get(positon));
+                    departmentText.setText("请选择部门");
+                    companyDialog.cancel();
+                }
             }
         });
         departmentButton.setOnClickListener(this);

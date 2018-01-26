@@ -41,6 +41,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/add_user_setting_photo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -57,7 +58,7 @@
                     android:textSize="15sp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-
+                    android:id="@+id/add_user_photo"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_alignParentRight="true"
@@ -97,15 +98,19 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:maxLength="15"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -133,15 +138,19 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:maxLength="15"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -169,15 +178,20 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:inputType="textPassword"
+                    android:maxLength="15"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -205,15 +219,20 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:inputType="textPassword"
+                    android:maxLength="15"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -241,15 +260,20 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -273,19 +297,24 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
+                    android:inputType="textEmailAddress"
                     android:text="邮箱"
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="请输入"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:hint="请输入"
+                    android:maxLength="20"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -298,6 +327,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/add_user_level"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -314,7 +344,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-
+                    android:id="@+id/add_user_level_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -393,6 +423,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/add_user_company"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -409,7 +440,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-
+                    android:id="@+id/add_user_company_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -429,6 +460,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/add_user_department"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -445,7 +477,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-
+                    android:id="@+id/add_user_department_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

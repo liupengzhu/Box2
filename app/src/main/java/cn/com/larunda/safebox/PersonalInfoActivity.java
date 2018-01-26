@@ -147,7 +147,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         }
         if (Build.VERSION.SDK_INT >= 24) {
             imageUri = FileProvider.getUriForFile(PersonalInfoActivity.this,
-                    "com.example.cameraalbumtest.fileprovider", outputImage);
+                    "cn.com.larunda.cameraalbumtest.fileprovider", outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }

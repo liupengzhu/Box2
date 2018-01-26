@@ -57,6 +57,7 @@
         android:background="@color/line" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/box_info_log_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

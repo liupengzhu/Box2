@@ -38,16 +38,33 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/box_info_log_text"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
         android:layout_toRightOf="@id/box_info_log_list_img"
-        android:text="日常维护"
-        android:textColor="@color/list_text_h"
-        android:textSize="15sp" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/box_info_log_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="日常维护"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/list_text_h"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/box_info_log_data_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="张三于2017/11/06对xxxx00001"
+            android:textColor="@color/list_text_n"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/box_info_log_time_text"
@@ -59,20 +76,6 @@
         android:text="2017-11-13 13:16:17"
         android:textColor="@color/list_text_l"
         android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/box_info_log_data_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/box_info_log_text"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_toRightOf="@id/box_info_log_list_img"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="张三于2017/11/06对xxxx00001"
-        android:textColor="@color/list_text_n"
-        android:textSize="15sp" />
 
     <View
         android:layout_width="match_parent"

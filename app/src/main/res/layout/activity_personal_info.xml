@@ -18,6 +18,7 @@
         android:layout_marginTop="10dp">
 
         <LinearLayout
+            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -81,15 +82,19 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
                     android:text="zq053694"
+                    android:maxLength="20"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -117,15 +122,19 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
                     android:text="张三"
+                    android:maxLength="20"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
 
@@ -154,15 +163,20 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="18962541522"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:text="18923654897"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
                 <ImageView
@@ -198,15 +212,20 @@
                     android:textColor="@color/list_text_h"
                     android:textSize="15sp" />
 
-                <TextView
-
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="189526155612@163.com"
+                    android:background="@drawable/text_edit"
+                    android:gravity="right|center"
+                    android:text="189525163648@qq.com"
+                    android:inputType="textEmailAddress"
+                    android:maxLength="20"
+                    android:maxLines="1"
                     android:textColor="@color/list_text_l"
+                    android:textCursorDrawable="@color/menu_sz_color"
                     android:textSize="15sp" />
 
                 <ImageView
@@ -227,6 +246,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/personal_info_company"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -243,13 +263,13 @@
                     android:textSize="15sp" />
 
                 <TextView
-
+                    android:id="@+id/personal_info_company_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="化工厂"
+                    android:text="家乐福"
                     android:textColor="@color/list_text_l"
                     android:textSize="15sp" />
 
@@ -263,6 +283,7 @@
                 android:orientation="vertical" />
 
             <RelativeLayout
+                android:id="@+id/personal_info_department"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -279,13 +300,13 @@
                     android:textSize="15sp" />
 
                 <TextView
-
+                    android:id="@+id/personal_info_department_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="50dp"
-                    android:text="生产一部"
+                    android:text="导购员"
                     android:textColor="@color/list_text_l"
                     android:textSize="15sp" />
 

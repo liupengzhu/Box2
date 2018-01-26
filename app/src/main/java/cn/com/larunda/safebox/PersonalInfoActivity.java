@@ -22,14 +22,19 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.PhotoDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,6 +50,16 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     CircleImageView photo;
     private PhotoDialog photoDialog;
 
+    private RelativeLayout companyButton;
+    private TextView companyText;
+    private ChooseDialog companyDialog;
+    private List<String> companyData = new ArrayList<>();
+
+    private RelativeLayout departmentButton;
+    private TextView departmentText;
+    private ChooseDialog departmentDialog;
+    private List<String> departmentData = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,24 +72,15 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        initData();
         initView();
+        initEvent();
     }
 
     /**
-     * 初始化view
+     * 初始化点击事件
      */
-    private void initView() {
-
-        titleBar = findViewById(R.id.personal_info_title_bar);
-        settingButton = findViewById(R.id.personal_info_setting);
-        settingButton.setOnClickListener(this);
-        photoButton = findViewById(R.id.personal_info_setting_photo);
-        photoButton.setOnClickListener(this);
-        photo = findViewById(R.id.personal_info_photo);
-        titleBar.setTextViewText("个人信息");
-        titleBar.setRightButtonSrc(0);
-        titleBar.setLeftButtonVisible(View.GONE);
-        titleBar.setLeftBackButtonVisible(View.VISIBLE);
+    private void initEvent() {
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
@@ -91,6 +97,54 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
+        settingButton.setOnClickListener(this);
+        photoButton.setOnClickListener(this);
+
+        companyButton.setOnClickListener(this);
+        companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+            @Override
+            public void OnClick(View v, int positon) {
+                if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
+                    companyDialog.cancel();
+                } else {
+                    companyText.setText(companyData.get(positon));
+                    departmentText.setText("请选择部门");
+                    companyDialog.cancel();
+                }
+            }
+        });
+        departmentButton.setOnClickListener(this);
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        companyData.add("家乐福");
+        companyData.add("朗润达");
+        companyData.add("沃尔玛");
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+
+        companyButton = findViewById(R.id.personal_info_company);
+        companyText = findViewById(R.id.personal_info_company_text);
+        companyDialog = new ChooseDialog(this, companyData);
+
+        departmentButton = findViewById(R.id.personal_info_department);
+        departmentText = findViewById(R.id.personal_info_department_text);
+
+        titleBar = findViewById(R.id.personal_info_title_bar);
+        settingButton = findViewById(R.id.personal_info_setting);
+        photoButton = findViewById(R.id.personal_info_setting_photo);
+        photo = findViewById(R.id.personal_info_photo);
+        titleBar.setTextViewText("个人信息");
+        titleBar.setRightButtonSrc(0);
+        titleBar.setLeftButtonVisible(View.GONE);
+        titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
 
     }
@@ -123,11 +177,52 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 });
                 photoDialog.show();
                 break;
+            case R.id.personal_info_company:
+                companyDialog.show();
+                break;
+            case R.id.personal_info_department:
+                if (isCheckedCompany()) {
+                    departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
+                    departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                        @Override
+                        public void OnClick(View v, int positon) {
+                            departmentText.setText(departmentData.get(positon));
+                            departmentDialog.cancel();
+                        }
+                    });
+                    departmentDialog.show();
+                }
+
+                break;
             default:
                 break;
 
         }
 
+    }
+
+    /**
+     * 判断选择公司的方法
+     *
+     * @return
+     */
+    private boolean isCheckedCompany() {
+        if (companyText.getText().toString().trim() == null) {
+            Toast.makeText(this, "请先选择单位", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            if (companyText.getText().toString().trim().equals("家乐福")) {
+                departmentData.clear();
+                departmentData.add("导购员");
+            } else if (companyText.getText().toString().trim().equals("朗润达")) {
+                departmentData.clear();
+                departmentData.add("软件部");
+            } else if (companyText.getText().toString().trim().equals("沃尔玛")) {
+                departmentData.clear();
+                departmentData.add("采购部");
+            }
+            return true;
+        }
     }
 
     /**

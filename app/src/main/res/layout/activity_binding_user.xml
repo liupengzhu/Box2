@@ -11,6 +11,7 @@
         android:layout_height="80dp"></com.larunda.titlebar.TitleBar>
 
     <RelativeLayout
+        android:id="@+id/binding_user_company"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -27,7 +28,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/binding_user_company_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -52,6 +53,7 @@
         android:orientation="vertical" />
 
     <RelativeLayout
+        android:id="@+id/binding_user_department"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -68,7 +70,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/binding_user_department_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -93,9 +95,9 @@
         android:orientation="vertical" />
 
     <RelativeLayout
+        android:id="@+id/binding_user_person"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:background="@color/white">
 
         <TextView
@@ -109,7 +111,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/binding_user_person_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

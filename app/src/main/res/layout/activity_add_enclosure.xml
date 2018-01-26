@@ -13,6 +13,7 @@
     </com.larunda.titlebar.TitleBar>
 
     <RelativeLayout
+        android:id="@+id/add_enclosure_enclosure"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
@@ -28,7 +29,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/add_enclosure_enclosure_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -56,6 +57,7 @@
         android:orientation="vertical" />
 
     <RelativeLayout
+        android:id="@+id/add_enclosure_position"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/white">
@@ -70,7 +72,7 @@
             android:textSize="15sp" />
 
         <TextView
-
+            android:id="@+id/add_enclosure_position_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

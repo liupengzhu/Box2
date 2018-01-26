@@ -7,14 +7,32 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
-public class AddEnclosureActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class AddEnclosureActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
+
+    private RelativeLayout enclosureButton;
+    private TextView enclosureText;
+    private ChooseDialog enclosureDialog;
+    private List<String> enclosureData = new ArrayList<>();
+
+    private RelativeLayout positionButton;
+    private TextView positionText;
+    private ChooseDialog positionDialog;
+    private List<String> positionData = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,19 +46,15 @@ public class AddEnclosureActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        initData();
         initView();
+        initEvent();
     }
 
     /**
-     * 初始化view
+     * 初始化点击事件
      */
-    private void initView() {
-
-        titleBar = findViewById(R.id.add_enclosure_title_bar);
-        titleBar.setTextViewText("添加区域");
-        titleBar.setRightButtonSrc(0);
-        titleBar.setLeftButtonVisible(View.GONE);
-        titleBar.setLeftBackButtonVisible(View.VISIBLE);
+    private void initEvent() {
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
@@ -58,5 +72,96 @@ public class AddEnclosureActivity extends AppCompatActivity {
 
             }
         });
+        enclosureButton.setOnClickListener(this);
+        enclosureDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+            @Override
+            public void OnClick(View v, int positon) {
+                if (enclosureText.getText().toString().trim().equals(enclosureData.get(positon))) {
+                    positionText.setText("请选择区域内外");
+                    enclosureDialog.cancel();
+                } else {
+                    enclosureText.setText(enclosureData.get(positon));
+                    enclosureDialog.cancel();
+                }
+            }
+        });
+        positionButton.setOnClickListener(this);
+        positionDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+            @Override
+            public void OnClick(View v, int positon) {
+                positionText.setText(positionData.get(positon));
+                positionDialog.cancel();
+            }
+        });
+
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        enclosureData.add("阳澄湖国际科创园1");
+        enclosureData.add("阳澄湖国际科创园2");
+        enclosureData.add("阳澄湖国际科创园3");
+        enclosureData.add("阳澄湖国际科创园4");
+
+        positionData.add("内");
+        positionData.add("外");
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView() {
+
+        enclosureButton = findViewById(R.id.add_enclosure_enclosure);
+        enclosureText = findViewById(R.id.add_enclosure_enclosure_text);
+        enclosureDialog = new ChooseDialog(this, enclosureData);
+
+        positionButton = findViewById(R.id.add_enclosure_position);
+        positionText = findViewById(R.id.add_enclosure_position_text);
+        positionDialog = new ChooseDialog(this, positionData);
+
+        titleBar = findViewById(R.id.add_enclosure_title_bar);
+        titleBar.setTextViewText("添加区域");
+        titleBar.setRightButtonSrc(0);
+        titleBar.setLeftButtonVisible(View.GONE);
+        titleBar.setLeftBackButtonVisible(View.VISIBLE);
+
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_enclosure_enclosure:
+                enclosureDialog.show();
+                break;
+            case R.id.add_enclosure_position:
+                if (isCheckedEnclosure()) {
+                    positionDialog.show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 判断是否选择区域的方法
+     *
+     * @return
+     */
+    private boolean isCheckedEnclosure() {
+        if (enclosureText.getText().toString().trim().equals("请选择区域")) {
+            Toast.makeText(this, "请先选择区域", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            return true;
+        }
     }
 }

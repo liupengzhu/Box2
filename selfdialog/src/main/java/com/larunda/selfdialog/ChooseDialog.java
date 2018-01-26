@@ -4,8 +4,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -26,6 +31,7 @@ public class ChooseDialog extends Dialog {
     public ChooseDialog(@NonNull Context context, List<String> datas) {
         super(context, R.style.MyDialog);
         this.datas = datas;
+
     }
 
 
@@ -38,8 +44,18 @@ public class ChooseDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_dialog);
-
         initView();
+
+        /**
+         * 动态改变listview的高
+         */
+        LinearLayout.LayoutParams list = (LinearLayout.LayoutParams) listView.getLayoutParams();
+        if(datas.size()>3){
+            list.height = dp2px(170);
+        }else {
+            list.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        }
+
 
         //初始化界面控件的事件
         initEvent();
@@ -71,6 +87,7 @@ public class ChooseDialog extends Dialog {
         chooseAdapter = new ChooseAdapter(datas, getContext());
         listView = findViewById(R.id.choose_list_view);
         listView.setAdapter(chooseAdapter);
+        listView.setVerticalScrollBarEnabled(false);
     }
 
 
@@ -81,4 +98,14 @@ public class ChooseDialog extends Dialog {
     public void setOnClickListener(OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
+    /**
+     * dp 2 px
+     *
+     * @param dpVal
+     */
+    protected int dp2px(int dpVal) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dpVal, getContext().getResources().getDisplayMetrics());
+    }
+
 }

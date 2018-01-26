@@ -5,12 +5,12 @@
     android:background="@color/login_error"
     android:orientation="vertical">
 
-    <com.example.titlebar.TitleBar
+    <com.larunda.titlebar.TitleBar
         android:id="@+id/enclosure_info_title_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp">
 
-    </com.example.titlebar.TitleBar>
+    </com.larunda.titlebar.TitleBar>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -3,7 +3,7 @@
     <dbname value = "boxinfo"/>
     <version value = "1"/>
     <list>
-        <mapping class = "com.example.box.db.HomeInfo"/>
+        <mapping class = "com.larunda.safebox.db.HomeInfo"/>
 
     </list>
 

@@ -5,12 +5,12 @@
     android:background="@color/tab_background"
     android:orientation="vertical">
 
-    <com.example.titlebar.TitleBar
+    <com.larunda.titlebar.TitleBar
         android:id="@+id/personal_info_title_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp">
 
-    </com.example.titlebar.TitleBar>
+    </com.larunda.titlebar.TitleBar>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"

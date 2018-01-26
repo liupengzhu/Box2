@@ -5,12 +5,12 @@
     android:background="@color/login_error"
     android:orientation="vertical">
 
-    <com.example.titlebar.TitleBar
+    <com.larunda.titlebar.TitleBar
         android:id="@+id/track_title_bar"
         android:layout_width="match_parent"
         android:layout_height="80dp">
 
-    </com.example.titlebar.TitleBar>
+    </com.larunda.titlebar.TitleBar>
     <com.baidu.mapapi.map.MapView
         android:id="@+id/map_view"
         android:clickable="true"

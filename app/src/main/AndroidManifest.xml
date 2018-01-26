@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.box">
+    package="com.larunda.safebox">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <application
-        android:name=".MyApplication"
+        android:name="cn.com.larunda.safebox.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/app"
         android:label="@string/app_name"
@@ -32,32 +32,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="cn.com.larunda.safebox.MainActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".LaunchActivity">
+        <activity android:name="cn.com.larunda.safebox.LoginActivity" />
+        <activity android:name="cn.com.larunda.safebox.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserInfoActivity" />
-        <activity android:name=".EnclosureActivity" />
-        <activity android:name=".LeavingAlarmActivity" />
-        <activity android:name=".SoundActivity" />
-        <activity android:name=".SystemSettingActivity" />
-        <activity android:name=".EditUserActivity" />
-        <activity android:name=".BoxAddActivity" />
-        <activity android:name=".BoxActivity" />
-        <activity android:name=".AddUserActivity" />
-        <activity android:name=".AddEnclosureActivity" />
-        <activity android:name=".PersonalInfoActivity" />
-        <activity android:name=".PersonalSettingActivity" />
+        <activity android:name="cn.com.larunda.safebox.UserInfoActivity" />
+        <activity android:name="cn.com.larunda.safebox.EnclosureActivity" />
+        <activity android:name="cn.com.larunda.safebox.LeavingAlarmActivity" />
+        <activity android:name="cn.com.larunda.safebox.SoundActivity" />
+        <activity android:name="cn.com.larunda.safebox.SystemSettingActivity" />
+        <activity android:name="cn.com.larunda.safebox.EditUserActivity" />
+        <activity android:name="cn.com.larunda.safebox.BoxAddActivity" />
+        <activity android:name="cn.com.larunda.safebox.BoxActivity" />
+        <activity android:name="cn.com.larunda.safebox.AddUserActivity" />
+        <activity android:name="cn.com.larunda.safebox.AddEnclosureActivity" />
+        <activity android:name="cn.com.larunda.safebox.PersonalInfoActivity" />
+        <activity android:name="cn.com.larunda.safebox.PersonalSettingActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.cameraalbumtest.fileprovider"
+            android:authorities="com.larunda.cameraalbumtest.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -65,16 +65,16 @@
                 android:resource="@xml/file_path" />
         </provider>
 
-        <activity android:name=".SettingQxActivity" />
-        <activity android:name=".SettingStatesActivity" />
-        <activity android:name=".BindingUserActivity" />
-        <activity android:name=".DynamicPasswordActivity" />
-        <activity android:name=".BoxAddUserActivity" />
-        <activity android:name=".BoxInfoLogActivity" />
-        <activity android:name=".BoxInfoSoundActivity" />
-        <activity android:name=".DetailedSoundActivity" />
-        <activity android:name=".LeavingInfoActivity" />
-        <activity android:name=".LeavingBindPersonActivity" />
+        <activity android:name="cn.com.larunda.safebox.SettingQxActivity" />
+        <activity android:name="cn.com.larunda.safebox.SettingStatesActivity" />
+        <activity android:name="cn.com.larunda.safebox.BindingUserActivity" />
+        <activity android:name="cn.com.larunda.safebox.DynamicPasswordActivity" />
+        <activity android:name="cn.com.larunda.safebox.BoxAddUserActivity" />
+        <activity android:name="cn.com.larunda.safebox.BoxInfoLogActivity" />
+        <activity android:name="cn.com.larunda.safebox.BoxInfoSoundActivity" />
+        <activity android:name="cn.com.larunda.safebox.DetailedSoundActivity" />
+        <activity android:name="cn.com.larunda.safebox.LeavingInfoActivity" />
+        <activity android:name="cn.com.larunda.safebox.LeavingBindPersonActivity" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -85,8 +85,8 @@
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".TrackActivity" />
-        <activity android:name=".EnclosureInfoActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.TrackActivity" />
+        <activity android:name="cn.com.larunda.safebox.EnclosureInfoActivity"></activity>
     </application>
 
 </manifest>

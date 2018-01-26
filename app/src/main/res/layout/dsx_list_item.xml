@@ -128,7 +128,7 @@
                 android:textColor="@color/list_text_l"
                 android:textSize="12sp" />
 
-            <com.example.battery.BatteryView
+            <com.larunda.battery.BatteryView
                 android:id="@+id/dsx_dl_img"
                 android:layout_width="20dp"
                 android:layout_height="10dp"

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.box.DetailedSoundActivity">
+    tools:context="com.larunda.safebox.cn.com.larunda.safebox.DetailedSoundActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

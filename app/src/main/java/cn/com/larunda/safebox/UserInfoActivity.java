@@ -1,8 +1,10 @@
 package cn.com.larunda.safebox;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -161,7 +163,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
+                            PreferenceManager.getDefaultSharedPreferences(UserInfoActivity.this).edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }

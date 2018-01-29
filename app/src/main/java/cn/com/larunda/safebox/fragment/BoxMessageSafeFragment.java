@@ -2,6 +2,7 @@ package cn.com.larunda.safebox.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -112,7 +113,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
+                            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }

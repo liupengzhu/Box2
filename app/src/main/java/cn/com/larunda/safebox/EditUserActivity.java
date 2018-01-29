@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -232,7 +233,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
+                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }

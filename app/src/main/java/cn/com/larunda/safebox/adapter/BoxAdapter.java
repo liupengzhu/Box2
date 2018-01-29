@@ -13,9 +13,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.larunda.battery.BatteryView;
+
 import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.MyApplication;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.recycler.MyBox;
 
 import java.util.List;
@@ -29,6 +32,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     private List<MyBox> myBoxList;
     private Context context;
     private DsxLongClickListener dsxLongClickListener;
+    private DsxOnClickListener dsxOnClickListener;
 
     private boolean isCheckedLayout = false;
 
@@ -84,8 +88,10 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             public void onClick(View v) {
                 int position = viewHolder.getAdapterPosition();
                 MyBox box = myBoxList.get(position);
-                Intent intent = new Intent(context, BoxActivity.class);
-                context.startActivity(intent);
+                if (dsxOnClickListener != null) {
+                    dsxOnClickListener.onClick(v, box.getId());
+                }
+
             }
         });
         viewHolder.box_layout.setOnLongClickListener(new View.OnLongClickListener() {
@@ -194,6 +200,10 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         void onLongClick(View v);
     }
 
+    public interface DsxOnClickListener {
+        void onClick(View v, String id);
+    }
+
     public boolean isCheckedLayout() {
         return isCheckedLayout;
     }
@@ -204,5 +214,9 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     public List<MyBox> getMyBoxList() {
         return myBoxList;
+    }
+
+    public void setDsxOnClickListener(DsxOnClickListener dsxOnClickListener) {
+        this.dsxOnClickListener = dsxOnClickListener;
     }
 }

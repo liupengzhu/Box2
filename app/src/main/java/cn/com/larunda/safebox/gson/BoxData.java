@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class BoxData {
-    @SerializedName("code")
+    public String id;
+    @SerializedName("aliases")
     public String name;
     @SerializedName("encrypt_level")
     public String level;

@@ -17,9 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.SettingQxActivity;
 import cn.com.larunda.safebox.SettingStatesActivity;
 import cn.com.larunda.safebox.adapter.BoxAdapter;
@@ -143,6 +146,14 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 MainActivity.tabLayout.setVisibility(View.GONE);
             }
         });
+        adapter.setDsxOnClickListener(new BoxAdapter.DsxOnClickListener() {
+            @Override
+            public void onClick(View v, String id) {
+                Intent intent = new Intent(getContext(), BoxActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -225,6 +236,11 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 box.setIs_sd(true);
             } else {
                 box.setIs_sd(false);
+            }
+            if (boxData.id != null) {
+                box.setId(boxData.id);
+            } else {
+                box.setId(null);
             }
             myBoxList.add(box);
 

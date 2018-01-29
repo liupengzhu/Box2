@@ -7,9 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
@@ -17,6 +19,7 @@ import cn.com.larunda.safebox.adapter.BoxMessageFragmentAdapter;
 import cn.com.larunda.safebox.fragment.BoxMessageInfoFragment;
 import cn.com.larunda.safebox.fragment.BoxMessageSafeFragment;
 import cn.com.larunda.safebox.util.Util;
+
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
@@ -31,7 +34,7 @@ public class BoxActivity extends AppCompatActivity {
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
     private BoxMessageFragmentAdapter adapter;
-
+    public static String ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class BoxActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        ID = getIntent().getStringExtra("id");
         init();
         initView();
     }

@@ -40,6 +40,7 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/box_message_info_meterial_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -75,6 +76,7 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/box_message_info_size_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -110,6 +112,7 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/box_message_info_protect_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -145,6 +148,7 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/box_message_info_electricity_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import cn.com.larunda.safebox.gson.BoxInfo;
+import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserToken;
+
 import com.google.gson.Gson;
 
 import java.lang.reflect.Field;
@@ -24,53 +26,62 @@ import java.lang.reflect.Field;
 
 public class Util {
 
-    public static Home handleHomeInfo(String response){
+    public static Home handleHomeInfo(String response) {
 
         Gson gson = new Gson();
-        Home home = gson.fromJson(response,Home.class);
+        Home home = gson.fromJson(response, Home.class);
         return home;
     }
-    public static UserToken handleLoginInfo(String response){
+
+    public static UserToken handleLoginInfo(String response) {
         Gson gson = new Gson();
-        UserToken userToken = gson.fromJson(response,UserToken.class);
+        UserToken userToken = gson.fromJson(response, UserToken.class);
         return userToken;
     }
-    public static MenuUserInfo handleMenuUserInfo(String response){
+
+    public static MenuUserInfo handleMenuUserInfo(String response) {
         Gson gson = new Gson();
-        MenuUserInfo menuUserInfo = gson.fromJson(response,MenuUserInfo.class);
+        MenuUserInfo menuUserInfo = gson.fromJson(response, MenuUserInfo.class);
         return menuUserInfo;
     }
 
-    public static BoxInfo handleBoxInfo(String response){
+    public static BoxInfo handleBoxInfo(String response) {
         Gson gson = new Gson();
-        BoxInfo boxInfo = gson.fromJson(response,BoxInfo.class);
+        BoxInfo boxInfo = gson.fromJson(response, BoxInfo.class);
         return boxInfo;
 
     }
 
-    public static SqInfo handleSqInfo(String response){
+    public static SqInfo handleSqInfo(String response) {
         Gson gson = new Gson();
-        SqInfo sqInfo = gson.fromJson(response,SqInfo.class);
+        SqInfo sqInfo = gson.fromJson(response, SqInfo.class);
         return sqInfo;
     }
 
 
-    public static SqLsInfo handleSqLsInfo(String response){
+    public static SqLsInfo handleSqLsInfo(String response) {
         Gson gson = new Gson();
-        SqLsInfo sqLsInfo = gson.fromJson(response,SqLsInfo.class);
+        SqLsInfo sqLsInfo = gson.fromJson(response, SqLsInfo.class);
         return sqLsInfo;
     }
 
 
-    public static TotalLogInfo handleTotalLogInfo(String response){
+    public static TotalLogInfo handleTotalLogInfo(String response) {
         Gson gson = new Gson();
-        TotalLogInfo totalLogInfo = gson.fromJson(response,TotalLogInfo.class);
+        TotalLogInfo totalLogInfo = gson.fromJson(response, TotalLogInfo.class);
         return totalLogInfo;
 
     }
 
+    public static BoxMessage handleBoxMessage(String response) {
+        Gson gson = new Gson();
+        BoxMessage message = gson.fromJson(response, BoxMessage.class);
+        return message;
+    }
+
     /**
      * 设置tablayout下划线宽度的方法
+     *
      * @param tabs
      * @param leftDip
      * @param rightDip
@@ -107,10 +118,6 @@ public class Util {
 
 
     }
-
-
-
-
 
 
 }

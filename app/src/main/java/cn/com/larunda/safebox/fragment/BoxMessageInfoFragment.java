@@ -112,6 +112,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         }
         if (boxMessage.size != null) {
             size_text.setText(boxMessage.size);
+        } else {
+            size_text.setText("");
         }
         if (boxMessage.protext_level != null) {
             protect_text.setText(boxMessage.protext_level);
@@ -119,7 +121,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             protect_text.setText("");
         }
         if (boxMessage.electricity != null) {
-            electricity_text.setText(boxMessage.electricity);
+            electricity_text.setText(boxMessage.electricity + "%");
         } else {
             electricity_text.setText("");
         }

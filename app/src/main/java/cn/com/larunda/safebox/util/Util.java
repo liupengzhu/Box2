@@ -14,6 +14,7 @@ import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
+import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 
 import com.google.gson.Gson;
@@ -77,6 +78,12 @@ public class Util {
         Gson gson = new Gson();
         BoxMessage message = gson.fromJson(response, BoxMessage.class);
         return message;
+    }
+
+    public static UserInfo handleUserInfo(String response){
+        Gson gson = new Gson();
+        UserInfo userInfo = gson.fromJson(response,UserInfo.class);
+        return userInfo;
     }
 
     /**

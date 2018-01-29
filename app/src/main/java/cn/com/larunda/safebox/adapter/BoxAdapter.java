@@ -127,9 +127,14 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MyBox box = myBoxList.get(position);
-
-        Glide.with(MyApplication.getContext()).load(box.getBox_img()).into(holder.boxImg);
-        holder.boxName.setText(box.getBox_name());
+        if (box.getBox_img() != null) {
+            Glide.with(MyApplication.getContext()).load(box.getBox_img()).into(holder.boxImg);
+        }
+        if (box.getBox_name() != null) {
+            holder.boxName.setText(box.getBox_name());
+        } else {
+            holder.boxName.setText("");
+        }
         if (isCheckedLayout) {
             holder.checked_button.setVisibility(View.VISIBLE);
         } else {

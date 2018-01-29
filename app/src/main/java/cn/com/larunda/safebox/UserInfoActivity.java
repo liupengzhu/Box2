@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,8 +17,11 @@ import android.view.WindowManager;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.UserInfoAdapter;
-import cn.com.larunda.safebox.recycler.UserInfo;
+import cn.com.larunda.safebox.gson.UserData;
+import cn.com.larunda.safebox.gson.UserInfo;
+import cn.com.larunda.safebox.recycler.MyUserInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
+
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
@@ -25,17 +29,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String USER_INFO_URI = "http://safebox.dsmcase.com:90/api/user/lists?_token=";
-
+    public static final String USER_INFO_URL = "http://safebox.dsmcase.com:90/api/user?_token=";
+    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     TitleBar titleBar;
 
-    List<UserInfo> userInfoList = new ArrayList<>();
+    List<MyUserInfo> myUserInfoList = new ArrayList<>();
     LinearLayoutManager manager;
     RecyclerView recyclerView;
     UserInfoAdapter adapter;
@@ -55,7 +60,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
 
         }
-        initData();
         initView();
         initEvent();
 
@@ -94,21 +98,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    /**
-     * 测试方法
-     */
-    private void initData() {
-        for (int i = 0; i < 20; i++) {
-            UserInfo userInfo = new UserInfo("张三" + i, "zq024502" + i, "一般用户", null);
-            userInfoList.add(userInfo);
-        }
-    }
 
     /**
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URI + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -116,11 +111,70 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                final UserInfo userInfo = Util.handleUserInfo(response.body().string());
+                if (userInfo != null && userInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUserInfo(userInfo);
+                        }
+                    });
 
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
             }
         });
 
 
+    }
+
+    /**
+     * 解析用户数据
+     *
+     * @param userInfo
+     */
+    private void initUserInfo(UserInfo userInfo) {
+        myUserInfoList.clear();
+        if (userInfo.userData != null) {
+            for (UserData userData : userInfo.userData) {
+                MyUserInfo myUserInfo = new MyUserInfo();
+                String imgUrl = null;
+                if (userData.pic != null) {
+                    imgUrl = userData.pic.replace('\\', ' ');
+                    myUserInfo.setUserImg(IMG_URL + imgUrl);
+                } else {
+                    myUserInfo.setUserImg(null);
+                }
+                if (userData.id != null) {
+                    myUserInfo.setUserId(userData.id);
+                }
+                if (userData.level != null) {
+                    if (userData.level.equals("1")) {
+                        myUserInfo.setUserQx("管理员");
+                    } else {
+                        myUserInfo.setUserQx("一般用户");
+                    }
+                }
+                if (userData.name != null) {
+                    myUserInfo.setUserName(userData.name);
+                }
+                if (userData.user != null) {
+                    myUserInfo.setUser(userData.user);
+                }
+                myUserInfoList.add(myUserInfo);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -134,7 +188,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
         manager = new LinearLayoutManager(this);
-        adapter = new UserInfoAdapter(userInfoList);
+        adapter = new UserInfoAdapter(myUserInfoList);
 
         swipeRefreshLayout = findViewById(R.id.user_info_swiper);
         recyclerView = findViewById(R.id.user_info_recycler);

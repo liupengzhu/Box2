@@ -28,9 +28,10 @@
 
             <TextView
                 android:id="@+id/user_info_name"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:maxLines="1"
                 android:text="张三"
                 android:textColor="@color/list_text_h"
                 android:textSize="15sp" />
@@ -40,7 +41,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
                 android:background="@drawable/user_qx"
                 android:text="一般用户"
                 android:textColor="@color/log_wdu"

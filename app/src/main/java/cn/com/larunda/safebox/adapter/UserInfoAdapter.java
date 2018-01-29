@@ -9,9 +9,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
 import cn.com.larunda.safebox.MyApplication;
+
 import com.larunda.safebox.R;
-import cn.com.larunda.safebox.recycler.UserInfo;
+
+import cn.com.larunda.safebox.recycler.MyUserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +27,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHolder> {
 
-    private List<UserInfo> userInfoList = new ArrayList<>();
+    private List<MyUserInfo> myUserInfoList = new ArrayList<>();
     private UserInfoOnClickListener userInfoOnClickListener;
     private Context context;
 
-    public UserInfoAdapter(List<UserInfo> userInfoList) {
-        this.userInfoList = userInfoList;
+    public UserInfoAdapter(List<MyUserInfo> myUserInfoList) {
+        this.myUserInfoList = myUserInfoList;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         CircleImageView userImg;
         TextView userName;
-        TextView userId;
+        TextView user;
         TextView userQx;
         RelativeLayout userLayout;
 
@@ -44,7 +47,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             super(itemView);
             userImg = itemView.findViewById(R.id.user_info_img);
             userName = itemView.findViewById(R.id.user_info_name);
-            userId = itemView.findViewById(R.id.user_info_username);
+            user = itemView.findViewById(R.id.user_info_username);
             userQx = itemView.findViewById(R.id.user_info_qx);
             userLayout = itemView.findViewById(R.id.user_info_button);
         }
@@ -58,7 +61,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
         viewHolder.userLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(userInfoOnClickListener!=null){
+                if (userInfoOnClickListener != null) {
                     userInfoOnClickListener.onClick(v);
                 }
             }
@@ -70,22 +73,34 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        UserInfo userInfo = userInfoList.get(position);
-        if (userInfo.getUserImg() != null) {
-            Glide.with(MyApplication.getContext()).load(userInfo.getUserImg()).into(holder.userImg);
+        MyUserInfo myUserInfo = myUserInfoList.get(position);
+        if (myUserInfo.getUserImg() != null) {
+            Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg()).into(holder.userImg);
         }
-        holder.userName.setText(userInfo.getUserName());
-        holder.userId.setText(userInfo.getUserId());
-        holder.userQx.setText(userInfo.getUserQx());
+        if (myUserInfo.getUserName() != null) {
+            holder.userName.setText(myUserInfo.getUserName());
+        } else {
+            holder.userName.setText("");
+        }
+        if (myUserInfo.getUser() != null) {
+            holder.user.setText(myUserInfo.getUser());
+        } else {
+            holder.user.setText("");
+        }
+        if (myUserInfo.getUserQx() != null) {
+            holder.userQx.setText(myUserInfo.getUserQx());
+        } else {
+            holder.userQx.setText("一般用户");
+        }
     }
 
     @Override
     public int getItemCount() {
-        return userInfoList.size();
+        return myUserInfoList.size();
     }
 
 
-    public interface UserInfoOnClickListener{
+    public interface UserInfoOnClickListener {
         void onClick(View v);
     }
 

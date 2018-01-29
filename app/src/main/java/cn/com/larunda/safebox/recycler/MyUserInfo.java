@@ -4,22 +4,32 @@ package cn.com.larunda.safebox.recycler;
  * Created by sddt on 18-1-16.
  */
 
-public class UserInfo {
+public class MyUserInfo {
 
     private String userName;
+    private String user;
     private String userId;
     private String userQx;
     private String userImg;
 
-    public UserInfo() {
+    public MyUserInfo() {
 
     }
 
-    public UserInfo(String userName, String userId, String userQx, String userImg) {
+    public MyUserInfo(String userName, String user, String userId, String userQx, String userImg) {
         this.userName = userName;
         this.userId = userId;
         this.userQx = userQx;
         this.userImg = userImg;
+        this.user = user;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getUserName() {

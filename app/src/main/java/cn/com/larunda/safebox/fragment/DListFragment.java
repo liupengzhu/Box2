@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,8 @@ import okhttp3.Response;
 public class DListFragment extends Fragment implements View.OnClickListener {
 
 
-    public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/box?_token=";
-    public static final String IMG_URI = "http://safebox.dsmcase.com:90";
+    public static final String BOX_URL = "http://safebox.dsmcase.com:90/api/box?_token=";
+    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private List<MyBox> myBoxList = new ArrayList<>();
     private RecyclerView recyclerView;
     private static BoxAdapter adapter;
@@ -160,7 +161,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     //发送网络请求
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URI + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -211,39 +212,60 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     //解析BoxInfo
     private void initBoxList(BoxInfo boxInfo) {
         myBoxList.clear();
-        for (BoxData boxData : boxInfo.boxDataList) {
+        if (boxInfo.boxDataList != null) {
+            for (BoxData boxData : boxInfo.boxDataList) {
 
-            String img_uri = null;
-            if (boxData.f_pic != null) {
-                img_uri = boxData.f_pic.replace('\\', ' ');
-            }
+                MyBox box = new MyBox();
+                String img_url = null;
+                if (boxData.f_pic != null) {
+                    img_url = boxData.f_pic.replace('\\', ' ');
+                    box.setBox_img(IMG_URL + img_url);
+                } else {
+                    box.setBox_img(null);
+                }
+                if (boxData.name != null) {
+                    box.setBox_name(boxData.name);
+                } else {
+                    box.setBox_name(null);
+                }
+                if (boxData.electricity != null) {
+                    box.setBox_dl(boxData.electricity);
+                } else {
+                    box.setBox_dl(null);
+                }
 
-            MyBox box = new MyBox();
-            box.setBox_name(boxData.name);
-            box.setBox_dl(boxData.electricity);
-            box.setBox_img(IMG_URI + img_uri);
-            if (boxData.level != null) {
-                box.setBox_qx(Integer.parseInt(boxData.level));
-            } else {
-                box.setBox_qx(0);
-            }
-            if (boxData.is_defence == "1") {
-                box.setIs_bf(true);
-            } else {
-                box.setIs_bf(false);
-            }
-            if (boxData.is_locked == "1") {
-                box.setIs_sd(true);
-            } else {
-                box.setIs_sd(false);
-            }
-            if (boxData.id != null) {
-                box.setId(boxData.id);
-            } else {
-                box.setId(null);
-            }
-            myBoxList.add(box);
+                if (boxData.level != null) {
+                    box.setBox_qx(Integer.parseInt(boxData.level));
+                } else {
+                    box.setBox_qx(0);
+                }
+                if (boxData.is_defence != null) {
+                    if (boxData.is_defence == "1") {
+                        box.setIs_bf(true);
+                    } else {
+                        box.setIs_bf(false);
+                    }
+                } else {
+                    box.setIs_bf(false);
+                }
+                if (boxData.is_locked != null) {
+                    if (boxData.is_locked == "1") {
+                        box.setIs_sd(true);
+                    } else {
+                        box.setIs_sd(false);
+                    }
+                } else {
+                    box.setIs_sd(false);
+                }
 
+                if (boxData.id != null) {
+                    box.setId(boxData.id);
+                } else {
+                    box.setId(null);
+                }
+                myBoxList.add(box);
+
+            }
         }
         adapter.notifyDataSetChanged();
 

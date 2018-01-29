@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.larunda.safebox.R;
 
@@ -44,7 +46,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     LinearLayoutManager manager;
     RecyclerView recyclerView;
     UserInfoAdapter adapter;
-    SwipeRefreshLayout swipeRefreshLayout;
+    SwipeRefreshLayout refreshLayout;
+
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
 
 
     @Override
@@ -63,6 +68,24 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         initView();
         initEvent();
 
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         sendRequest();
     }
 
@@ -106,7 +129,14 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -117,6 +147,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void run() {
                             initUserInfo(userInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
 
@@ -190,7 +223,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(myUserInfoList);
 
-        swipeRefreshLayout = findViewById(R.id.user_info_swiper);
+        refreshLayout = findViewById(R.id.user_info_swiper);
+        loodingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
+        loodingLayout = findViewById(R.id.user_info_loading_layout);
+
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);

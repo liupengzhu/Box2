@@ -17,7 +17,9 @@ import android.widget.RelativeLayout;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.adapter.SqLsAdapter;
 import cn.com.larunda.safebox.gson.SqLsData;
 import cn.com.larunda.safebox.gson.SqLsInfo;
@@ -77,7 +79,7 @@ public class LsListFragment extends Fragment {
      */
     private void sendRequest() {
 
-        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -113,7 +115,7 @@ public class LsListFragment extends Fragment {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token",null).commit();
+                            MainActivity.preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }

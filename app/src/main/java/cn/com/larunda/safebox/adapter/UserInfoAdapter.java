@@ -57,12 +57,13 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.user_info_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        final ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.userLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MyUserInfo myUserInfo = myUserInfoList.get(viewHolder.getAdapterPosition());
                 if (userInfoOnClickListener != null) {
-                    userInfoOnClickListener.onClick(v);
+                    userInfoOnClickListener.onClick(v, myUserInfo.getUserId());
                 }
             }
         });
@@ -101,7 +102,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
 
     public interface UserInfoOnClickListener {
-        void onClick(View v);
+        void onClick(View v, String id);
     }
 
     public void setUserInfoOnClickListener(UserInfoOnClickListener userInfoOnClickListener) {

@@ -95,8 +95,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void initEvent() {
         adapter.setUserInfoOnClickListener(new UserInfoAdapter.UserInfoOnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v, String id) {
                 Intent intent = new Intent(UserInfoActivity.this, EditUserActivity.class);
+                intent.putExtra("id", id);
                 startActivity(intent);
             }
         });
@@ -126,6 +127,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

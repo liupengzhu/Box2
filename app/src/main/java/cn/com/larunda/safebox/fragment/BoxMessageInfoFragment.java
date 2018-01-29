@@ -67,6 +67,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
      * 发送网络请求
      */
     private void sendHttpRequest() {
+
         HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

@@ -14,13 +14,16 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.PhotoDialog;
@@ -29,10 +32,19 @@ import com.larunda.titlebar.TitleListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.Department;
+import cn.com.larunda.safebox.gson.EditUserInfo;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class EditUserActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,6 +73,18 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     private Uri imageUri;
     CircleImageView photo;
 
+    EditText userText;
+    EditText nameText;
+    EditText telText;
+    EditText emailText;
+    TextView fingerprintText;
+
+    public static final String EDIT_USER_URL = "http://safebox.dsmcase.com:90/api/user/";
+    public static final String COMPANY_URL = "http://safebox.dsmcase.com:90/api/company/";
+    public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
+    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+    private String userId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,9 +97,188 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        userId = getIntent().getStringExtra("id");
         initData();
         initView();
         initEvent();
+        sendRequest();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId + "?_token=" + MainActivity.token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final EditUserInfo userInfo = Util.handleEditUserInfo(response.body().string());
+                if (userInfo != null && userInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUserInfo(userInfo);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    /**
+     * 解析用户信息
+     *
+     * @param userInfo
+     */
+    private void initUserInfo(EditUserInfo userInfo) {
+        String imgUrl = null;
+        if (userInfo.pic != null) {
+            imgUrl = userInfo.pic.replace('\\', ' ');
+            Glide.with(this).load(IMG_URL + imgUrl).into(photo);
+        }
+        if (userInfo.user != null) {
+            userText.setText(userInfo.user);
+        } else {
+            userText.setText("");
+        }
+        if (userInfo.name != null) {
+            nameText.setText(userInfo.name);
+        } else {
+            nameText.setText("");
+        }
+        if (userInfo.tel != null) {
+            telText.setText(userInfo.tel);
+        } else {
+            telText.setText("");
+        }
+        if (userInfo.email != null) {
+            emailText.setText(userInfo.email);
+        } else {
+            emailText.setText("");
+        }
+        if (userInfo.level != null) {
+            if (userInfo.level.equals("1")) {
+                levelText.setText("管理员");
+            } else {
+                levelText.setText("一般用户");
+            }
+        } else {
+            levelText.setText("一般用户");
+        }
+        if (userInfo.fingerprint != null) {
+            if (userInfo.fingerprint.equals("1")) {
+                fingerprintText.setText("已录入");
+            } else {
+                fingerprintText.setText("未录入");
+            }
+        } else {
+            fingerprintText.setText("未录入");
+        }
+        if (userInfo.company_id != "") {
+            sendRequestForCompany(userInfo.company_id);
+        } else {
+            companyText.setText("");
+        }
+        if (userInfo.department_id != "") {
+            sendRequestForDepartment(userInfo.department_id);
+        } else {
+            departmentText.setText("");
+        }
+    }
+
+    /**
+     * 请求部门信息
+     *
+     * @param department_id
+     */
+    private void sendRequestForDepartment(String department_id) {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + MainActivity.token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final Department department = Util.handleDepartment(response.body().string());
+                if (department != null && department.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            departmentText.setText(department.f_name);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 请求公司信息
+     *
+     * @param company_id
+     */
+    private void sendRequestForCompany(String company_id) {
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + MainActivity.token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final Company company = Util.handleCompany(response.body().string());
+                if (company != null && company.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            companyText.setText(company.f_name);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -176,9 +379,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 初始化数据
      */
     private void initData() {
-        levelData.add("一级权限");
-        levelData.add("二级权限");
-        levelData.add("三级权限");
+        levelData.add("一般用户");
+        levelData.add("管理员");
 
         companyData.add("家乐福");
         companyData.add("朗润达");
@@ -205,6 +407,12 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         departmentText = findViewById(R.id.edit_user_department_text);
 
         photoDialog = new PhotoDialog(this);
+
+        userText = findViewById(R.id.edit_user_user_text);
+        nameText = findViewById(R.id.edit_user_name_text);
+        telText = findViewById(R.id.edit_user_tel_text);
+        emailText = findViewById(R.id.edit_user_email_text);
+        fingerprintText = findViewById(R.id.edit_user_fingerprint_text);
 
         titleBar = findViewById(R.id.edit_user_title_bar);
         titleBar.setTextViewText("编辑用户");

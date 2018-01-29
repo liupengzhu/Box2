@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.adapter.LogAdapter;
 
 import cn.com.larunda.safebox.gson.Home;
@@ -68,8 +70,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ImageView loodingLayout;
 
     private Button logButton;
-
-
 
 
     @Nullable
@@ -128,13 +128,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             }
         });
-
         queryInfo();
     }
 
     public void queryInfo() {
         swipeRefreshLayout.setRefreshing(true);
-
         HttpUtil.sendGetRequestWithHttp(BOX_URI + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -178,7 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token",null).commit();
+                            MainActivity.preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }
@@ -240,11 +238,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     /**
      * 点击事件监听
+     *
      * @param v
      */
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.home_button:
                 MainActivity.viewPager.setCurrentItem(3);
                 break;

@@ -9,6 +9,9 @@ import android.widget.LinearLayout;
 
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.Department;
+import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.SqInfo;
@@ -80,10 +83,27 @@ public class Util {
         return message;
     }
 
-    public static UserInfo handleUserInfo(String response){
+    public static UserInfo handleUserInfo(String response) {
         Gson gson = new Gson();
-        UserInfo userInfo = gson.fromJson(response,UserInfo.class);
+        UserInfo userInfo = gson.fromJson(response, UserInfo.class);
         return userInfo;
+    }
+
+    public static EditUserInfo handleEditUserInfo(String response) {
+        Gson gson = new Gson();
+        EditUserInfo userInfo = gson.fromJson(response, EditUserInfo.class);
+        return userInfo;
+    }
+
+    public static Company handleCompany(String response){
+        Gson gson = new Gson();
+        Company company = gson.fromJson(response,Company.class);
+        return company;
+    }
+    public static Department handleDepartment(String response){
+        Gson gson = new Gson();
+        Department department = gson.fromJson(response,Department.class);
+        return department;
     }
 
     /**

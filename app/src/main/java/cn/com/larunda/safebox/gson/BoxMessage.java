@@ -24,6 +24,8 @@ public class BoxMessage {
     public String electricity;
     @SerializedName("f_lock_time")
     public BoxLockTime boxLockTime;
+    @SerializedName("f_is_leaving")
+    public String is_leaving;
 
     public String error;
 

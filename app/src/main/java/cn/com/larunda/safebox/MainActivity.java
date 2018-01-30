@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
+
 import com.larunda.selfdialog.SelfDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences preferences;
     private Button systemBackButton;
     private SelfDialog selfDialog;
+
+    private String id;
 
 
     @Override
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PersonalInfoActivity.class);
+                intent.putExtra("id", id);
                 startActivity(intent);
             }
         });
@@ -230,10 +235,11 @@ public class MainActivity extends AppCompatActivity {
         menu_user_tell.setText(menuUserInfo.userTell);
         String img_uri = menuUserInfo.userImg.replace('\\', ' ');
         Glide.with(this).load(IMG_URI + img_uri).into(menu_user_img);
-
+        id = menuUserInfo.id;
         if (menuUserInfo.level.equals("2")) {
             user_info.setVisibility(View.GONE);
         }
+
 
     }
 

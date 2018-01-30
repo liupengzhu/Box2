@@ -102,7 +102,9 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         initData();
         initView();
         initEvent();
-        sendRequest();
+        if (userId != null) {
+            sendRequest();
+        }
     }
 
     /**
@@ -133,7 +135,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
+                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -272,7 +274,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
+                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }

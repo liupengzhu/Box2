@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class MenuUserInfo {
 
+    public String id;
     @SerializedName("f_user")
     public String userId;
 

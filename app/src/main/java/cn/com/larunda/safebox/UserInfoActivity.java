@@ -42,14 +42,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     public static final String USER_INFO_URL = "http://safebox.dsmcase.com:90/api/user?_token=";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
-    TitleBar titleBar;
+    private TitleBar titleBar;
 
-    List<MyUserInfo> myUserInfoList = new ArrayList<>();
-    LinearLayoutManager manager;
-    RecyclerView recyclerView;
-    UserInfoAdapter adapter;
-    SwipeRefreshLayout refreshLayout;
-
+    private List<MyUserInfo> myUserInfoList = new ArrayList<>();
+    private LinearLayoutManager manager;
+    private RecyclerView recyclerView;
+    private UserInfoAdapter adapter;
+    private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
     private SharedPreferences preferences;

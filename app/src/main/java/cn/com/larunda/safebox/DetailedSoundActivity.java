@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -16,7 +17,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
@@ -51,6 +54,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private String token;
     private String code;
     private String img;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,17 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         img = getIntent().getStringExtra("img");
         initView();
         iniEvent();
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
+        //每次创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
 
         sendRequest();
     }
@@ -77,10 +94,18 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -91,6 +116,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                         @Override
                         public void run() {
                             initSound(detailedSoundInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
                 } else {
@@ -117,6 +145,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void initSound(DetailedSoundInfo detailedSoundInfo) {
         detailedSoundList.clear();
         if (detailedSoundInfo.detailedSoundDataList != null) {
+            if(detailedSoundInfo.detailedSoundDataList.size()==0){
+                Toast.makeText(this,"当前递送箱没有录音",Toast.LENGTH_SHORT).show();
+            }
             for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
                 DetailedSound detailedSound = new DetailedSound();
                 if (detailedSoundData.id != null) {
@@ -163,6 +194,10 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void initView() {
         preferences = PreferenceManager.getDefaultSharedPreferences(DetailedSoundActivity.this);
         token = preferences.getString("token", null);
+
+        refreshLayout = findViewById(R.id.detailed_sound_swiper);
+        loodingErrorLayout = findViewById(R.id.detailed_sound_loading_error_layout);
+        loodingLayout = findViewById(R.id.detailed_sound_loading_layout);
 
         back_Button = findViewById(R.id.detailed_sound_back);
         imageView = findViewById(R.id.detailed_sound_item_play_img);

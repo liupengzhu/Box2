@@ -3,6 +3,7 @@ package cn.com.larunda.safebox;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -85,6 +86,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private String userId = "";
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +114,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -135,7 +138,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -213,7 +216,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param department_id
      */
     private void sendRequestForDepartment(String department_id) {
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -235,7 +238,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -251,7 +254,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -274,7 +277,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -394,7 +397,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 初始化View
      */
     private void initView() {
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(EditUserActivity.this);
+        token = preferences.getString("token", null);
         settingPhoto = findViewById(R.id.edit_user_setting_photo);
         photo = findViewById(R.id.edit_user_photo);
 

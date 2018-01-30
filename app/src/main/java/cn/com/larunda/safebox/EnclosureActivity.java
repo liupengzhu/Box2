@@ -1,6 +1,7 @@
 package cn.com.larunda.safebox;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -66,6 +67,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private ImageView allCheckedImage;
     private TextView allCheckedText;
     public static final String ENCLOSURE_URL = "http://safebox.dsmcase.com:90/api/area?_token=";
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +106,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -135,7 +138,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                         public void run() {
                             Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(EnclosureActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -171,6 +174,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
      */
     private void initView() {
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(EnclosureActivity.this);
+        token = preferences.getString("token", null);
         titleBar = findViewById(R.id.enclosure_title_bar);
         titleBar.setTextViewText("地理围栏");
         titleBar.setLeftButtonVisible(View.GONE);

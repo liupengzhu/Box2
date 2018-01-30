@@ -69,7 +69,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
      */
     private void sendHttpRequest() {
 
-        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -91,7 +91,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                         public void run() {
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString("token", null).commit();
+                            BoxActivity.preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             getActivity().finish();
                         }

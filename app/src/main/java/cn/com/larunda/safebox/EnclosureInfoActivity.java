@@ -2,10 +2,13 @@ package cn.com.larunda.safebox;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -56,6 +59,9 @@ public class EnclosureInfoActivity extends AppCompatActivity {
     public static final String ENCLOSURE_INFO_URL = "http://safebox.dsmcase.com:90/api/area/";
     private List<LatLng> points = new ArrayList<>();
     private TextView textView;
+
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +123,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
      * 请求数据
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -180,6 +186,17 @@ public class EnclosureInfoActivity extends AppCompatActivity {
 
                 }
             }
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
         }
     }
 
@@ -204,7 +221,8 @@ public class EnclosureInfoActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(EnclosureInfoActivity.this);
+        token = preferences.getString("token", null);
         textView = findViewById(R.id.enclosure_info_text);
         titleBar = findViewById(R.id.enclosure_info_title_bar);
         titleBar.setTextViewText("详细信息");

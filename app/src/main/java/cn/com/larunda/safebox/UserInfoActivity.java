@@ -52,6 +52,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private SharedPreferences preferences;
+    private String token;
 
 
     @Override
@@ -124,7 +126,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -157,7 +159,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(UserInfoActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -212,6 +214,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      * 初始化View
      */
     private void initView() {
+        preferences = PreferenceManager.getDefaultSharedPreferences(UserInfoActivity.this);
+        token = preferences.getString("token", null);
 
         titleBar = findViewById(R.id.user_info_title_bar);
         titleBar.setTextViewText("用户管理");

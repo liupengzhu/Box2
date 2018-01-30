@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -84,6 +85,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private String userId = "";
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * 请求网络数据
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -134,7 +137,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         public void run() {
                             Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(PersonalInfoActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -214,7 +217,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      */
     private void sendRequestForDepartment(String department_id) {
 
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -236,7 +239,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         public void run() {
                             Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(PersonalInfoActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -252,7 +255,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + MainActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -275,7 +278,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         public void run() {
                             Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
-                            PreferenceManager.getDefaultSharedPreferences(PersonalInfoActivity.this).edit().putString("token", null).commit();
+                            preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             finish();
                         }
@@ -337,6 +340,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * 初始化view
      */
     private void initView() {
+        preferences = PreferenceManager.getDefaultSharedPreferences(PersonalInfoActivity.this);
+        token = preferences.getString("token", null);
 
         companyButton = findViewById(R.id.personal_info_company);
         companyText = findViewById(R.id.personal_info_company_text);

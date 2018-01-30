@@ -79,16 +79,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         sendRequest();
+
     }
 
     /**

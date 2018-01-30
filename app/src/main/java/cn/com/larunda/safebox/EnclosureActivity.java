@@ -3,6 +3,7 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,7 +44,11 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     TitleBar titleBar;
     EnclosureAdapter adapter;
     RecyclerView recyclerView;
-    SwipeRefreshLayout swipeRefreshLayout;
+
+    SwipeRefreshLayout refreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
     LinearLayoutManager manager;
     List<Enclosure> enclosureList = new ArrayList<>();
     private RelativeLayout top_layout;
@@ -76,6 +81,18 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         }
 
         initView();
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+
         sendRequest();
 
 
@@ -85,10 +102,18 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + MainActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -99,6 +124,20 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                         @Override
                         public void run() {
                             initEnclosureInfo(enclosureInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            PreferenceManager.getDefaultSharedPreferences(EnclosureActivity.this).edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
                         }
                     });
                 }
@@ -164,7 +203,10 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
         adapter = new EnclosureAdapter(enclosureList);
         recyclerView = findViewById(R.id.enclosure_recycler);
-        swipeRefreshLayout = findViewById(R.id.enclosure_swiper);
+        refreshLayout = findViewById(R.id.enclosure_swiper);
+        loodingErrorLayout = findViewById(R.id.enclosure_loading_error_layout);
+        loodingLayout = findViewById(R.id.enclosure_loading_layout);
+
         manager = new LinearLayoutManager(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);

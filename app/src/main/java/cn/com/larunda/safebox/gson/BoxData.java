@@ -10,6 +10,8 @@ public class BoxData {
     public String id;
     @SerializedName("aliases")
     public String name;
+
+    public String code;
     @SerializedName("encrypt_level")
     public String level;
 
@@ -20,5 +22,10 @@ public class BoxData {
     public String electricity;
 
     public String f_pic;
+    @SerializedName("record_num_unread")
+    public String unReadNum;
+
+    @SerializedName("record_num_read")
+    public String readNum;
 
 }

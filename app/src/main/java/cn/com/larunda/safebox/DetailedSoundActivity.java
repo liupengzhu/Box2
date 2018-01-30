@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,6 +30,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     DetailedSoundAdapter adapter;
     LinearLayoutManager manager;
     List<DetailedSound> detailedSoundList = new ArrayList<>();
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +43,12 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
 
-            intData();
-            initView();
-            iniEvent();
-
         }
+        id = getIntent().getStringExtra("id");
+        Log.d("main", id);
+        intData();
+        initView();
+        iniEvent();
     }
 
     /**

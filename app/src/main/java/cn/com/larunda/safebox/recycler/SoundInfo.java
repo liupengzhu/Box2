@@ -7,10 +7,23 @@ package cn.com.larunda.safebox.recycler;
 public class SoundInfo {
     private String boxName;
     private String total;
+    private String id;
 
     public SoundInfo(String boxName, String total) {
         this.boxName = boxName;
         this.total = total;
+    }
+
+    public SoundInfo() {
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getBoxName() {

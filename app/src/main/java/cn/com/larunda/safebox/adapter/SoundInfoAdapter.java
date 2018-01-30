@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.recycler.SoundInfo;
 
 import java.util.ArrayList;
@@ -44,12 +45,15 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.sound_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        final ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (soundInfoOnClickListener != null) {
-                    soundInfoOnClickListener.onClick(v);
+                    SoundInfo soundInfo = soundInfoList.get(viewHolder.getAdapterPosition());
+                    if (soundInfo.getId() != null) {
+                        soundInfoOnClickListener.onClick(v, soundInfo.getId());
+                    }
                 }
             }
         });
@@ -69,7 +73,7 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
     }
 
     public interface SoundInfoOnClickListener {
-        void onClick(View view);
+        void onClick(View view, String id);
     }
 
     public void setSoundInfoOnClickListener(SoundInfoOnClickListener soundInfoOnClickListener) {

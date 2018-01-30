@@ -13,6 +13,7 @@ import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
+import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
@@ -125,6 +126,12 @@ public class Util {
         Gson gson = new Gson();
         DetailedSoundInfo detailedSoundInfo = gson.fromJson(response,DetailedSoundInfo.class);
         return detailedSoundInfo;
+    }
+
+    public static DynamicPassword handleDynamicPassword(String response){
+        Gson gson = new Gson();
+        DynamicPassword dynamicPassword = gson.fromJson(response,DynamicPassword.class);
+        return dynamicPassword;
     }
 
     /**

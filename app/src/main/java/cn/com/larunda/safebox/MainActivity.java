@@ -300,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
     private void getToken() {
         token = preferences.getString("token", null);
 
-
     }
 
     //初始化Tab；

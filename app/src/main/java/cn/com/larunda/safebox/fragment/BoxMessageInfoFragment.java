@@ -169,8 +169,11 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 startActivity(bindingUserIntent);
                 break;
             case R.id.box_message_password:
-                Intent passwordIntent = new Intent(getContext(), DynamicPasswordActivity.class);
-                startActivity(passwordIntent);
+                if(BoxActivity.ID!=null) {
+                    Intent passwordIntent = new Intent(getContext(), DynamicPasswordActivity.class);
+                    passwordIntent.putExtra("id", BoxActivity.ID);
+                    startActivity(passwordIntent);
+                }
                 break;
             case R.id.box_message_log:
                 Intent logIntent = new Intent(getContext(), BoxInfoLogActivity.class);

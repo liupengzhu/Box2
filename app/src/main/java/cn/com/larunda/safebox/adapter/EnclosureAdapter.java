@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.recycler.Enclosure;
 
 import java.util.ArrayList;
@@ -69,7 +70,10 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
             @Override
             public void onClick(View v) {
                 if (enclosureOnClickListener != null) {
-                    enclosureOnClickListener.onClick(v);
+                    Enclosure enclosure = enclosureList.get(viewHolder.getAdapterPosition());
+                    if (enclosure.getId() != null) {
+                        enclosureOnClickListener.onClick(v, enclosure.getId());
+                    }
                 }
             }
         });
@@ -133,7 +137,7 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
     }
 
     public interface EnclosureOnClickListener {
-        void onClick(View v);
+        void onClick(View v, String id);
     }
 
     public boolean isCheckedLayout() {

@@ -12,6 +12,8 @@ import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.EditUserInfo;
+import cn.com.larunda.safebox.gson.EnclosureData;
+import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.SqInfo;
@@ -95,15 +97,22 @@ public class Util {
         return userInfo;
     }
 
-    public static Company handleCompany(String response){
+    public static Company handleCompany(String response) {
         Gson gson = new Gson();
-        Company company = gson.fromJson(response,Company.class);
+        Company company = gson.fromJson(response, Company.class);
         return company;
     }
-    public static Department handleDepartment(String response){
+
+    public static Department handleDepartment(String response) {
         Gson gson = new Gson();
-        Department department = gson.fromJson(response,Department.class);
+        Department department = gson.fromJson(response, Department.class);
         return department;
+    }
+
+    public static EnclosureInfo handleEnclosureInfo(String response) {
+        Gson gson = new Gson();
+        EnclosureInfo enclosureInfo = gson.fromJson(response, EnclosureInfo.class);
+        return enclosureInfo;
     }
 
     /**

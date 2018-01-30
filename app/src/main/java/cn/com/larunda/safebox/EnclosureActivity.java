@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -21,10 +22,19 @@ import android.widget.TextView;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.EnclosureAdapter;
+import cn.com.larunda.safebox.gson.EnclosureData;
+import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.recycler.Enclosure;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +60,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private boolean isAllChecked = false;
     private ImageView allCheckedImage;
     private TextView allCheckedText;
+    public static final String ENCLOSURE_URL = "http://safebox.dsmcase.com:90/api/area?_token=";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,22 +75,57 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
-        initData();
         initView();
+        sendRequest();
 
 
     }
 
     /**
-     * 测试方法 初始化数据
+     * 发送网络请求
      */
-    private void initData() {
-        for (int i = 0; i < 10; i++) {
-            Enclosure enclosure = new Enclosure("阳澄湖国际科创园" + i);
-            enclosureList.add(enclosure);
-        }
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + MainActivity.token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
 
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final EnclosureInfo enclosureInfo = Util.handleEnclosureInfo(response.body().string());
+                if (enclosureInfo != null && enclosureInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initEnclosureInfo(enclosureInfo);
+                        }
+                    });
+                }
+            }
+        });
     }
+
+    /**
+     * 解析地理围栏信息
+     */
+    private void initEnclosureInfo(EnclosureInfo enclosureInfo) {
+        enclosureList.clear();
+        if (enclosureList != null) {
+            for (EnclosureData enclosureData : enclosureInfo.enclosureDataList) {
+                Enclosure enclosure = new Enclosure();
+                enclosure.setId(enclosureData.id);
+                if (enclosureData.name != null) {
+                    enclosure.setName(enclosureData.name);
+                } else {
+                    enclosure.setName("");
+                }
+                enclosureList.add(enclosure);
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
 
     /**
      * 初始化View
@@ -147,8 +193,9 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
         adapter.setEnclosureOnClickListener(new EnclosureAdapter.EnclosureOnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v, String id) {
                 Intent intent = new Intent(EnclosureActivity.this, EnclosureInfoActivity.class);
+                intent.putExtra("id", id);
                 startActivity(intent);
             }
         });

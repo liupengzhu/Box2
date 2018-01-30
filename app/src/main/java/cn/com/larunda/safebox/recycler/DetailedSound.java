@@ -14,6 +14,9 @@ public class DetailedSound {
         this.time = time;
         this.isDownload = isDownload;
     }
+    public DetailedSound(){
+
+    }
 
     public String getSoundId() {
         return soundId;

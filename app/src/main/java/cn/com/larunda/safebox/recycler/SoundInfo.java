@@ -8,7 +8,7 @@ public class SoundInfo {
     private String boxName;
     private String total;
     private String id;
-
+    private String box_img;
     public SoundInfo(String boxName, String total) {
         this.boxName = boxName;
         this.total = total;
@@ -40,5 +40,13 @@ public class SoundInfo {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    public String getBox_img() {
+        return box_img;
+    }
+
+    public void setBox_img(String box_img) {
+        this.box_img = box_img;
     }
 }

@@ -52,7 +52,7 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
                 if (soundInfoOnClickListener != null) {
                     SoundInfo soundInfo = soundInfoList.get(viewHolder.getAdapterPosition());
                     if (soundInfo.getId() != null) {
-                        soundInfoOnClickListener.onClick(v, soundInfo.getId());
+                        soundInfoOnClickListener.onClick(v, soundInfo.getId(),soundInfo.getBox_img(),soundInfo.getBoxName());
                     }
                 }
             }
@@ -73,7 +73,7 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
     }
 
     public interface SoundInfoOnClickListener {
-        void onClick(View view, String id);
+        void onClick(View view, String id ,String img ,String code);
     }
 
     public void setSoundInfoOnClickListener(SoundInfoOnClickListener soundInfoOnClickListener) {

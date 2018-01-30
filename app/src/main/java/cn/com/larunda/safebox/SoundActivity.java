@@ -44,6 +44,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayoutManager manager;
     private List<SoundInfo> soundInfoList = new ArrayList<>();
     public static final String BOX_URL = "http://safebox.dsmcase.com:90/api/box?_token=";
+    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
 
@@ -141,6 +142,13 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         if (boxInfo.boxDataList != null) {
             for (BoxData boxData : boxInfo.boxDataList) {
                 SoundInfo soundInfo = new SoundInfo();
+                String img_url = null;
+                if (boxData.f_pic != null) {
+                    img_url = boxData.f_pic.replace('\\', ' ');
+                    soundInfo.setBox_img(IMG_URL + img_url);
+                } else {
+                    soundInfo.setBox_img(null);
+                }
                 if (boxData.code != null) {
                     soundInfo.setBoxName(boxData.code);
                 } else {
@@ -190,9 +198,11 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         });
         adapter.setSoundInfoOnClickListener(new SoundInfoAdapter.SoundInfoOnClickListener() {
             @Override
-            public void onClick(View view, String id) {
+            public void onClick(View view, String id, String img, String code) {
                 Intent intent = new Intent(SoundActivity.this, DetailedSoundActivity.class);
                 intent.putExtra("id", id);
+                intent.putExtra("img", img);
+                intent.putExtra("code", code);
                 startActivity(intent);
 
             }

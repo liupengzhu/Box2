@@ -11,22 +11,39 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.PolygonOptions;
+import com.baidu.mapapi.map.Stroke;
+import com.baidu.mapapi.model.LatLng;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.com.larunda.safebox.gson.CoordinateInfo;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class EnclosureInfoActivity extends AppCompatActivity {
 
@@ -34,7 +51,11 @@ public class EnclosureInfoActivity extends AppCompatActivity {
     private LocationClient mLocationClient;
     private MapView mapView;
     private BaiduMap baiduMap;
-    private EnclosureInfoActivity.MyLocationListener myListener = new EnclosureInfoActivity.MyLocationListener();
+    private MyLocationListener myListener = new MyLocationListener();
+    private String id;
+    public static final String ENCLOSURE_INFO_URL = "http://safebox.dsmcase.com:90/api/area/";
+    private List<LatLng> points = new ArrayList<>();
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +73,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        id = getIntent().getStringExtra("id");
         initView();
 
 
@@ -86,8 +108,35 @@ public class EnclosureInfoActivity extends AppCompatActivity {
         } else {
             requestLocation();
         }
-        showInfo();
+        sendRequest();
 
+
+    }
+
+    /**
+     * 请求数据
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + "?_token=" + MainActivity.token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final CoordinateInfo coordinateInfo = Util.handleCoordinateInfo(response.body().string());
+                if (coordinateInfo != null && coordinateInfo.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showInfo(coordinateInfo);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -97,9 +146,58 @@ public class EnclosureInfoActivity extends AppCompatActivity {
         mLocationClient.start();
     }
 
-    private void showInfo() {
+    private void showInfo(CoordinateInfo coordinateInfo) {
 
+        if (coordinateInfo.getF_name() != null) {
+            textView.setText(coordinateInfo.getF_name());
+        } else {
+            textView.setText("");
+        }
+        if (coordinateInfo.getF_data() != null) {
+            for (int i = 0; i < coordinateInfo.getF_data().size(); i++) {
+                List<CoordinateInfo.FDataBean> fDataBeanList = coordinateInfo.getF_data().get(i);
+                if (fDataBeanList != null) {
+                    points.clear();
+                    for (int j = 0; j < fDataBeanList.size(); j++) {
+                        CoordinateInfo.FDataBean fDataBean = fDataBeanList.get(j);
+                        if (fDataBean.getLat() != null && fDataBean.getLng() != null) {
 
+                            LatLng latLng = new LatLng(Float.parseFloat(fDataBean.getLat()), Float.parseFloat(fDataBean.getLng()));
+                            if (i == 0 && j == 0) {
+                                MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
+                                baiduMap.animateMapStatus(update);
+                                if (fDataBeanList.size() > 50) {
+                                    update = MapStatusUpdateFactory.zoomTo(8f);//缩放大小
+                                } else {
+                                    update = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
+                                }
+                                baiduMap.animateMapStatus(update);
+                            }
+                            points.add(latLng);
+                        }
+                    }
+                    drawOverlay(points);
+
+                }
+            }
+        }
+    }
+
+    /**
+     * 画多边形
+     *
+     * @param points
+     */
+    private void drawOverlay(List<LatLng> points) {
+
+        //构建用户绘制多边形的Option对象
+        OverlayOptions polygonOption = new PolygonOptions()
+                .points(points)
+                .stroke(new Stroke(5, 0xFFF00F0E))
+                .fillColor(0x5A7c8092);
+
+        //在地图上添加多边形Option，用于显示
+        baiduMap.addOverlay(polygonOption);
     }
 
     /**
@@ -107,6 +205,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
      */
     private void initView() {
 
+        textView = findViewById(R.id.enclosure_info_text);
         titleBar = findViewById(R.id.enclosure_info_title_bar);
         titleBar.setTextViewText("详细信息");
         titleBar.setRightButtonSrc(0);

@@ -10,9 +10,9 @@ import android.widget.LinearLayout;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.EditUserInfo;
-import cn.com.larunda.safebox.gson.EnclosureData;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
@@ -114,6 +114,13 @@ public class Util {
         EnclosureInfo enclosureInfo = gson.fromJson(response, EnclosureInfo.class);
         return enclosureInfo;
     }
+
+    public static CoordinateInfo handleCoordinateInfo(String response) {
+        Gson gson = new Gson();
+        CoordinateInfo coordinateInfo = gson.fromJson(response, CoordinateInfo.class);
+        return coordinateInfo;
+    }
+
 
     /**
      * 设置tablayout下划线宽度的方法

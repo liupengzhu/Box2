@@ -70,6 +70,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     private TimeDialog endDialog;
 
     public static final String MESSAGE_URI = "http://safebox.dsmcase.com:90/api/box/";
+    private TextView bind_area_text;
 
     @Nullable
     @Override
@@ -140,6 +141,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
         } else {
             levelText.setText("");
         }
+        bind_area_text.setText("已设置" +boxMessage.bind_area_num+ "个区域");
         if (boxMessage.isLocked != null) {
             if (boxMessage.isLocked.equals("1")) {
                 lockText.setText("已锁定");
@@ -210,6 +212,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
      * @param view
      */
     private void initView(View view) {
+        bind_area_text = view.findViewById(R.id.box_message_info_bind_area_text);
         enclosureButton = view.findViewById(R.id.box_message_enclosure);
         trackButton = view.findViewById(R.id.box_message_track);
         levelButton = view.findViewById(R.id.box_message_level);

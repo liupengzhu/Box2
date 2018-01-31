@@ -47,6 +47,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     TextView size_text;
     TextView protect_text;
     TextView electricity_text;
+    TextView bind_user_text;
 
     @Nullable
     @Override
@@ -128,6 +129,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         } else {
             electricity_text.setText("");
         }
+        bind_user_text.setText("已绑定" +boxMessage.bind_user_num+ "个用户");
     }
 
     /**
@@ -146,6 +148,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
      * @param view
      */
     private void initView(View view) {
+        bind_user_text = view.findViewById(R.id.box_message_info_bind_user_text);
         bindingUser_Button = view.findViewById(R.id.box_message_binding_user);
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);

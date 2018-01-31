@@ -315,6 +315,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/box_message_info_bind_area_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

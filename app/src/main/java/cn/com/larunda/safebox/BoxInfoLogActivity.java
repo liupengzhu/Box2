@@ -1,9 +1,11 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
@@ -44,6 +48,10 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private String token;
 
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,17 @@ public class BoxInfoLogActivity extends AppCompatActivity {
         id = getIntent().getStringExtra("id");
         initView();
         initEvent();
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
+        //每次创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
         sendRequest();
     }
 
@@ -65,10 +84,18 @@ public class BoxInfoLogActivity extends AppCompatActivity {
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&id=" + id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -80,6 +107,20 @@ public class BoxInfoLogActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             initData(boxInfoLogInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(BoxInfoLogActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
                         }
                     });
                 }
@@ -147,6 +188,10 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private void initView() {
         preferences = PreferenceManager.getDefaultSharedPreferences(BoxInfoLogActivity.this);
         token = preferences.getString("token", null);
+
+        refreshLayout = findViewById(R.id.box_info_log_swipe);
+        loodingErrorLayout = findViewById(R.id.box_info_log_loading_error_layout);
+        loodingLayout = findViewById(R.id.box_info_log_loading_layout);
 
         recyclerView = findViewById(R.id.box_info_log_recycler);
         adapter = new BoxInfoLogAdapter(this, boxInfoLogList);

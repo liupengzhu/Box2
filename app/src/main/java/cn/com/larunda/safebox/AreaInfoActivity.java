@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.adapter.BindAreaAdapter;
 import cn.com.larunda.safebox.adapter.BoxAddUserAdapter;
-import cn.com.larunda.safebox.gson.BoxAddUserInfo;
-import cn.com.larunda.safebox.recycler.BoxAddUser;
+import cn.com.larunda.safebox.gson.BindAreaData;
+import cn.com.larunda.safebox.gson.BindAreaInfo;
+import cn.com.larunda.safebox.recycler.BindArea;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -41,8 +43,8 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
-    private BoxAddUserAdapter adapter;
-    private List<BoxAddUser> boxAddUserList = new ArrayList<>();
+    private BindAreaAdapter adapter;
+    private List<BindArea> bindAreaList = new ArrayList<>();
     private String id;
     private String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/box/bind_area_lists?_token=";
     private SharedPreferences preferences;
@@ -104,12 +106,12 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final BoxAddUserInfo boxAddUserInfo = Util.handleBoxAddUserInfo(content);
-                if (boxAddUserInfo != null && boxAddUserInfo.error == null) {
+                final BindAreaInfo bindAreaInfo = Util.handleBindAreaInfo(content);
+                if (bindAreaInfo != null && bindAreaInfo.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
+                            initData(bindAreaInfo);
                             refreshLayout.setRefreshing(false);
                             loodingErrorLayout.setVisibility(View.INVISIBLE);
                             loodingLayout.setVisibility(View.INVISIBLE);
@@ -134,8 +136,34 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     /**
      * 解析数据
      */
-    private void initData() {
-
+    private void initData(BindAreaInfo bindAreaInfo) {
+        bindAreaList.clear();
+        if (bindAreaInfo.dataList != null) {
+            for (BindAreaData data : bindAreaInfo.dataList) {
+                BindArea bindArea = new BindArea();
+                if (data.f_name != null) {
+                    bindArea.setName(data.f_name);
+                } else {
+                    bindArea.setName("");
+                }
+                if (data.created_at != null) {
+                    bindArea.setTime(data.created_at);
+                } else {
+                    bindArea.setTime("");
+                }
+                if (data.in_or_out != null) {
+                    if (data.in_or_out.equals("0")) {
+                        bindArea.setIn_or_out("里");
+                    } else {
+                        bindArea.setIn_or_out("外");
+                    }
+                } else {
+                    bindArea.setIn_or_out("");
+                }
+                bindAreaList.add(bindArea);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -184,7 +212,7 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
 
         recyclerView = findViewById(R.id.area_recycler);
         manager = new LinearLayoutManager(this);
-        adapter = new BoxAddUserAdapter(this, boxAddUserList);
+        adapter = new BindAreaAdapter(this, bindAreaList);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -200,7 +228,11 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.area_add_button:
-
+                if (id != null) {
+                    Intent intent = new Intent(this, AddEnclosureActivity.class);
+                    intent.putExtra("id", id);
+                    startActivity(intent);
+                }
                 break;
             default:
                 break;

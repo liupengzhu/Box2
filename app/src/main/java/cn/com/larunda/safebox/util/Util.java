@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
@@ -155,6 +156,12 @@ public class Util {
         Gson gson = new Gson();
         LocationInfo locationInfo = gson.fromJson(response, LocationInfo.class);
         return locationInfo;
+    }
+
+    public static BindAreaInfo handleBindAreaInfo(String response) {
+        Gson gson = new Gson();
+        BindAreaInfo bindAreaInfo = gson.fromJson(response, BindAreaInfo.class);
+        return bindAreaInfo;
     }
 
     /**

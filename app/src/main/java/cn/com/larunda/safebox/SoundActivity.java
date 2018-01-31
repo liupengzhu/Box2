@@ -167,6 +167,11 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                 } else {
                     soundInfo.setTotal("共0条录音");
                 }
+                if (boxData.unReadNum != null) {
+                    soundInfo.setUnRead(boxData.unReadNum);
+                } else {
+                    soundInfo.setUnRead("0");
+                }
 
                 soundInfoList.add(soundInfo);
             }

@@ -140,6 +140,17 @@ public class EnclosureInfoActivity extends AppCompatActivity {
                             showInfo(coordinateInfo);
                         }
                     });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
                 }
             }
         });

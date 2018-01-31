@@ -141,7 +141,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
         } else {
             levelText.setText("");
         }
-        bind_area_text.setText("已设置" +boxMessage.bind_area_num+ "个区域");
+        bind_area_text.setText("已设置" + boxMessage.bind_area_num + "个区域");
         if (boxMessage.isLocked != null) {
             if (boxMessage.isLocked.equals("1")) {
                 lockText.setText("已锁定");
@@ -309,8 +309,11 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.box_message_track:
-                Intent trackIntent = new Intent(getContext(), TrackActivity.class);
-                startActivity(trackIntent);
+                if (BoxActivity.ID != null) {
+                    Intent trackIntent = new Intent(getContext(), TrackActivity.class);
+                    trackIntent.putExtra("id", BoxActivity.ID);
+                    startActivity(trackIntent);
+                }
                 break;
             case R.id.box_message_level:
                 chooseDialog.show();

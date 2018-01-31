@@ -24,6 +24,9 @@
             android:id="@+id/sound_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="xxxx000001"
             android:textColor="@color/list_text_h"
             android:textSize="15sp" />
@@ -32,12 +35,28 @@
             android:id="@+id/sound_data_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLength="25"
             android:maxLines="1"
+            android:ellipsize="end"
             android:text="共15条录音"
             android:textColor="@color/list_text_n"
             android:textSize="15sp" />
 
     </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/sound_count_text"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/circle_red"
+        android:text="3"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="10sp" />
 
     <ImageView
         android:layout_width="20dp"

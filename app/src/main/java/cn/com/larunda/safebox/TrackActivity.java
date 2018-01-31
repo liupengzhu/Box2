@@ -2,15 +2,19 @@ package cn.com.larunda.safebox;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,8 +38,17 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.com.larunda.safebox.gson.LocationInfo;
+import cn.com.larunda.safebox.gson.PathData;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class TrackActivity extends AppCompatActivity {
 
@@ -44,6 +57,11 @@ public class TrackActivity extends AppCompatActivity {
     private MapView mapView;
     private BaiduMap baiduMap;
     private MyLocationListener myListener = new MyLocationListener();
+    private String id;
+
+    public static final String PATH_URL = "http://safebox.dsmcase.com:90/api/location/path?_token=";
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +79,7 @@ public class TrackActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        id = getIntent().getStringExtra("id");
         initView();
 
 
@@ -95,8 +114,41 @@ public class TrackActivity extends AppCompatActivity {
         } else {
             requestLocation();
         }
-        showInfo();
+        sendRequest();
 
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(PATH_URL + token + "&box_id=" + id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                LocationInfo locationInfo = Util.handleLocationInfo(content);
+                if (locationInfo != null && locationInfo.error == null) {
+
+                    showInfo(locationInfo);
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TrackActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -106,62 +158,62 @@ public class TrackActivity extends AppCompatActivity {
         mLocationClient.start();
     }
 
-    private void showInfo() {
+    /**
+     * 显示轨迹
+     *
+     * @param locationInfo
+     */
+    private void showInfo(LocationInfo locationInfo) {
 
-        //定义Maker坐标点
+        List<LatLng> points = new ArrayList<>();
+        if (locationInfo.pathDataList != null) {
+            for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
+                if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
+                    LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
+                            Float.parseFloat(locationInfo.pathDataList.get(i).longitude));
+                    if (i == locationInfo.pathDataList.size() - 1) {
+                        MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
+                        baiduMap.animateMapStatus(update);
+                        update = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
+                        baiduMap.animateMapStatus(update);
+                        //构建Marker图标
+                        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                                .fromResource(R.drawable.locatin_red);
+                        //构建MarkerOption，用于在地图上添加Marker
+                        OverlayOptions option = new MarkerOptions()
+                                .position(latLng)
+                                .icon(bitmap);
+                        //在地图上添加Marker，并显示
+                        baiduMap.addOverlay(option);
+                    }
+                    points.add(latLng);
+                }
 
-        LatLng point = new LatLng(39.965, 110.404);
+            }
+            if (points.size() >= 2) {
+                //构建分段颜色索引数组
 
-        //构建Marker图标
-
-        BitmapDescriptor bitmap = BitmapDescriptorFactory
-                .fromResource(R.drawable.locatin_red);
-
-        //构建MarkerOption，用于在地图上添加Marker
-
-        OverlayOptions option = new MarkerOptions()
-                .position(point)
-                .icon(bitmap);
-
-        //在地图上添加Marker，并显示
-
-        baiduMap.addOverlay(option);
-
-        List<LatLng> points = new ArrayList<LatLng>();
-        points.add(new LatLng(39.965, 110.404));
-        points.add(new LatLng(39.925, 110.454));
-        points.add(new LatLng(39.955, 110.494));
-        points.add(new LatLng(39.905, 110.554));
-        points.add(new LatLng(39.965, 110.604));
-
-        //构建分段颜色索引数组
-
-        List<Integer> colors = new ArrayList<>();
-        colors.add(Integer.valueOf(Color.RED));
-
-
-        OverlayOptions ooPolyline = new PolylineOptions()
-                .colorsValues(colors)
-                .width(5)
-                .points(points);
-
-        //添加在地图中
-
-        Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
-
-        LatLng ll = new LatLng(39.965, 110.404);
-        MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(ll);//移动到我的经纬度
-        baiduMap.animateMapStatus(update);
-        update = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
-        baiduMap.animateMapStatus(update);
+                List<Integer> colors = new ArrayList<>();
+                colors.add(Integer.valueOf(Color.RED));
+                OverlayOptions ooPolyline = new PolylineOptions()
+                        .colorsValues(colors)
+                        .width(5)
+                        .points(points);
+                //添加在地图中
+                Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
+            }
 
 
+        }
     }
 
     /**
      * 初始化View
      */
     private void initView() {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(TrackActivity.this);
+        token = preferences.getString("token", null);
 
         titleBar = findViewById(R.id.track_title_bar);
         titleBar.setTextViewText("定位轨迹");
@@ -171,7 +223,6 @@ public class TrackActivity extends AppCompatActivity {
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
-
 
             }
 

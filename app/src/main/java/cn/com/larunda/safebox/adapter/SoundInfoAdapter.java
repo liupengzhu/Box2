@@ -33,12 +33,14 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
         TextView nameText;
         TextView totalText;
         RelativeLayout button;
+        TextView unReadText;
 
         public ViewHolder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.sound_name_text);
             totalText = itemView.findViewById(R.id.sound_data_text);
             button = itemView.findViewById(R.id.sound_item_layout);
+            unReadText = itemView.findViewById(R.id.sound_count_text);
         }
     }
 
@@ -52,7 +54,7 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
                 if (soundInfoOnClickListener != null) {
                     SoundInfo soundInfo = soundInfoList.get(viewHolder.getAdapterPosition());
                     if (soundInfo.getId() != null) {
-                        soundInfoOnClickListener.onClick(v, soundInfo.getId(),soundInfo.getBox_img(),soundInfo.getBoxName());
+                        soundInfoOnClickListener.onClick(v, soundInfo.getId(), soundInfo.getBox_img(), soundInfo.getBoxName());
                     }
                 }
             }
@@ -65,6 +67,12 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
         SoundInfo soundInfo = soundInfoList.get(position);
         holder.nameText.setText(soundInfo.getBoxName());
         holder.totalText.setText(soundInfo.getTotal());
+        if (soundInfo.getUnRead().equals("0")) {
+            holder.unReadText.setVisibility(View.GONE);
+        } else {
+            holder.unReadText.setVisibility(View.VISIBLE);
+            holder.unReadText.setText(soundInfo.getUnRead());
+        }
     }
 
     @Override
@@ -73,7 +81,7 @@ public class SoundInfoAdapter extends RecyclerView.Adapter<SoundInfoAdapter.View
     }
 
     public interface SoundInfoOnClickListener {
-        void onClick(View view, String id ,String img ,String code);
+        void onClick(View view, String id, String img, String code);
     }
 
     public void setSoundInfoOnClickListener(SoundInfoOnClickListener soundInfoOnClickListener) {

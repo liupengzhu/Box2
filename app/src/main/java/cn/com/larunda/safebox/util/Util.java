@@ -19,6 +19,7 @@ import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
+import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
@@ -125,26 +126,35 @@ public class Util {
         CoordinateInfo coordinateInfo = gson.fromJson(response, CoordinateInfo.class);
         return coordinateInfo;
     }
-    public static DetailedSoundInfo handleDetailedSoundInfo(String response){
+
+    public static DetailedSoundInfo handleDetailedSoundInfo(String response) {
         Gson gson = new Gson();
-        DetailedSoundInfo detailedSoundInfo = gson.fromJson(response,DetailedSoundInfo.class);
+        DetailedSoundInfo detailedSoundInfo = gson.fromJson(response, DetailedSoundInfo.class);
         return detailedSoundInfo;
     }
 
-    public static DynamicPassword handleDynamicPassword(String response){
+    public static DynamicPassword handleDynamicPassword(String response) {
         Gson gson = new Gson();
-        DynamicPassword dynamicPassword = gson.fromJson(response,DynamicPassword.class);
+        DynamicPassword dynamicPassword = gson.fromJson(response, DynamicPassword.class);
         return dynamicPassword;
     }
-    public static BoxAddUserInfo handleBoxAddUserInfo(String response){
+
+    public static BoxAddUserInfo handleBoxAddUserInfo(String response) {
         Gson gson = new Gson();
-        BoxAddUserInfo boxAddUserInfo = gson.fromJson(response,BoxAddUserInfo.class);
+        BoxAddUserInfo boxAddUserInfo = gson.fromJson(response, BoxAddUserInfo.class);
         return boxAddUserInfo;
     }
-    public static BoxInfoLogInfo handleBoxInfoLogInfo(String response){
+
+    public static BoxInfoLogInfo handleBoxInfoLogInfo(String response) {
         Gson gson = new Gson();
-        BoxInfoLogInfo boxInfoLogInfo = gson.fromJson(response,BoxInfoLogInfo.class);
+        BoxInfoLogInfo boxInfoLogInfo = gson.fromJson(response, BoxInfoLogInfo.class);
         return boxInfoLogInfo;
+    }
+
+    public static LocationInfo handleLocationInfo(String response) {
+        Gson gson = new Gson();
+        LocationInfo locationInfo = gson.fromJson(response, LocationInfo.class);
+        return locationInfo;
     }
 
     /**

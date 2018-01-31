@@ -9,6 +9,8 @@ public class SoundInfo {
     private String total;
     private String id;
     private String box_img;
+    private String unRead;
+
     public SoundInfo(String boxName, String total) {
         this.boxName = boxName;
         this.total = total;
@@ -48,5 +50,13 @@ public class SoundInfo {
 
     public void setBox_img(String box_img) {
         this.box_img = box_img;
+    }
+
+    public String getUnRead() {
+        return unRead;
+    }
+
+    public void setUnRead(String unRead) {
+        this.unRead = unRead;
     }
 }

@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
+import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
@@ -139,6 +140,11 @@ public class Util {
         Gson gson = new Gson();
         BoxAddUserInfo boxAddUserInfo = gson.fromJson(response,BoxAddUserInfo.class);
         return boxAddUserInfo;
+    }
+    public static BoxInfoLogInfo handleBoxInfoLogInfo(String response){
+        Gson gson = new Gson();
+        BoxInfoLogInfo boxInfoLogInfo = gson.fromJson(response,BoxInfoLogInfo.class);
+        return boxInfoLogInfo;
     }
 
     /**

@@ -14,6 +14,9 @@ public class BoxInfoLog {
         this.logContent = logContent;
         this.logTime = logTime;
     }
+    public BoxInfoLog(){
+
+    }
 
     public String getLogName() {
         return logName;

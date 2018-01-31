@@ -166,9 +166,11 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_message_binding_user:
-                Intent bindingUserIntent = new Intent(getContext(), BoxAddUserActivity.class);
-                bindingUserIntent.putExtra("id", BoxActivity.ID);
-                startActivity(bindingUserIntent);
+                if (BoxActivity.ID != null) {
+                    Intent bindingUserIntent = new Intent(getContext(), BoxAddUserActivity.class);
+                    bindingUserIntent.putExtra("id", BoxActivity.ID);
+                    startActivity(bindingUserIntent);
+                }
                 break;
             case R.id.box_message_password:
                 if (BoxActivity.ID != null) {
@@ -178,8 +180,11 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 }
                 break;
             case R.id.box_message_log:
-                Intent logIntent = new Intent(getContext(), BoxInfoLogActivity.class);
-                startActivity(logIntent);
+                if (BoxActivity.ID != null) {
+                    Intent logIntent = new Intent(getContext(), BoxInfoLogActivity.class);
+                    logIntent.putExtra("id", BoxActivity.ID);
+                    startActivity(logIntent);
+                }
                 break;
             case R.id.box_message_sound:
                 Intent soundIntent = new Intent(getContext(), BoxInfoSoundActivity.class);

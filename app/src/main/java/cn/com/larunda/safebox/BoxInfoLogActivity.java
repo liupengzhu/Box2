@@ -1,12 +1,15 @@
 package cn.com.larunda.safebox;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,11 +18,18 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.BoxInfoLogAdapter;
+import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.recycler.BoxInfoLog;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class BoxInfoLogActivity extends AppCompatActivity {
 
@@ -29,6 +39,10 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private BoxInfoLogAdapter adapter;
     private LinearLayoutManager manager;
     private List<BoxInfoLog> boxInfoLogList = new ArrayList<>();
+    public static final String BOX_LOG_URL = "http://safebox.dsmcase.com:90/api/box/log?_token=";
+    private String id;
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +55,67 @@ public class BoxInfoLogActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        initData();
+        id = getIntent().getStringExtra("id");
         initView();
         initEvent();
+        sendRequest();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&id=" + id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final BoxInfoLogInfo boxInfoLogInfo = Util.handleBoxInfoLogInfo(content);
+                if (boxInfoLogInfo != null && boxInfoLogInfo.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initData(boxInfoLogInfo);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析数据
+     *
+     * @param boxInfoLogInfo
+     */
+    private void initData(BoxInfoLogInfo boxInfoLogInfo) {
+        boxInfoLogList.clear();
+        if (boxInfoLogInfo.getData() != null) {
+            for (BoxInfoLogInfo.DataBean dataBean : boxInfoLogInfo.getData()) {
+                BoxInfoLog boxInfoLog = new BoxInfoLog();
+                if (dataBean.getCreated_at() != null) {
+                    boxInfoLog.setLogTime(dataBean.getCreated_at());
+                } else {
+                    boxInfoLog.setLogTime("");
+                }
+                if (dataBean.getF_info() != null) {
+                    boxInfoLog.setLogContent(dataBean.getF_info());
+                } else {
+                    boxInfoLog.setLogContent("");
+                }
+                if (dataBean.getF_title() != null) {
+                    boxInfoLog.setLogName(dataBean.getF_title());
+                } else {
+                    boxInfoLog.setLogName("");
+                }
+                boxInfoLogList.add(boxInfoLog);
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -68,21 +140,13 @@ public class BoxInfoLogActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 测试方法
-     */
-    private void initData() {
-        for (int i = 0; i < 20; i++) {
-            BoxInfoLog log = new BoxInfoLog("日常维护", "张三于2017/11/16对xxxx",
-                    "2017-11-13 13:16:17");
-            boxInfoLogList.add(log);
-        }
-    }
 
     /**
      * 初始化View
      */
     private void initView() {
+        preferences = PreferenceManager.getDefaultSharedPreferences(BoxInfoLogActivity.this);
+        token = preferences.getString("token", null);
 
         recyclerView = findViewById(R.id.box_info_log_recycler);
         adapter = new BoxInfoLogAdapter(this, boxInfoLogList);

@@ -1,7 +1,10 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,15 +20,22 @@ import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.com.larunda.safebox.gson.AreaInfo;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class AddEnclosureActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
-
     private String id;
-
+    public static final String ADD_ENCLOSURE_URL = "http://safebox.dsmcase.com:90/api/app/box/area_add_lists?_token=";
     private RelativeLayout enclosureButton;
     private TextView enclosureText;
     private ChooseDialog enclosureDialog;
@@ -35,6 +45,8 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
     private TextView positionText;
     private ChooseDialog positionDialog;
     private List<String> positionData = new ArrayList<>();
+    private SharedPreferences preferences;
+    private String token;
 
 
     @Override
@@ -50,6 +62,57 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         id = getIntent().getStringExtra("id");
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        token = preferences.getString("token", null);
+        sendRequest();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final AreaInfo areaInfo = Util.handleAreaInfo(content);
+                if (areaInfo != null && areaInfo.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initAreaInfo(areaInfo);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(AddEnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initAreaInfo(AreaInfo areaInfo) {
+        if (areaInfo.getData() != null) {
+            for (AreaInfo.DataBean data : areaInfo.getData()) {
+                if (data.getF_name() != null) {
+                    enclosureData.add(data.getF_name());
+                }
+            }
+        }
         initData();
         initView();
         initEvent();
@@ -81,9 +144,9 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void OnClick(View v, int positon) {
                 if (enclosureText.getText().toString().trim().equals(enclosureData.get(positon))) {
-                    positionText.setText("请选择区域内外");
                     enclosureDialog.cancel();
                 } else {
+                    positionText.setText("请选择区域内外");
                     enclosureText.setText(enclosureData.get(positon));
                     enclosureDialog.cancel();
                 }
@@ -104,10 +167,6 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      * 初始化数据
      */
     private void initData() {
-        enclosureData.add("阳澄湖国际科创园1");
-        enclosureData.add("阳澄湖国际科创园2");
-        enclosureData.add("阳澄湖国际科创园3");
-        enclosureData.add("阳澄湖国际科创园4");
 
         positionData.add("内");
         positionData.add("外");

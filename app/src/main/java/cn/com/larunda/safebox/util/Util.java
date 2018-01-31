@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
@@ -163,6 +164,12 @@ public class Util {
         BindAreaInfo bindAreaInfo = gson.fromJson(response, BindAreaInfo.class);
         return bindAreaInfo;
     }
+    public static AreaInfo handleAreaInfo(String response) {
+        Gson gson = new Gson();
+        AreaInfo areaInfo = gson.fromJson(response, AreaInfo.class);
+        return areaInfo;
+    }
+
 
     /**
      * 设置tablayout下划线宽度的方法

@@ -153,7 +153,7 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 if (data.in_or_out != null) {
                     if (data.in_or_out.equals("0")) {
-                        bindArea.setIn_or_out("里");
+                        bindArea.setIn_or_out("内");
                     } else {
                         bindArea.setIn_or_out("外");
                     }

@@ -82,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
     public static String token = "";
     //是否退出程序的标志位
     private boolean isExit = false;
-    private MenuUserInfo menuUserInfo;
+
 
     public static SharedPreferences preferences;
     private Button systemBackButton;
-    private SelfDialog selfDialog;
+
 
     private String id;
 
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void queryMenuInfo() {
 
-        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback()  {
 
             @Override
             public void onFailure(Call call, IOException e) {
@@ -203,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-                menuUserInfo = Util.handleMenuUserInfo(response.body().string());
+                String content = response.body().string();
+                final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
                 if (menuUserInfo != null && menuUserInfo.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override

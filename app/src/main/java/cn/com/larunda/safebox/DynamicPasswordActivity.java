@@ -1,6 +1,7 @@
 package cn.com.larunda.safebox;
 
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -76,9 +77,7 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
         last_time = preferences.getLong(id + "time", 0);
         if (last_time != 0) {
             long time = System.currentTimeMillis() - last_time;
-            Log.d("main", time + "");
             if (time < 60000) {
-                Log.d("main", time / 60 + "");
                 progressBar.setProgress((int) (time / 60));
                 String passwordString = preferences.getString(id + "password", null);
                 if (passwordString != null) {
@@ -127,12 +126,24 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final DynamicPassword dynamicPassword = Util.handleDynamicPassword(response.body().string());
+                String content = response.body().string();
+                final DynamicPassword dynamicPassword = Util.handleDynamicPassword(content);
                 if (dynamicPassword != null && dynamicPassword.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             initPassword(dynamicPassword);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(DynamicPasswordActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
                         }
                     });
                 }

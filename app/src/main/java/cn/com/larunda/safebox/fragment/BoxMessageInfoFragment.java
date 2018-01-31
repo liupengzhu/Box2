@@ -77,7 +77,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final BoxMessage boxMessage = Util.handleBoxMessage(response.body().string());
+                String content = response.body().string();
+                final BoxMessage boxMessage = Util.handleBoxMessage(content);
                 if (boxMessage != null && boxMessage.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -166,10 +167,11 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         switch (v.getId()) {
             case R.id.box_message_binding_user:
                 Intent bindingUserIntent = new Intent(getContext(), BoxAddUserActivity.class);
+                bindingUserIntent.putExtra("id", BoxActivity.ID);
                 startActivity(bindingUserIntent);
                 break;
             case R.id.box_message_password:
-                if(BoxActivity.ID!=null) {
+                if (BoxActivity.ID != null) {
                     Intent passwordIntent = new Intent(getContext(), DynamicPasswordActivity.class);
                     passwordIntent.putExtra("id", BoxActivity.ID);
                     startActivity(passwordIntent);

@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
@@ -25,6 +26,7 @@ import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Field;
 
@@ -132,6 +134,11 @@ public class Util {
         Gson gson = new Gson();
         DynamicPassword dynamicPassword = gson.fromJson(response,DynamicPassword.class);
         return dynamicPassword;
+    }
+    public static BoxAddUserInfo handleBoxAddUserInfo(String response){
+        Gson gson = new Gson();
+        BoxAddUserInfo boxAddUserInfo = gson.fromJson(response,BoxAddUserInfo.class);
+        return boxAddUserInfo;
     }
 
     /**

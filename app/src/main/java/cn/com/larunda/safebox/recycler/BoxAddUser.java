@@ -9,12 +9,25 @@ public class BoxAddUser {
     private String company;
     private String department;
     private String phone;
+    private String pic;
 
     public BoxAddUser(String name, String company, String department, String phone) {
         this.name = name;
         this.company = company;
         this.department = department;
         this.phone = phone;
+    }
+
+    public BoxAddUser() {
+
+    }
+
+    public String getPic() {
+        return pic;
+    }
+
+    public void setPic(String pic) {
+        this.pic = pic;
     }
 
     public String getName() {

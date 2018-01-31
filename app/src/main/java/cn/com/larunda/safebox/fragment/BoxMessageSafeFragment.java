@@ -17,6 +17,7 @@ import cn.com.larunda.safebox.AddEnclosureActivity;
 
 import com.larunda.safebox.R;
 
+import cn.com.larunda.safebox.AreaInfoActivity;
 import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
@@ -305,8 +306,11 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_message_enclosure:
-                Intent intent = new Intent(getContext(), AddEnclosureActivity.class);
-                startActivity(intent);
+                if(BoxActivity.ID!=null) {
+                    Intent intent = new Intent(getContext(), AreaInfoActivity.class);
+                    intent.putExtra("id",BoxActivity.ID);
+                    startActivity(intent);
+                }
                 break;
             case R.id.box_message_track:
                 if (BoxActivity.ID != null) {

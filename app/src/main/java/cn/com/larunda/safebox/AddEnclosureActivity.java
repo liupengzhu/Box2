@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,6 +23,8 @@ import java.util.List;
 public class AddEnclosureActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
+
+    private String id;
 
     private RelativeLayout enclosureButton;
     private TextView enclosureText;
@@ -46,6 +49,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        id = getIntent().getStringExtra("id");
         initData();
         initView();
         initEvent();

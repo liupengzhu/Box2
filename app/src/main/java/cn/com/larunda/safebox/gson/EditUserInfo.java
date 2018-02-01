@@ -28,6 +28,7 @@ public class EditUserInfo {
     public String error;
     @SerializedName("company_array")
     public List<Company> companyList;
+    public Config config;
 
     public static class Company{
         public String id;

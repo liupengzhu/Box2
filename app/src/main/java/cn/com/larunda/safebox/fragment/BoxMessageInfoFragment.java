@@ -129,7 +129,7 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         } else {
             electricity_text.setText("");
         }
-        bind_user_text.setText("已绑定" +boxMessage.bind_user_num+ "个用户");
+        bind_user_text.setText("已绑定" + boxMessage.bind_user_num + "个用户");
     }
 
     /**

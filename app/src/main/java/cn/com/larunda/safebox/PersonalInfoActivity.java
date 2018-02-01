@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -82,6 +83,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     TextView fingerprintText;
     TextView levelText;
 
+    private boolean isChangeCompany = false;
+    private boolean isChangeDepartmetn = false;
+
     public static final String PERSONSL_INFO_URL = "http://safebox.dsmcase.com:90/api/user/";
     public static final String COMPANY_URL = "http://safebox.dsmcase.com:90/api/company/";
     public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
@@ -123,8 +127,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-                final EditUserInfo userInfo = Util.handleEditUserInfo(response.body().string());
+                String content = response.body().string();
+                final EditUserInfo userInfo = Util.handleEditUserInfo(content);
                 if (userInfo != null && userInfo.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -165,6 +169,20 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                     companyId.add(Integer.parseInt(company.id));
                     companyData.add(company.name.trim());
                 }
+            }
+        }
+        if (userInfo.config.user.change_company != null) {
+            if (userInfo.config.user.change_company.equals("1")) {
+                isChangeCompany = true;
+            } else {
+                isChangeCompany = false;
+            }
+        }
+        if (userInfo.config.user.change_department != null) {
+            if (userInfo.config.user.change_department.equals("1")) {
+                isChangeDepartmetn = true;
+            } else {
+                isChangeDepartmetn = false;
             }
         }
 
@@ -391,34 +409,38 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 photoDialog.show();
                 break;
             case R.id.personal_info_company:
-                companyDialog = new ChooseDialog(this, companyData);
-                companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                    @Override
-                    public void OnClick(View v, int positon) {
-                        if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
-                            companyDialog.cancel();
-                        } else {
-                            companyText.setText(companyData.get(positon));
-                            Integer id = companyId.get(positon);
-                            departmentText.setText("请选择部门");
-                            sendRequestForDepartmentList(id + "");
-                            companyDialog.cancel();
-                        }
-                    }
-                });
-                companyDialog.show();
-                break;
-            case R.id.personal_info_department:
-                if (isCheckedCompany()) {
-                    departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
-                    departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                if (isChangeCompany) {
+                    companyDialog = new ChooseDialog(this, companyData);
+                    companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
                         @Override
                         public void OnClick(View v, int positon) {
-                            departmentText.setText(departmentData.get(positon));
-                            departmentDialog.cancel();
+                            if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
+                                companyDialog.cancel();
+                            } else {
+                                companyText.setText(companyData.get(positon));
+                                Integer id = companyId.get(positon);
+                                departmentText.setText("请选择部门");
+                                sendRequestForDepartmentList(id + "");
+                                companyDialog.cancel();
+                            }
                         }
                     });
-                    departmentDialog.show();
+                    companyDialog.show();
+                }
+                break;
+            case R.id.personal_info_department:
+                if (isChangeDepartmetn) {
+                    if (isCheckedCompany()) {
+                        departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
+                        departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                            @Override
+                            public void OnClick(View v, int positon) {
+                                departmentText.setText(departmentData.get(positon));
+                                departmentDialog.cancel();
+                            }
+                        });
+                        departmentDialog.show();
+                    }
                 }
 
                 break;

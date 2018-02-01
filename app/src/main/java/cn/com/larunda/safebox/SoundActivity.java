@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
@@ -51,6 +55,10 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
 
 
     @Override
@@ -177,6 +185,9 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             }
 
         }
+        if (soundInfoList.size() == 0) {
+            Toast.makeText(this, "录音不存在", Toast.LENGTH_SHORT).show();
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -212,11 +223,18 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
 
             }
         });
+
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
     private void initView() {
         preferences = PreferenceManager.getDefaultSharedPreferences(SoundActivity.this);
         token = preferences.getString("token", null);
+
+        searchText = findViewById(R.id.sound_serch_edit);
+        cancelButton = findViewById(R.id.sound_cancel_button);
+        ensureButton = findViewById(R.id.sound_ensure_button);
 
         refreshLayout = findViewById(R.id.sound_swiper);
         loodingErrorLayout = findViewById(R.id.sound_loading_error_layout);
@@ -244,7 +262,74 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
      */
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sound_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.sound_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                }
+                break;
+            default:
+                break;
 
+        }
 
+    }
+
+    /**
+     * 搜索
+     *
+     * @param name
+     */
+    private void sendSearchRequest(String name) {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + "&search=" + name, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+
+                if (boxInfo != null && boxInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initBoxList(boxInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(SoundActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+
+            }
+        });
     }
 }

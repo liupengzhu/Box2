@@ -2,6 +2,8 @@ package cn.com.larunda.safebox.gson;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by sddt on 18-1-29.
  */
@@ -24,4 +26,11 @@ public class EditUserInfo {
     @SerializedName("f_pic")
     public String pic;
     public String error;
+    @SerializedName("company_array")
+    public List<Company> companyList;
+
+    public static class Company{
+        public String id;
+        public String name;
+    }
 }

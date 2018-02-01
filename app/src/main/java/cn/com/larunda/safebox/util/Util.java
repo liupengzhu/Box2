@@ -16,6 +16,7 @@ import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
+import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.gson.EditUserInfo;
@@ -164,10 +165,17 @@ public class Util {
         BindAreaInfo bindAreaInfo = gson.fromJson(response, BindAreaInfo.class);
         return bindAreaInfo;
     }
+
     public static AreaInfo handleAreaInfo(String response) {
         Gson gson = new Gson();
         AreaInfo areaInfo = gson.fromJson(response, AreaInfo.class);
         return areaInfo;
+    }
+
+    public static DepartmentInfo handleDepartmentInfo(String response) {
+        Gson gson = new Gson();
+        DepartmentInfo departmentInfo = gson.fromJson(response, DepartmentInfo.class);
+        return departmentInfo;
     }
 
 

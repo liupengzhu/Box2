@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v4.util.SparseArrayCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,7 @@ import java.util.List;
 
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.Department;
+import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -63,6 +65,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     private TextView companyText;
     private ChooseDialog companyDialog;
     private List<String> companyData = new ArrayList<>();
+    private List<Integer> companyId = new ArrayList<>();
 
     private RelativeLayout departmentButton;
     private TextView departmentText;
@@ -83,6 +86,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     public static final String EDIT_USER_URL = "http://safebox.dsmcase.com:90/api/user/";
     public static final String COMPANY_URL = "http://safebox.dsmcase.com:90/api/company/";
+    public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
     public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private String userId = "";
@@ -102,12 +106,12 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         userId = getIntent().getStringExtra("id");
-        initData();
         initView();
-        initEvent();
         if (userId != null) {
             sendRequest();
         }
+        initEvent();
+
     }
 
     /**
@@ -122,7 +126,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 final EditUserInfo userInfo = Util.handleEditUserInfo(response.body().string());
                 if (userInfo != null && userInfo.error == null) {
                     runOnUiThread(new Runnable() {
@@ -156,6 +159,17 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      */
     private void initUserInfo(EditUserInfo userInfo) {
         String imgUrl = null;
+        companyData.clear();
+        companyId.clear();
+        if (userInfo.companyList != null) {
+            for (EditUserInfo.Company company : userInfo.companyList) {
+                if (company.id != null && company.name != null) {
+                    companyId.add(Integer.parseInt(company.id));
+                    companyData.add(company.name.trim());
+                }
+            }
+        }
+
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
             Glide.with(this).load(IMG_URL + imgUrl).into(photo);
@@ -200,6 +214,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         }
         if (userInfo.company_id != "") {
             sendRequestForCompany(userInfo.company_id);
+            sendRequestForDepartmentList(userInfo.company_id);
         } else {
             companyText.setText("");
         }
@@ -207,6 +222,62 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             sendRequestForDepartment(userInfo.department_id);
         } else {
             departmentText.setText("");
+        }
+    }
+
+    /**
+     * 请求部门列表
+     *
+     * @param company_id
+     */
+    private void sendRequestForDepartmentList(String company_id) {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+
+                if (departmentInfo != null && departmentInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initDepartmentList(departmentInfo);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析部门列表
+     *
+     * @param departmentInfo
+     */
+    private void initDepartmentList(DepartmentInfo departmentInfo) {
+        departmentData.clear();
+        if (departmentInfo.getData() != null) {
+            for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
+                if (data.getF_name() != null) {
+                    departmentData.add(data.getF_name());
+                }
+            }
         }
     }
 
@@ -316,20 +387,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         companyButton.setOnClickListener(this);
-        companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-            @Override
-            public void OnClick(View v, int positon) {
-                if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
-                    companyDialog.cancel();
-                } else {
-                    companyText.setText(companyData.get(positon));
-                    departmentText.setText("请选择部门");
-                    companyDialog.cancel();
-                }
-            }
-        });
         departmentButton.setOnClickListener(this);
-
         settingPhoto.setOnClickListener(this);
 
         photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
@@ -381,17 +439,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         startActivityForResult(intent, TAKE_PHOTO);
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        levelData.add("一般用户");
-        levelData.add("管理员");
-
-        companyData.add("家乐福");
-        companyData.add("朗润达");
-        companyData.add("沃尔玛");
-    }
 
     /**
      * 初始化View
@@ -408,7 +455,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
         companyButton = findViewById(R.id.edit_user_company);
         companyText = findViewById(R.id.edit_user_company_text);
-        companyDialog = new ChooseDialog(this, companyData);
+
 
         departmentButton = findViewById(R.id.edit_user_department);
         departmentText = findViewById(R.id.edit_user_department_text);
@@ -444,6 +491,22 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 levelDialog.show();
                 break;
             case R.id.edit_user_company:
+                companyDialog = new ChooseDialog(this, companyData);
+                companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                    @Override
+                    public void OnClick(View v, int positon) {
+                        String company = companyData.get(positon).trim();
+                        if (companyText.getText().toString().trim().equals(company)) {
+                            companyDialog.cancel();
+                        } else {
+                            companyText.setText(company);
+                            Integer id = companyId.get(positon);
+                            departmentText.setText("请选择部门");
+                            sendRequestForDepartmentList(id + "");
+                            companyDialog.cancel();
+                        }
+                    }
+                });
                 companyDialog.show();
                 break;
             case R.id.edit_user_department:
@@ -476,16 +539,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "请先选择单位", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            if (companyText.getText().toString().trim().equals("家乐福")) {
-                departmentData.clear();
-                departmentData.add("导购员");
-            } else if (companyText.getText().toString().trim().equals("朗润达")) {
-                departmentData.clear();
-                departmentData.add("软件部");
-            } else if (companyText.getText().toString().trim().equals("沃尔玛")) {
-                departmentData.clear();
-                departmentData.add("采购部");
-            }
             return true;
         }
     }

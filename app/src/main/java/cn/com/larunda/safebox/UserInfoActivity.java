@@ -11,12 +11,16 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
@@ -53,6 +57,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private ImageView loodingLayout;
     private SharedPreferences preferences;
     private String token;
+
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
 
 
     @Override
@@ -117,6 +125,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intent);
             }
         });
+
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
 
@@ -206,6 +217,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 myUserInfoList.add(myUserInfo);
             }
         }
+        if (myUserInfoList.size() == 0) {
+            Toast.makeText(this, "用户不存在", Toast.LENGTH_SHORT).show();
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -228,6 +242,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         loodingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
         loodingLayout = findViewById(R.id.user_info_loading_layout);
 
+        searchText = findViewById(R.id.user_info_serch_edit);
+        cancelButton = findViewById(R.id.user_info_cancel_button);
+        ensureButton = findViewById(R.id.user_info_ensure_button);
+
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
@@ -242,6 +260,71 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      */
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.user_info_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.user_info_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                }
+                break;
+            default:
+                break;
 
+        }
+    }
+
+    /**
+     * 搜索用户
+     *
+     * @param name
+     */
+    private void sendSearchRequest(String name) {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + "&search=" + name, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final UserInfo userInfo = Util.handleUserInfo(content);
+                if (userInfo != null && userInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUserInfo(userInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
     }
 }

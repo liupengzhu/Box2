@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.gson.AddPerson;
 import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
@@ -14,6 +15,7 @@ import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.CompanyList;
 import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
@@ -179,10 +181,22 @@ public class Util {
         return departmentInfo;
     }
 
-    public static Config handleConfig(String response){
+    public static Config handleConfig(String response) {
         Gson gson = new Gson();
-        Config config = gson.fromJson(response,Config.class);
+        Config config = gson.fromJson(response, Config.class);
         return config;
+    }
+
+    public static CompanyList handleCompanyList(String response) {
+        Gson gson = new Gson();
+        CompanyList companyList = gson.fromJson(response, CompanyList.class);
+        return companyList;
+    }
+
+    public static AddPerson handleAddPerson(String response) {
+        Gson gson = new Gson();
+        AddPerson addPerson = gson.fromJson(response, AddPerson.class);
+        return addPerson;
     }
 
 

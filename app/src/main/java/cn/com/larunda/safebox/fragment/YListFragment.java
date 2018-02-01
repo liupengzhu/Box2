@@ -18,13 +18,16 @@ import android.widget.RelativeLayout;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.adapter.SqAdapter;
 import cn.com.larunda.safebox.gson.SqData;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.recycler.MySq;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
+
 import com.larunda.selfdialog.ConfirmDialog;
 
 import java.io.IOException;
@@ -76,9 +79,9 @@ public class YListFragment extends Fragment {
     }
 
 
-
     /**
      * 初始化view
+     *
      * @param view
      */
     private void initView(View view) {
@@ -168,8 +171,8 @@ public class YListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-                final SqInfo sqInfo = Util.handleSqInfo(response.body().string());
+                String content = response.body().string();
+                final SqInfo sqInfo = Util.handleSqInfo(content);
                 if (sqInfo != null && sqInfo.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override

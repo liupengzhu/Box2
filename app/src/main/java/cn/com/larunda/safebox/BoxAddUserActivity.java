@@ -240,8 +240,11 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_add_user_add_button:
-                Intent bindingUserIntent = new Intent(this, BindingUserActivity.class);
-                startActivity(bindingUserIntent);
+                if (id != null) {
+                    Intent bindingUserIntent = new Intent(this, BindingUserActivity.class);
+                    bindingUserIntent.putExtra("id", id);
+                    startActivity(bindingUserIntent);
+                }
                 break;
             default:
                 break;

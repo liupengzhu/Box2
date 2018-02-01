@@ -1,9 +1,13 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,27 +20,46 @@ import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.com.larunda.safebox.gson.AddPerson;
+import cn.com.larunda.safebox.gson.CompanyList;
+import cn.com.larunda.safebox.gson.DepartmentInfo;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class BindingUserActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
+    public static final String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/app/user_info/company_lists?_token=";
+    public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
+    public static final String PERSON_LIST_URL = "http://safebox.dsmcase.com:90/api/app/box/user_add_lists?_token=";
     private RelativeLayout companyButton;
     private TextView companyText;
     private ChooseDialog companyDialog;
     private List<String> companyData = new ArrayList<>();
+    private List<Integer> companyId = new ArrayList<>();
 
     private RelativeLayout departmentButton;
     private TextView departmentText;
     private ChooseDialog departmentDialog;
     private List<String> departmentData = new ArrayList<>();
+    private List<Integer> departmentId = new ArrayList<>();
 
     private RelativeLayout personButton;
     private TextView personText;
     private ChooseDialog personDialog;
     private List<String> personData = new ArrayList<>();
+    private SharedPreferences preferences;
+    private String token;
+
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +72,65 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        initData();
+        id = getIntent().getStringExtra("id");
         initView();
         initEvent();
+        sendRequest();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(BIND_USER_URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final CompanyList companyList = Util.handleCompanyList(content);
+                if (companyList != null && companyList.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initData(companyList);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析公司数据
+     *
+     * @param companyList
+     */
+    private void initData(CompanyList companyList) {
+        companyData.clear();
+        if (companyList.getData() != null) {
+            for (CompanyList.DataBean dataBean : companyList.getData()) {
+                if (dataBean.getF_name() != null) {
+                    companyData.add(dataBean.getF_name());
+                    companyId.add(dataBean.getId());
+                }
+            }
+
+        }
     }
 
     /**
@@ -75,42 +154,25 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         });
 
         companyButton.setOnClickListener(this);
-        companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-            @Override
-            public void OnClick(View v, int positon) {
-                if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
-                    companyDialog.cancel();
-                } else {
-                    companyText.setText(companyData.get(positon));
-                    departmentText.setText("请选择部门");
-                    personText.setText("请选择姓名");
-                    companyDialog.cancel();
-                }
-            }
-        });
+
         departmentButton.setOnClickListener(this);
 
         personButton.setOnClickListener(this);
 
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        companyData.add("家乐福");
-        companyData.add("朗润达");
-        companyData.add("沃尔玛");
-    }
 
     /**
      * 初始化view
      */
     private void initView() {
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        token = preferences.getString("token", null);
+
         companyButton = findViewById(R.id.binding_user_company);
         companyText = findViewById(R.id.binding_user_company_text);
-        companyDialog = new ChooseDialog(this, companyData);
+
 
         departmentButton = findViewById(R.id.binding_user_department);
         departmentText = findViewById(R.id.binding_user_department_text);
@@ -136,6 +198,22 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         switch (v.getId()) {
 
             case R.id.binding_user_company:
+                companyDialog = new ChooseDialog(this, companyData);
+                companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                    @Override
+                    public void OnClick(View v, int positon) {
+                        if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
+                            companyDialog.cancel();
+                        } else {
+                            companyText.setText(companyData.get(positon));
+                            int id = companyId.get(positon);
+                            departmentText.setText("请选择部门");
+                            personText.setText("请选择姓名");
+                            sendRequestForDepartmentList(id + "");
+                            companyDialog.cancel();
+                        }
+                    }
+                });
                 companyDialog.show();
                 break;
             case R.id.binding_user_department:
@@ -148,7 +226,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                                 departmentDialog.cancel();
                             } else {
                                 departmentText.setText(departmentData.get(positon));
+                                int id = departmentId.get(positon);
                                 personText.setText("请选择姓名");
+                                sendRequestForPersonList(id + "");
                                 departmentDialog.cancel();
                             }
                         }
@@ -176,6 +256,115 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
+     * 请求人员信息
+     *
+     * @param s
+     */
+    private void sendRequestForPersonList(String s) {
+        HttpUtil.sendGetRequestWithHttp(PERSON_LIST_URL + token + "&id=" + id + "&department_id=" + s, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final AddPerson addPerson = Util.handleAddPerson(content);
+                if (addPerson != null && addPerson.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initPersonData(addPerson);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析人员信息
+     *
+     * @param addPerson
+     */
+    private void initPersonData(AddPerson addPerson) {
+        personData.clear();
+        if (addPerson.getData() != null) {
+            for (AddPerson.DataBean dataBean : addPerson.getData()) {
+                if (dataBean.getF_name() != null) {
+                    personData.add(dataBean.getF_name());
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 请求部门列表
+     *
+     * @param company_id
+     */
+    private void sendRequestForDepartmentList(String company_id) {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+
+                if (departmentInfo != null && departmentInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initDepartmentList(departmentInfo);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initDepartmentList(DepartmentInfo departmentInfo) {
+        departmentData.clear();
+        if (departmentInfo.getData() != null) {
+            for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
+                if (data.getF_name() != null) {
+                    departmentData.add(data.getF_name());
+                    departmentId.add(data.getId());
+                }
+            }
+        }
+    }
+
+    /**
      * 判断是否选择部门方法
      *
      * @return
@@ -188,14 +377,6 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(this, "请先选择部门", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            personData.add("张三1");
-            personData.add("张三2");
-            personData.add("张三3");
-            personData.add("张三4");
-            personData.add("张三5");
-            personData.add("张三6");
-            personData.add("张三7");
-            personData.add("张三8");
             return true;
         }
     }
@@ -210,16 +391,6 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(this, "请先选择单位", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            if (companyText.getText().toString().trim().equals("家乐福")) {
-                departmentData.clear();
-                departmentData.add("导购员");
-            } else if (companyText.getText().toString().trim().equals("朗润达")) {
-                departmentData.clear();
-                departmentData.add("软件部");
-            } else if (companyText.getText().toString().trim().equals("沃尔玛")) {
-                departmentData.clear();
-                departmentData.add("采购部");
-            }
             return true;
         }
     }

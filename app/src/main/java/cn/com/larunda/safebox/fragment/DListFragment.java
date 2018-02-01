@@ -8,15 +8,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.LoginActivity;
@@ -67,6 +70,10 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     public static boolean isLongClick = false;
 
     private boolean isAllChecked = false;
+
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -125,10 +132,10 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         settingQx_Button = view.findViewById(R.id.dsx_list_setting_qx);
         settingState_Button = view.findViewById(R.id.dsx_list_setting_state);
 
-        allCheckedImage.setOnClickListener(this);
-        allCheckedText.setOnClickListener(this);
-        settingQx_Button.setOnClickListener(this);
-        settingState_Button.setOnClickListener(this);
+        searchText = view.findViewById(R.id.list_serch_edit);
+        cancelButton = view.findViewById(R.id.list_cancel_button);
+        ensureButton = view.findViewById(R.id.list_ensure_button);
+
     }
 
     /**
@@ -155,6 +162,14 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                 startActivity(intent);
             }
         });
+
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+        settingQx_Button.setOnClickListener(this);
+        settingState_Button.setOnClickListener(this);
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
 
@@ -267,6 +282,9 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
             }
         }
+        if (myBoxList.size() == 0) {
+            Toast.makeText(getContext(), "递送箱不存在", Toast.LENGTH_SHORT).show();
+        }
         adapter.notifyDataSetChanged();
 
 
@@ -304,8 +322,74 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             case R.id.dsx_list_setting_state:
                 Intent settingStatesIntent = new Intent(getContext(), SettingStatesActivity.class);
                 startActivity(settingStatesIntent);
+                break;
+            case R.id.list_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.list_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                }
+                break;
+            default:
+                break;
         }
 
+    }
+
+    /**
+     * 搜索
+     *
+     * @param name
+     */
+    private void sendSearchRequest(String name) {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + "&search=" + name, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+
+                if (boxInfo != null && boxInfo.error == null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initBoxList(boxInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    });
+                }
+
+            }
+        });
     }
 
     /**

@@ -8,13 +8,13 @@
 
     <RelativeLayout
         android:id="@+id/top_layout"
-        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:background="@color/white"
         android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
 
         <EditText
             android:id="@+id/list_serch_edit"
@@ -36,6 +36,7 @@
             android:src="@mipmap/list_serch" />
 
         <ImageView
+            android:id="@+id/list_cancel_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignRight="@+id/list_serch_edit"
@@ -44,6 +45,7 @@
             android:src="@mipmap/list_unsherch" />
 
         <TextView
+            android:id="@+id/list_ensure_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

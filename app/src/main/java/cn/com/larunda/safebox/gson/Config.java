@@ -18,4 +18,5 @@ public class Config {
         public String upload_fingerprint;
 
     }
+    public String error;
 }

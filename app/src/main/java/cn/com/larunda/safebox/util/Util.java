@@ -14,6 +14,7 @@ import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
@@ -176,6 +177,12 @@ public class Util {
         Gson gson = new Gson();
         DepartmentInfo departmentInfo = gson.fromJson(response, DepartmentInfo.class);
         return departmentInfo;
+    }
+
+    public static Config handleConfig(String response){
+        Gson gson = new Gson();
+        Config config = gson.fromJson(response,Config.class);
+        return config;
     }
 
 

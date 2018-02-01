@@ -11,15 +11,18 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
@@ -54,6 +57,10 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     List<Enclosure> enclosureList = new ArrayList<>();
     private RelativeLayout top_layout;
     private LinearLayout bottom_layout;
+
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
 
     /**
      * 是否在长按状态
@@ -165,6 +172,9 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                 enclosureList.add(enclosure);
             }
         }
+        if (enclosureList.size() == 0) {
+            Toast.makeText(this, "地理围栏不存在", Toast.LENGTH_SHORT).show();
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -199,6 +209,10 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             }
         });
 
+        searchText = findViewById(R.id.enclosure_serch_edit);
+        cancelButton = findViewById(R.id.enclosure_cancel_button);
+        ensureButton = findViewById(R.id.enclosure_ensure_button);
+
         top_layout = findViewById(R.id.enclosure_top_layout);
         bottom_layout = findViewById(R.id.enclosure_bottom_layout);
 
@@ -219,6 +233,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         setAdapterClick(adapter);
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
     /**
@@ -322,8 +338,70 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             case R.id.enclosure_all_checked_text:
                 allCheckedClick();
                 break;
+            case R.id.enclosure_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.enclosure_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                }
+                break;
+            default:
+                break;
 
         }
+    }
+
+    /**
+     * 搜索
+     *
+     * @param name
+     */
+    private void sendSearchRequest(String name) {
+
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + "&search=" + name, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final EnclosureInfo enclosureInfo = Util.handleEnclosureInfo(response.body().string());
+                if (enclosureInfo != null && enclosureInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initEnclosureInfo(enclosureInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
     }
 }
 

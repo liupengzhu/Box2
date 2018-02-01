@@ -43,6 +43,7 @@
             android:src="@mipmap/list_serch" />
 
         <ImageView
+            android:id="@+id/enclosure_cancel_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignRight="@+id/enclosure_serch_edit"
@@ -51,6 +52,7 @@
             android:src="@mipmap/list_unsherch" />
 
         <TextView
+            android:id="@+id/enclosure_ensure_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

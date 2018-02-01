@@ -42,7 +42,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class DListFragment extends Fragment implements View.OnClickListener {
+public class DListFragment extends BaseFragment implements View.OnClickListener {
 
 
     public static final String BOX_URL = "http://safebox.dsmcase.com:90/api/box?_token=";
@@ -100,7 +100,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             bottom_layout.setVisibility(View.VISIBLE);
             MainActivity.tabLayout.setVisibility(View.GONE);
         }
-        sendRequest();
+
         return view;
     }
 
@@ -339,5 +339,10 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void loadData() {
+        sendRequest();
     }
 }

@@ -35,7 +35,7 @@ import java.io.IOException;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxMessageInfoFragment extends Fragment implements View.OnClickListener {
+public class BoxMessageInfoFragment extends BaseFragment implements View.OnClickListener {
 
     RelativeLayout bindingUser_Button;
     RelativeLayout password_Button;
@@ -62,7 +62,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     @Override
     public void onStart() {
         super.onStart();
-        sendHttpRequest();
+
     }
 
     /**
@@ -202,4 +202,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     }
 
 
+    @Override
+    protected void loadData() {
+        sendHttpRequest();
+    }
 }

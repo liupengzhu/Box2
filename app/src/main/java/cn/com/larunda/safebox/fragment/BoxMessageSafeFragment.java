@@ -40,7 +40,7 @@ import java.util.List;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxMessageSafeFragment extends Fragment implements View.OnClickListener {
+public class BoxMessageSafeFragment extends BaseFragment implements View.OnClickListener {
 
     RelativeLayout enclosureButton;
     RelativeLayout trackButton;
@@ -86,7 +86,6 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     @Override
     public void onStart() {
         super.onStart();
-        sendHttpRequest();
     }
 
     /**
@@ -337,5 +336,10 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
 
         }
 
+    }
+
+    @Override
+    protected void loadData() {
+        sendHttpRequest();
     }
 }

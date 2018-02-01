@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by sddt on 18-1-16.
  */
 
-public class TotalLogFragment extends Fragment {
+public class TotalLogFragment extends BaseFragment {
 
 
     List<String> titleList = new ArrayList<>();
@@ -49,7 +50,6 @@ public class TotalLogFragment extends Fragment {
         } else {
             view = (View) container.getTag(R.id.tag_second);
         }
-
         return view;
     }
 
@@ -88,6 +88,11 @@ public class TotalLogFragment extends Fragment {
             }
         });
 
+
+    }
+
+    @Override
+    protected void loadData() {
 
     }
 }

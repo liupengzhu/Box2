@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home?_token=";
     TextView totalView;
@@ -128,7 +129,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             }
         });
-        queryInfo();
+
     }
 
     public void queryInfo() {
@@ -248,5 +249,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 MainActivity.viewPager.setCurrentItem(3);
                 break;
         }
+    }
+
+    @Override
+    protected void loadData() {
+        queryInfo();
     }
 }

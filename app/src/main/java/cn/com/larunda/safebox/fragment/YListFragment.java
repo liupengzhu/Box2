@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,19 @@ public class YListFragment extends Fragment {
         loodingLayout.setVisibility(View.VISIBLE);
         return view;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+            }
+        });
+        sendRequest();
+    }
+
 
 
     /**
@@ -132,18 +146,6 @@ public class YListFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                sendRequest();
-            }
-        });
-        sendRequest();
-    }
-
     /**
      * 发送请求数据
      */
@@ -205,7 +207,6 @@ public class YListFragment extends Fragment {
         sqList.clear();
         for (SqData sqData : sqInfo.sqDataList) {
 
-            //Log.d("main",MainActivity.token);
             String img_uri = sqData.user_pic.replace('\\', ' ');
             MySq mySq = new MySq(IMG_URI + img_uri, sqData.user, sqData.code, sqData.date);
             sqList.add(mySq);
@@ -214,4 +215,5 @@ public class YListFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
     }
+
 }

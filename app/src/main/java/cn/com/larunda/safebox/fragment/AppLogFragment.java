@@ -73,6 +73,7 @@ public class AppLogFragment extends Fragment {
             }
         });
         sendRequest();
+
     }
 
     /**
@@ -162,4 +163,5 @@ public class AppLogFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
     }
+
 }

@@ -5,18 +5,20 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.adapter.SqFragmentAdapter;
 import cn.com.larunda.safebox.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SListFragment extends Fragment {
+public class SListFragment extends BaseFragment {
     List<String> titleList = new ArrayList<>();
     List<Fragment> fragmentList = new ArrayList<>();
     TabLayout tabLayout;
@@ -42,12 +44,6 @@ public class SListFragment extends Fragment {
         }
 
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
     }
 
     /**
@@ -78,5 +74,9 @@ public class SListFragment extends Fragment {
         });
 
 
+    }
+
+    @Override
+    protected void loadData() {
     }
 }

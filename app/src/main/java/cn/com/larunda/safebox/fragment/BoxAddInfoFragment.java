@@ -17,7 +17,7 @@ import com.larunda.safebox.R;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxAddInfoFragment extends Fragment implements View.OnClickListener {
+public class BoxAddInfoFragment extends BaseFragment implements View.OnClickListener {
 
     RelativeLayout addButton;
 
@@ -56,5 +56,10 @@ public class BoxAddInfoFragment extends Fragment implements View.OnClickListener
                 break;
 
         }
+    }
+
+    @Override
+    protected void loadData() {
+
     }
 }

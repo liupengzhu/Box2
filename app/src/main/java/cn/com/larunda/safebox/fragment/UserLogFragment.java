@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,13 +73,13 @@ public class UserLogFragment extends Fragment {
             }
         });
         sendRequest();
+
     }
 
     /**
      * 发送网络请求并解析数据
      */
     private void sendRequest() {
-
         swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE, new Callback() {
             @Override
@@ -86,7 +87,6 @@ public class UserLogFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.INVISIBLE);
@@ -161,4 +161,5 @@ public class UserLogFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
     }
+
 }

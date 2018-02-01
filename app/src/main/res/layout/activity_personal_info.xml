@@ -95,7 +95,7 @@
                     android:maxLines="1"
                     android:text="zq053694"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -136,7 +136,7 @@
                     android:maxLines="1"
                     android:text="张三"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -179,7 +179,7 @@
                     android:maxLines="1"
                     android:text="18923654897"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
                 <ImageView
@@ -229,7 +229,7 @@
                     android:maxLines="1"
                     android:text="189525163648@qq.com"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
                 <ImageView

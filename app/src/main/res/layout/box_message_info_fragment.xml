@@ -40,7 +40,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/box_message_info_meterial_text"
+                    android:id="@+id/box_message_info_material_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

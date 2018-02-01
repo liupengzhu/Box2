@@ -5,14 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import cn.com.larunda.safebox.AddEnclosureActivity;
+
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.TimeDialog;
@@ -53,6 +56,8 @@ public class BoxAddSafeFragment extends Fragment implements View.OnClickListener
     private ChooseDialog bfChooseDialog;
     private TimeDialog startDialog;
     private TimeDialog endDialog;
+
+    private EditText materialText;
 
     @Nullable
     @Override
@@ -103,6 +108,8 @@ public class BoxAddSafeFragment extends Fragment implements View.OnClickListener
         bfChooseDialog = new ChooseDialog(getContext(), bfList);
         startDialog = new TimeDialog(getContext());
         endDialog = new TimeDialog(getContext());
+
+        materialText = view.findViewById(R.id.box_add_info_material_text);
     }
 
     /**
@@ -181,8 +188,7 @@ public class BoxAddSafeFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_add_safe_enclosure:
-                Intent intent = new Intent(getContext(), AddEnclosureActivity.class);
-                startActivity(intent);
+
                 break;
             case R.id.box_add_safe_level:
                 chooseDialog.show();

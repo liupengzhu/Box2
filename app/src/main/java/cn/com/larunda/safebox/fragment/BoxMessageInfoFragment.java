@@ -153,7 +153,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);
         sound_Button = view.findViewById(R.id.box_message_sound);
-        material_text = view.findViewById(R.id.box_message_info_meterial_text);
+        material_text = view.findViewById(R.id.box_message_info_material_text);
         size_text = view.findViewById(R.id.box_message_info_size_text);
         protect_text = view.findViewById(R.id.box_message_info_protect_text);
         electricity_text = view.findViewById(R.id.box_message_info_electricity_text);

@@ -18,11 +18,11 @@
         android:layout_weight="1">
 
         <LinearLayout
-            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@color/white"
+            android:focusableInTouchMode="true"
             android:orientation="vertical">
 
             <TextView
@@ -111,7 +111,7 @@
                     android:maxLength="15"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -151,7 +151,7 @@
                     android:maxLength="15"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -192,7 +192,7 @@
                     android:maxLength="15"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -233,7 +233,7 @@
                     android:maxLength="15"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -274,7 +274,7 @@
                     android:maxLength="11"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 
@@ -315,7 +315,7 @@
                     android:maxLength="20"
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
-                    android:textCursorDrawable="@color/menu_sz_color"
+                    android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
 
 

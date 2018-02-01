@@ -131,9 +131,9 @@ public class TrackActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
+                Log.d("main",content);
                 LocationInfo locationInfo = Util.handleLocationInfo(content);
                 if (locationInfo != null && locationInfo.error == null) {
-
                     showInfo(locationInfo);
                 } else {
                     runOnUiThread(new Runnable() {

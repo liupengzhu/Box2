@@ -97,6 +97,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
 
         initEvent();
 
@@ -186,7 +188,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -201,8 +204,10 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                         public void run() {
                             initBoxList(boxInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+
                         }
                     });
                 } else {
@@ -356,7 +361,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -371,8 +377,9 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                         public void run() {
                             initBoxList(boxInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     });
                 } else {

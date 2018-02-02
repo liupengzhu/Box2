@@ -60,6 +60,8 @@ public class UserLogFragment extends Fragment {
         initView(view);
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
         return view;
     }
 
@@ -89,7 +91,8 @@ public class UserLogFragment extends Fragment {
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
 
@@ -104,8 +107,9 @@ public class UserLogFragment extends Fragment {
                         public void run() {
                             showInfo(totalLogInfo);
                             swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     });
 

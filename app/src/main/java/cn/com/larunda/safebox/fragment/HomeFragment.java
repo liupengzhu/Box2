@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,8 +65,10 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private LinearLayoutManager manager;
 
     public SwipeRefreshLayout swipeRefreshLayout;
+
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private NestedScrollView layout;
 
     private Button logButton;
 
@@ -103,6 +106,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         diskText = view.findViewById(R.id.disk_text);
         loodingErrorLayout = view.findViewById(R.id.loading_error_layout);
         loodingLayout = view.findViewById(R.id.loading_layout);
+        layout = view.findViewById(R.id.home_ok_layout);
+
         recyclerView = view.findViewById(R.id.log_recycler);
         manager = new LinearLayoutManager(getActivity());
         adapter = new LogAdapter(myLogList);
@@ -114,6 +119,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
     }
 
     @Override
@@ -141,7 +148,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                         //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
                     }
                 });
 
@@ -157,8 +165,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                         public void run() {
                             showInfo(home);
                             swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.VISIBLE);
 
                         }
 

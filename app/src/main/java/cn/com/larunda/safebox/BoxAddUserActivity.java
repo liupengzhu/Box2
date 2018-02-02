@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -53,6 +54,8 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     private String token;
 
     private SwipeRefreshLayout refreshLayout;
+
+    private NestedScrollView layout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
@@ -82,6 +85,8 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
 
         //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
 
         sendRequest();
     }
@@ -99,7 +104,9 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+
                     }
                 });
             }
@@ -114,8 +121,9 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                         public void run() {
                             initData(boxAddUserInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.VISIBLE);
                         }
                     });
                 } else {
@@ -213,6 +221,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
         refreshLayout = findViewById(R.id.box_add_user_swipe);
         loodingErrorLayout = findViewById(R.id.box_add_user_loading_error_layout);
         loodingLayout = findViewById(R.id.box_add_user_loading_layout);
+        layout = findViewById(R.id.box_add_user_layout);
 
         titleBar = findViewById(R.id.box_add_user_title_bar);
         titleBar.setTextViewText("");

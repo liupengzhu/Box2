@@ -90,6 +90,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
         sendRequest();
 
     }
@@ -144,7 +146,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -158,8 +161,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             initUserInfo(userInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     });
 
@@ -292,7 +296,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -307,8 +312,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             initUserInfo(userInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     });
 

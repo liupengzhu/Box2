@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private NestedScrollView layout;
 
 
     @Override
@@ -81,6 +83,8 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
 
         //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
 
         sendRequest();
     }
@@ -98,7 +102,8 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                     public void run() {
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -113,8 +118,9 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             initData(bindAreaInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.VISIBLE);
                         }
                     });
                 } else {
@@ -201,6 +207,7 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
         refreshLayout = findViewById(R.id.area_swipe);
         loodingErrorLayout = findViewById(R.id.area_loading_error_layout);
         loodingLayout = findViewById(R.id.area_loading_layout);
+        layout = findViewById(R.id.area_layout);
 
         titleBar = findViewById(R.id.area_title_bar);
         titleBar.setTextViewText("");

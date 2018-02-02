@@ -7,13 +7,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.com.larunda.safebox.AddEnclosureActivity;
 
@@ -25,6 +29,7 @@ import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.TrackActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -33,6 +38,10 @@ import okhttp3.Response;
 
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.TimeDialog;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,6 +89,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     private ImageView loodingLayout;
     private LinearLayout layout;
 
+    private Button putButton;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -110,7 +121,6 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
@@ -121,7 +131,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final BoxMessage boxMessage = Util.handleBoxMessage(response.body().string());
+                String content = response.body().string();
+                final BoxMessage boxMessage = Util.handleBoxMessage(content);
                 if (boxMessage != null && boxMessage.error == null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -156,11 +167,11 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
      */
     private void initBoxMessage(BoxMessage boxMessage) {
         if (boxMessage.encrypt_level != null) {
-            if (boxMessage.encrypt_level.equals("2")) {
+            if (boxMessage.encrypt_level.equals("3")) {
                 levelText.setText("三级加密");
-            } else if (boxMessage.encrypt_level.equals("1")) {
+            } else if (boxMessage.encrypt_level.equals("2")) {
                 levelText.setText("二级加密");
-            } else if (boxMessage.encrypt_level.equals("0")) {
+            } else if (boxMessage.encrypt_level.equals("1")) {
                 levelText.setText("一级加密");
             }
         } else {
@@ -258,6 +269,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         startDialog = new TimeDialog(getContext());
         endDialog = new TimeDialog(getContext());
 
+        putButton = view.findViewById(R.id.box_message_safe_button);
+
         loodingErrorLayout = view.findViewById(R.id.box_message_safe_loading_error_layout);
         loodingLayout = view.findViewById(R.id.box_message_safe_loading_layout);
         layout = view.findViewById(R.id.box_message_safe_layout);
@@ -279,6 +292,7 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         lockButton.setOnClickListener(this);
         startTimeButton.setOnClickListener(this);
         endTimeButton.setOnClickListener(this);
+        putButton.setOnClickListener(this);
 
         chooseDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
             @Override
@@ -368,10 +382,144 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
             case R.id.box_message_end:
                 endDialog.show();
                 break;
+
+            case R.id.box_message_safe_button:
+                if (levelText != null && startTimeText != null && startDateText != null && endDateText != null
+                        && endTimeText != null && lockText != null) {
+                    String level = levelText.getText().toString().trim();
+                    String startData = startDateText.getText().toString().trim();
+                    String startTime = startTimeText.getText().toString().trim();
+                    String endData = endDateText.getText().toString().trim();
+                    String endTime = endTimeText.getText().toString().trim();
+                    String lock = lockText.getText().toString().trim();
+                    if (!isEmpty(level, startData, startTime, endData, endTime, lock)) {
+                        sendPutRequest(level, startData + " " + startTime, endData + " " + endTime, lock);
+                    }
+                }
+                break;
             default:
                 break;
 
         }
+
+    }
+
+    /**
+     * 发送put
+     *
+     * @param level
+     * @param s
+     * @param s1
+     * @param lock
+     */
+    private void sendPutRequest(String level, String s, String s1, String lock) {
+        swipeRefreshLayout.setRefreshing(true);
+        final JSONObject jsonObject = new JSONObject();
+        final JSONObject js = new JSONObject();
+        try {
+            if (level.equals("三级加密")) {
+                jsonObject.put("f_encrypt_level", 3);
+            } else if (level.equals("二级加密")) {
+                jsonObject.put("f_encrypt_level", 2);
+            } else {
+                jsonObject.put("f_encrypt_level", 1);
+            }
+            js.put("start_time", s);
+            js.put("end_time", s1);
+            jsonObject.put("f_lock_time", js);
+            if (lock.equals("已锁定")) {
+                jsonObject.put("f_is_locked", 1);
+            } else {
+                jsonObject.put("f_is_locked", 0);
+            }
+            jsonObject.put("type", "app");
+            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(),"网络异常",Toast.LENGTH_SHORT).show();
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, final Response response) throws IOException {
+                    String content = response.body().string();
+                    final Result result = Util.handleResult(content);
+                    if (result != null && result.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseResult(result);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                BoxActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void parseResult(Result result) {
+        if(result.data!=null&&result.data.equals("true")){
+            Toast.makeText(getContext(),"更新成功",Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getContext(),"更新失败",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * 判断是否为空
+     *
+     * @param level
+     * @param startData
+     * @param starttime
+     * @param endData
+     * @param endTime
+     * @param lock
+     * @return
+     */
+    private boolean isEmpty(String level, String startData, String starttime, String endData, String endTime, String lock) {
+        if (TextUtils.isEmpty(level)) {
+            Toast.makeText(getContext(), "权限等级不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(startData)) {
+            Toast.makeText(getContext(), "开始日期不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(starttime)) {
+            Toast.makeText(getContext(), "开始时间不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(endData)) {
+            Toast.makeText(getContext(), "结束日期不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(endTime)) {
+            Toast.makeText(getContext(), "结束时间不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(lock)) {
+            Toast.makeText(getContext(), "锁定状态不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
 
     }
 

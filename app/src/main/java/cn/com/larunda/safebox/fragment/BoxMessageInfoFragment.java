@@ -28,6 +28,7 @@ import cn.com.larunda.safebox.DynamicPasswordActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -297,19 +298,41 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
             HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "网络异常", Toast.LENGTH_SHORT).show();
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String content = response.body().string();
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
+                    final Result result = Util.handleResult(content);
+                    if (result != null && result.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseResult(result);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                BoxActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
                 }
+
             });
 
 
@@ -320,6 +343,13 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
 
     }
 
+    private void parseResult(Result result) {
+        if (result.data != null && result.data.equals("true")) {
+            Toast.makeText(getContext(), "更新成功", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "更新失败", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     protected void loadData() {

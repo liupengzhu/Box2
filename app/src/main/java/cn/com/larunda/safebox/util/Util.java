@@ -27,6 +27,7 @@ import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
+import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
@@ -197,6 +198,11 @@ public class Util {
         Gson gson = new Gson();
         AddPerson addPerson = gson.fromJson(response, AddPerson.class);
         return addPerson;
+    }
+    public static Result handleResult(String response){
+        Gson gson = new Gson();
+        Result result = gson.fromJson(response,Result.class);
+        return result;
     }
 
 

@@ -49,8 +49,7 @@ public class BoxAddInfoFragment extends BaseFragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_add_info_add_button:
-                Intent intent = new Intent(getContext(), BoxAddUserActivity.class);
-                startActivity(intent);
+
                 break;
             default:
                 break;

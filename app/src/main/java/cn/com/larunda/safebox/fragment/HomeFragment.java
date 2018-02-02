@@ -64,10 +64,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private LinearLayoutManager manager;
 
     public SwipeRefreshLayout swipeRefreshLayout;
-
-
     private RelativeLayout loodingErrorLayout;
-
     private ImageView loodingLayout;
 
     private Button logButton;
@@ -170,8 +167,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
 
                 } else {
-
-
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

@@ -6,9 +6,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -73,6 +75,10 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     public static final String MESSAGE_URI = "http://safebox.dsmcase.com:90/api/box/";
     private TextView bind_area_text;
 
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,6 +86,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         initData();
         initView(view);
         initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -92,10 +100,19 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
      * 发送网络请求
      */
     private void sendHttpRequest() {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -106,6 +123,9 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                         @Override
                         public void run() {
                             initBoxMessage(boxMessage);
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
                 } else {
@@ -233,6 +253,11 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         startDialog = new TimeDialog(getContext());
         endDialog = new TimeDialog(getContext());
 
+        loodingErrorLayout = view.findViewById(R.id.box_message_safe_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.box_message_safe_loading_layout);
+        swipeRefreshLayout = view.findViewById(R.id.box_message_safe_swipe);
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
+
 
     }
 
@@ -305,9 +330,9 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.box_message_enclosure:
-                if(BoxActivity.ID!=null) {
+                if (BoxActivity.ID != null) {
                     Intent intent = new Intent(getContext(), AreaInfoActivity.class);
-                    intent.putExtra("id",BoxActivity.ID);
+                    intent.putExtra("id", BoxActivity.ID);
                     startActivity(intent);
                 }
                 break;

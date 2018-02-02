@@ -6,10 +6,12 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -49,12 +51,18 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     TextView electricity_text;
     TextView bind_user_text;
 
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.box_message_info_fragment, container, false);
         initView(view);
         initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -69,11 +77,19 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
      * 发送网络请求
      */
     private void sendHttpRequest() {
-
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
 
             @Override
@@ -85,6 +101,9 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                         @Override
                         public void run() {
                             initBoxMessage(boxMessage);
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.INVISIBLE);
                         }
                     });
                 } else {
@@ -158,6 +177,10 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         protect_text = view.findViewById(R.id.box_message_info_protect_text);
         electricity_text = view.findViewById(R.id.box_message_info_electricity_text);
 
+        loodingErrorLayout = view.findViewById(R.id.box_message_info_loading_error_layout);
+        loodingLayout = view.findViewById(R.id.box_message_info_loading_layout);
+        swipeRefreshLayout = view.findViewById(R.id.box_message_info_swipe);
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
     }
 
     /**

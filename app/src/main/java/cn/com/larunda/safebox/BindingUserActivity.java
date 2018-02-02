@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,6 +24,9 @@ import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,7 @@ import java.util.List;
 import cn.com.larunda.safebox.gson.AddPerson;
 import cn.com.larunda.safebox.gson.CompanyList;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
+import cn.com.larunda.safebox.gson.UserToken;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -41,6 +46,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
     private TitleBar titleBar;
 
     public static final String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/app/user_info/company_lists?_token=";
+    public static final String ADD_USER_URL = "http://safebox.dsmcase.com:90/api/box/add_bind_user?_token=";
     public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
     public static final String PERSON_LIST_URL = "http://safebox.dsmcase.com:90/api/app/box/user_add_lists?_token=";
     private RelativeLayout companyButton;
@@ -59,15 +65,20 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
     private TextView personText;
     private ChooseDialog personDialog;
     private List<String> personData = new ArrayList<>();
+    private List<Integer> personId = new ArrayList<>();
     private SharedPreferences preferences;
     private String token;
 
     private String id;
+    private int userId;
 
     public SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
     private LinearLayout layout;
+
+    private Button postButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +158,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      */
     private void initData(CompanyList companyList) {
         companyData.clear();
+        companyId.clear();
         if (companyList.getData() != null) {
             for (CompanyList.DataBean dataBean : companyList.getData()) {
                 if (dataBean.getF_name() != null) {
@@ -189,6 +201,8 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
         loodingErrorLayout.setOnClickListener(this);
 
+        postButton.setOnClickListener(this);
+
     }
 
 
@@ -217,6 +231,8 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
         personButton = findViewById(R.id.binding_user_person);
         personText = findViewById(R.id.binding_user_person_text);
+
+        postButton = findViewById(R.id.binding_user_button);
 
         titleBar = findViewById(R.id.binding_user_title_bar);
         titleBar.setTextViewText("绑定用户");
@@ -290,6 +306,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                     personDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
                         @Override
                         public void OnClick(View v, int positon) {
+                            userId = personId.get(positon);
                             personText.setText(personData.get(positon));
                             personDialog.cancel();
                         }
@@ -300,8 +317,83 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             case R.id.binding_user_loading_error_layout:
                 sendRequest();
                 break;
+            case R.id.binding_user_button:
+                if (isCheckedDepartment()) {
+                    if (personText.getText().toString().trim().equals("请选择姓名")) {
+                        Toast.makeText(this, "姓名不能为空", Toast.LENGTH_SHORT).show();
+                    } else {
+                        sendPostRequest();
+                    }
+                }
+                break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 提交绑定人员信息
+     */
+    private void sendPostRequest() {
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+            jsonObject.put("box_id", id);
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(ADD_USER_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                        }
+                    });
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析添加人员返回信息
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
+        }else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
         }
     }
 
@@ -365,10 +457,12 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      */
     private void initPersonData(AddPerson addPerson) {
         personData.clear();
+        personId.clear();
         if (addPerson.getData() != null) {
             for (AddPerson.DataBean dataBean : addPerson.getData()) {
                 if (dataBean.getF_name() != null) {
                     personData.add(dataBean.getF_name());
+                    personId.add(dataBean.getId());
                 }
             }
 
@@ -430,6 +524,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     private void initDepartmentList(DepartmentInfo departmentInfo) {
         departmentData.clear();
+        departmentId.clear();
         if (departmentInfo.getData() != null) {
             for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
                 if (data.getF_name() != null) {

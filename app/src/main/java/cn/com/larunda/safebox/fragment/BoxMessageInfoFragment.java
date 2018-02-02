@@ -7,13 +7,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.BoxAddUserActivity;
@@ -31,6 +36,9 @@ import okhttp3.Response;
 
 import com.larunda.safebox.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 /**
@@ -45,15 +53,17 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     RelativeLayout sound_Button;
     public static final String MESSAGE_URI = "http://safebox.dsmcase.com:90/api/box/";
 
-    TextView material_text;
-    TextView size_text;
-    TextView protect_text;
+    EditText material_text;
+    EditText size_text;
+    EditText protect_text;
     TextView electricity_text;
     TextView bind_user_text;
 
     public SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private LinearLayout layout;
+    private Button putButton;
 
     @Nullable
     @Override
@@ -63,6 +73,8 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         initEvent();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         return view;
     }
 
@@ -84,10 +96,10 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -102,8 +114,9 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                         public void run() {
                             initBoxMessage(boxMessage);
                             swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -159,6 +172,8 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         password_Button.setOnClickListener(this);
         log_Button.setOnClickListener(this);
         sound_Button.setOnClickListener(this);
+        putButton.setOnClickListener(this);
+        loodingErrorLayout.setOnClickListener(this);
     }
 
     /**
@@ -177,9 +192,14 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         protect_text = view.findViewById(R.id.box_message_info_protect_text);
         electricity_text = view.findViewById(R.id.box_message_info_electricity_text);
 
+        putButton = view.findViewById(R.id.box_message_info_button);
+
         loodingErrorLayout = view.findViewById(R.id.box_message_info_loading_error_layout);
         loodingLayout = view.findViewById(R.id.box_message_info_loading_layout);
+        layout = view.findViewById(R.id.box_message_info_layout);
+
         swipeRefreshLayout = view.findViewById(R.id.box_message_info_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         swipeRefreshLayout.setEnabled(false);//设置swipe不可用
     }
 
@@ -216,9 +236,85 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                 Intent soundIntent = new Intent(getContext(), BoxInfoSoundActivity.class);
                 startActivity(soundIntent);
                 break;
+            case R.id.box_message_info_button:
+                if (material_text != null && size_text != null && protect_text != null) {
+                    String material = material_text.getText().toString().trim();
+                    String size = size_text.getText().toString().trim();
+                    String protect = protect_text.getText().toString().trim();
+                    if (!isEmpty(material, size, protect)) {
+                        sendPutRequest(material, size, protect);
+                    }
+                }
+                break;
+            case R.id.box_message_info_loading_error_layout:
+                sendHttpRequest();
+                break;
             default:
                 break;
 
+        }
+
+
+    }
+
+    /**
+     * 判断字符串是否为空
+     *
+     * @param material
+     * @param size
+     * @param protect
+     * @return
+     */
+    private boolean isEmpty(String material, String size, String protect) {
+        if (TextUtils.isEmpty(material)) {
+            Toast.makeText(getContext(), "材质不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(size)) {
+            Toast.makeText(getContext(), "尺寸不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(protect)) {
+            Toast.makeText(getContext(), "防护等级不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 更新递送箱信息
+     *
+     * @param trim
+     * @param trim1
+     * @param trim2
+     */
+    private void sendPutRequest(String trim, String trim1, String trim2) {
+        swipeRefreshLayout.setRefreshing(true);
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("f_material", trim);
+            jsonObject.put("f_size", trim1);
+            jsonObject.put("f_protect_grade", trim2);
+            jsonObject.put("type", "app");
+            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String content = response.body().string();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
 

@@ -129,45 +129,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try {
             jsonObject.put("user", name);
             jsonObject.put("pwd", password);
+
+            HttpUtil.sendPostRequestWithHttp(LOGIN_URI, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+
+                    UserToken userToken = Util.handleLoginInfo(response.body().string());
+
+
+                    if (userToken != null && userToken.message == null) {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        editor.putString("token", userToken.token);
+                        editor.apply();
+                        startActivity(intent);
+                        finish();
+                    } else {
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-        HttpUtil.sendPostRequestWithHttp(LOGIN_URI, jsonObject.toString(), new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-
-                UserToken userToken = Util.handleLoginInfo(response.body().string());
-
-
-                if (userToken != null && userToken.message == null) {
-
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    editor.putString("token", userToken.token);
-                    editor.apply();
-                    startActivity(intent);
-                    finish();
-                } else {
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-            }
-        });
 
 
     }

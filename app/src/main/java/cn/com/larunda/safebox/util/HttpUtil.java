@@ -28,10 +28,11 @@ public class HttpUtil {
 
     public final static OkHttpClient client = new OkHttpClient.Builder()
             .readTimeout(READER_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT,TimeUnit.SECONDS)
-            .connectTimeout(CONNECT_TIMEOUT,TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .build();
-    public static void sendGetRequestWithHttp (String url,okhttp3.Callback callback){
+
+    public static void sendGetRequestWithHttp(String url, okhttp3.Callback callback) {
 
         Request request = new Request.Builder()
                 .url(url)
@@ -40,9 +41,9 @@ public class HttpUtil {
 
     }
 
-    public static void sendPostRequestWithHttp(String url , String json, Callback callback){
+    public static void sendPostRequestWithHttp(String url, String json, Callback callback) {
 
-        RequestBody requestBody = RequestBody.create(JSON,json);
+        RequestBody requestBody = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -51,22 +52,32 @@ public class HttpUtil {
 
     }
 
+    public static void sendPutRequestWithHttp(String url, String json, Callback callback) {
+
+        RequestBody requestBody = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .put(requestBody)
+                .build();
+        client.newCall(request).enqueue(callback);
+
+    }
 
 
-    public static void sendPutImageWithHttp(String url,String localPath,Callback callback){
+    public static void sendPutImageWithHttp(String url, String localPath, Callback callback) {
         File file = new File(localPath);
-        RequestBody requestBody = RequestBody.create(IMAGE,file);
+        RequestBody requestBody = RequestBody.create(IMAGE, file);
         Request request = new Request.Builder()
                 .url(url)
-                .post(requestBody)
+                .put(requestBody)
                 .build();
         client.newCall(request).enqueue(callback);
 
     }
 
 
-    public static void sendDeleteWithHttp(String url, String json ,Callback callback){
-        RequestBody requestBody = RequestBody.create(JSON,json);
+    public static void sendDeleteWithHttp(String url, String json, Callback callback) {
+        RequestBody requestBody = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
                 .delete(requestBody)
@@ -74,9 +85,6 @@ public class HttpUtil {
         client.newCall(request).enqueue(callback);
 
     }
-
-
-
 
 
 }

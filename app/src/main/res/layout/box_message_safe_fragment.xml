@@ -9,6 +9,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/box_message_safe_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/tab_background"
@@ -378,7 +379,18 @@
                 </RelativeLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/menu_sz_color"
+                android:text="保存"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
         </LinearLayout>
 
         <RelativeLayout
@@ -386,7 +398,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/login_error"
-            android:visibility="invisible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -405,7 +417,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="网络链接异常"
+                    android:text="点击刷新"
                     android:textSize="20sp" />
             </LinearLayout>
         </RelativeLayout>
@@ -415,6 +427,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/login_error"
-            android:visibility="invisible" />
+            android:visibility="gone" />
     </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

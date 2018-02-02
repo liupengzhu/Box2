@@ -78,6 +78,7 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     public SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private LinearLayout layout;
 
     @Nullable
     @Override
@@ -88,6 +89,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         initEvent();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         return view;
     }
 
@@ -110,7 +113,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                         //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -124,8 +128,9 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                         public void run() {
                             initBoxMessage(boxMessage);
                             swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -255,7 +260,10 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
 
         loodingErrorLayout = view.findViewById(R.id.box_message_safe_loading_error_layout);
         loodingLayout = view.findViewById(R.id.box_message_safe_loading_layout);
+        layout = view.findViewById(R.id.box_message_safe_layout);
+
         swipeRefreshLayout = view.findViewById(R.id.box_message_safe_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         swipeRefreshLayout.setEnabled(false);//设置swipe不可用
 
 
@@ -318,6 +326,7 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                 endDialog.cancel();
             }
         });
+        loodingErrorLayout.setOnClickListener(this);
 
     }
 
@@ -342,6 +351,9 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                     trackIntent.putExtra("id", BoxActivity.ID);
                     startActivity(trackIntent);
                 }
+                break;
+            case R.id.box_message_safe_loading_error_layout:
+                sendHttpRequest();
                 break;
             case R.id.box_message_level:
                 chooseDialog.show();

@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +64,11 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     private String id;
 
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+    private LinearLayout layout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +83,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         id = getIntent().getStringExtra("id");
         initView();
         initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         sendRequest();
     }
 
@@ -82,10 +94,19 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      * 发送网络请求
      */
     private void sendRequest() {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(BIND_USER_URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -97,6 +118,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void run() {
                             initData(companyList);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -131,6 +156,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             }
 
         }
+        companyText.setText("请选择单位");
+        departmentText.setText("请选择部门");
+        personText.setText("请选择姓名");
     }
 
     /**
@@ -159,6 +187,8 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
         personButton.setOnClickListener(this);
 
+        loodingErrorLayout.setOnClickListener(this);
+
     }
 
 
@@ -166,6 +196,14 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      * 初始化view
      */
     private void initView() {
+
+        loodingErrorLayout = findViewById(R.id.binding_user_loading_error_layout);
+        loodingLayout = findViewById(R.id.binding_user_loading_layout);
+        layout = findViewById(R.id.binding_user_layout);
+
+        swipeRefreshLayout = findViewById(R.id.binding_user_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -198,6 +236,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         switch (v.getId()) {
 
             case R.id.binding_user_company:
+                if (companyData.size() == 0) {
+                    Toast.makeText(this, "没有更多单位", Toast.LENGTH_SHORT).show();
+                }
                 companyDialog = new ChooseDialog(this, companyData);
                 companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
                     @Override
@@ -218,6 +259,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.binding_user_department:
                 if (isCheckedCompany()) {
+                    if (departmentData.size() == 0) {
+                        Toast.makeText(this, "没有更多部门", Toast.LENGTH_SHORT).show();
+                    }
                     departmentDialog = new ChooseDialog(BindingUserActivity.this, departmentData);
                     departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
                         @Override
@@ -239,6 +283,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
             case R.id.binding_user_person:
                 if (isCheckedDepartment()) {
+                    if (personData.size() == 0) {
+                        Toast.makeText(this, "没有更多人员", Toast.LENGTH_SHORT).show();
+                    }
                     personDialog = new ChooseDialog(BindingUserActivity.this, personData);
                     personDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
                         @Override
@@ -249,6 +296,9 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                     });
                     personDialog.show();
                 }
+                break;
+            case R.id.binding_user_loading_error_layout:
+                sendRequest();
                 break;
             default:
                 break;
@@ -261,10 +311,19 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      * @param s
      */
     private void sendRequestForPersonList(String s) {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(PERSON_LIST_URL + token + "&id=" + id + "&department_id=" + s, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -276,6 +335,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void run() {
                             initPersonData(addPerson);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
 
@@ -318,10 +381,19 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
      * @param company_id
      */
     private void sendRequestForDepartmentList(String company_id) {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -334,6 +406,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                         @Override
                         public void run() {
                             initDepartmentList(departmentInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {

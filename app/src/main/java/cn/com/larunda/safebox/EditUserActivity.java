@@ -33,6 +33,9 @@ import com.larunda.selfdialog.PhotoDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -89,6 +92,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
     public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+
+    public static final String UPLOAD = "http://safebox.dsmcase.com:90/api/upload/file?_token=";
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
@@ -172,7 +177,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
-            Glide.with(this).load(IMG_URL + imgUrl).into(photo);
+            Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
         }
         if (userInfo.user != null) {
             userText.setText(userInfo.user);
@@ -557,7 +562,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        photo.setImageBitmap(bitmap);
+                        /*photo.setImageBitmap(bitmap);*/
+                        Log.d("main",imageUri+"");
+
+                        Glide.with(this).load("/sdcard/Android/data/com.example.box//cache/output_image.jpg").into(photo);
                         photoDialog.cancel();
 
                     } catch (FileNotFoundException e) {
@@ -621,11 +629,13 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
-            photo.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+            /*photo.setImageBitmap(BitmapFactory.decodeFile(imagePath));*/
+            Glide.with(this).load(imagePath).into(photo);
             photoDialog.cancel();
         }
 
     }
+
 
 
     private String getImagePath(Uri externalContentUri, String selection) {

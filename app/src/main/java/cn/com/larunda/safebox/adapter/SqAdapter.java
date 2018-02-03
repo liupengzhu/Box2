@@ -85,7 +85,7 @@ public class SqAdapter extends RecyclerView.Adapter<SqAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MySq sq = sqList.get(position);
-        Glide.with(MyApplication.getContext()).load(sq.getUserImg()).into(holder.userImg);
+        Glide.with(MyApplication.getContext()).load(sq.getUserImg()).error(R.mipmap.user_img).into(holder.userImg);
         holder.userName.setText(sq.getUserName());
         holder.xlh.setText(sq.getUserXLH());
         holder.date.setText(sq.getDate());

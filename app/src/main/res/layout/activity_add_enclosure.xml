@@ -12,86 +12,154 @@
 
     </com.larunda.titlebar.TitleBar>
 
-    <RelativeLayout
-        android:id="@+id/add_enclosure_enclosure"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/add_enclosure_swipe"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:text="区域"
-            android:textColor="@color/list_text_h"
-            android:textSize="15sp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/add_enclosure_enclosure_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="50dp"
-            android:text="请选择区域"
-            android:textColor="@color/list_text_l"
-            android:textSize="15sp" />
+            <LinearLayout
+                android:id="@+id/add_enclosure_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/right_jian" />
+                <RelativeLayout
+                    android:id="@+id/add_enclosure_enclosure"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:text="区域"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
 
-    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/add_enclosure_enclosure_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:text="请选择区域"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="15sp" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/login_error"
-        android:orientation="vertical" />
-
-    <RelativeLayout
-        android:id="@+id/add_enclosure_position"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/white">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:text="区域内外"
-            android:textColor="@color/list_text_h"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/add_enclosure_position_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="50dp"
-            android:text="请选择区域内外"
-            android:textColor="@color/list_text_l"
-            android:textSize="15sp" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/right_jian" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/right_jian" />
 
 
-    </RelativeLayout>
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/login_error"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:id="@+id/add_enclosure_position"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:text="区域内外"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/add_enclosure_position_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:text="请选择区域内外"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/right_jian" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/add_enclosure_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/menu_sz_color"
+                    android:text="保存"
+                    android:textColor="@color/white"
+                    android:textSize="20dp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/add_enclosure_loading_error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/loading_error" />
+
+                    <TextView
+                        android:id="@+id/loading_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="点击刷新"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/add_enclosure_loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="gone" />
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </LinearLayout>

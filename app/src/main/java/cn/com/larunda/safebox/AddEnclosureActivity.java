@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +51,11 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
     private SharedPreferences preferences;
     private String token;
 
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+    private LinearLayout layout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +72,13 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
         id = getIntent().getStringExtra("id");
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
+        initData();
+        initView();
+        initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         sendRequest();
     }
 
@@ -71,10 +86,19 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      * 发送网络请求
      */
     private void sendRequest() {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -86,6 +110,10 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             initAreaInfo(areaInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
 
@@ -106,6 +134,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void initAreaInfo(AreaInfo areaInfo) {
+        enclosureData.clear();
         if (areaInfo.getData() != null) {
             for (AreaInfo.DataBean data : areaInfo.getData()) {
                 if (data.getF_name() != null) {
@@ -113,9 +142,10 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         }
-        initData();
-        initView();
-        initEvent();
+        if (enclosureData.size() == 0) {
+            Toast.makeText(this, "没有更多区域", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
@@ -140,18 +170,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
             }
         });
         enclosureButton.setOnClickListener(this);
-        enclosureDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-            @Override
-            public void OnClick(View v, int positon) {
-                if (enclosureText.getText().toString().trim().equals(enclosureData.get(positon))) {
-                    enclosureDialog.cancel();
-                } else {
-                    positionText.setText("请选择区域内外");
-                    enclosureText.setText(enclosureData.get(positon));
-                    enclosureDialog.cancel();
-                }
-            }
-        });
+
         positionButton.setOnClickListener(this);
         positionDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
             @Override
@@ -160,6 +179,8 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                 positionDialog.cancel();
             }
         });
+
+        loodingErrorLayout.setOnClickListener(this);
 
     }
 
@@ -177,9 +198,17 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      */
     private void initView() {
 
+        loodingErrorLayout = findViewById(R.id.add_enclosure_loading_error_layout);
+        loodingLayout = findViewById(R.id.add_enclosure_loading_layout);
+        layout = findViewById(R.id.add_enclosure_layout);
+
+        swipeRefreshLayout = findViewById(R.id.add_enclosure_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
+
         enclosureButton = findViewById(R.id.add_enclosure_enclosure);
         enclosureText = findViewById(R.id.add_enclosure_enclosure_text);
-        enclosureDialog = new ChooseDialog(this, enclosureData);
+
 
         positionButton = findViewById(R.id.add_enclosure_position);
         positionText = findViewById(R.id.add_enclosure_position_text);
@@ -202,12 +231,29 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add_enclosure_enclosure:
+                enclosureDialog = new ChooseDialog(this, enclosureData);
+                enclosureDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                    @Override
+                    public void OnClick(View v, int positon) {
+                        if (enclosureText.getText().toString().trim().equals(enclosureData.get(positon))) {
+                            enclosureDialog.cancel();
+                        } else {
+                            positionText.setText("请选择区域内外");
+                            enclosureText.setText(enclosureData.get(positon));
+                            enclosureDialog.cancel();
+                        }
+                    }
+                });
                 enclosureDialog.show();
                 break;
             case R.id.add_enclosure_position:
                 if (isCheckedEnclosure()) {
                     positionDialog.show();
                 }
+                break;
+
+            case R.id.add_enclosure_loading_error_layout:
+                sendRequest();
                 break;
             default:
                 break;

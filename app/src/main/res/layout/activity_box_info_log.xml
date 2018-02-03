@@ -8,7 +8,7 @@
     <com.larunda.titlebar.TitleBar
         android:id="@+id/box_info_log_title_bar"
         android:layout_width="match_parent"
-        android:layout_height="80dp"></com.larunda.titlebar.TitleBar>
+        android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
 
     <LinearLayout
         android:layout_width="match_parent"

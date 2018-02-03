@@ -12,6 +12,7 @@ public class MyBox {
     private boolean is_sd;
     private String box_dl;
     private String id;
+    private String code;
 
     private boolean imgIsChecked = false;
 
@@ -90,5 +91,13 @@ public class MyBox {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

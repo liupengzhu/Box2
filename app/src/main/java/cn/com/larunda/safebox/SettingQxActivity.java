@@ -1,22 +1,40 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 
 public class SettingQxActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,6 +44,14 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
 
     private List<String> levelList = new ArrayList<>();
     private ChooseDialog levelDialog;
+    private ArrayList<Integer> idList = new ArrayList<>();
+
+    private Button postButton;
+    public static final String LEVEL_URL = "http://safebox.dsmcase.com:90/api/box/set_encrypt_level?_token=";
+    private SharedPreferences preferences;
+    private String token;
+
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +64,11 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        idList = getIntent().getIntegerArrayListExtra("id");
         initData();
         initView();
         initEvent();
+
 
     }
 
@@ -73,6 +101,7 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
                 levelDialog.cancel();
             }
         });
+        postButton.setOnClickListener(this);
     }
 
     /**
@@ -89,15 +118,23 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
      */
     private void initView() {
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        token = preferences.getString("token", null);
+
         levelButton = findViewById(R.id.setting_level);
         levelDialog = new ChooseDialog(this, levelList);
         levelText = findViewById(R.id.setting_level_text);
+
+        postButton = findViewById(R.id.setting_qx_button);
 
         titleBar = findViewById(R.id.setting_qx_title_bar);
         titleBar.setTextViewText("设定权限");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
+        refreshLayout = findViewById(R.id.setting_qx_refresh);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setEnabled(false);//设置swipe不可用
 
     }
 
@@ -112,6 +149,101 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
             case R.id.setting_level:
                 levelDialog.show();
                 break;
+            case R.id.setting_qx_button:
+                if(levelText!=null){
+                    String level = levelText.getText().toString().trim();
+                    if(!isEmpty(level)){
+                        sendPostRequest(level);
+                    }
+                }
+                break;
+            default:
+                break;
         }
+    }
+
+    /**
+     * 发送加密等级
+     * @param level
+     */
+    private void sendPostRequest(String level) {
+        JSONObject jsonObject = new JSONObject();
+        final String id = Util.listToString(idList);
+        try {
+            jsonObject.put("code",id);
+            if(level.equals("三级加密")){
+                jsonObject.put("level",3);
+            }else if(level.equals("二级加密")){
+                jsonObject.put("level",2);
+            }else{
+                jsonObject.put("level",1);
+            }
+            refreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(LEVEL_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SettingQxActivity.this,"网络错误",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    refreshLayout.setRefreshing(false);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseMessage(content);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析数据
+     * @param content
+     */
+    private void parseMessage(String content) {
+        if(content.equals("success")){
+            Toast.makeText(SettingQxActivity.this,"设置成功",Toast.LENGTH_SHORT).show();
+        }else {
+            cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
+            if(message!=null&&message.error==null){
+                if(message.message!=null){
+                    Toast.makeText(SettingQxActivity.this,"网络链接超时",Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
+        }
+    }
+
+    /**
+     * 检测有没有选择等级
+     * @param level
+     * @return
+     */
+    private boolean isEmpty(String level) {
+        if(TextUtils.isEmpty(level)||level.equals("请选择加密等级")){
+            Toast.makeText(this,"请选择加密等级",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 }

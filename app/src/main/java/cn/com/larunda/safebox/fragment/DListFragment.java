@@ -74,6 +74,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private EditText searchText;
     private ImageView cancelButton;
     private TextView ensureButton;
+    private ArrayList<Integer> idList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -237,6 +238,9 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
                 MyBox box = new MyBox();
                 String img_url = null;
+                if(boxData.code!=null){
+                    box.setCode(boxData.code);
+                }
                 if (boxData.f_pic != null) {
                     img_url = boxData.f_pic.replace('\\', ' ');
                     box.setBox_img(IMG_URL + img_url);
@@ -308,6 +312,18 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     }
 
     /**
+     * 检查选中的box
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (MyBox box : myBoxList) {
+            if (box.isImgIsChecked()) {
+                idList.add(Integer.valueOf(box.getCode()));
+            }
+        }
+    }
+
+    /**
      * 点击事件监听
      *
      * @param v
@@ -321,8 +337,14 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                 allCheckedClick();
                 break;
             case R.id.dsx_list_setting_qx:
-                Intent settingQxIntent = new Intent(getContext(), SettingQxActivity.class);
-                startActivity(settingQxIntent);
+                checkIsChecked();
+                if (idList.size() != 0) {
+                    Intent settingQxIntent = new Intent(getContext(), SettingQxActivity.class);
+                    settingQxIntent.putIntegerArrayListExtra("id", idList);
+                    startActivity(settingQxIntent);
+                } else {
+                    Toast.makeText(getContext(), "还没有选中箱子", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.dsx_list_setting_state:
                 Intent settingStatesIntent = new Intent(getContext(), SettingStatesActivity.class);

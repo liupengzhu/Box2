@@ -27,6 +27,7 @@ import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
+import cn.com.larunda.safebox.gson.Message;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
@@ -38,6 +39,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by Administrator on 2018/1/8.
@@ -203,6 +205,29 @@ public class Util {
         Gson gson = new Gson();
         Result result = gson.fromJson(response,Result.class);
         return result;
+    }
+
+    public static Message handleMessage(String response){
+        Gson gson = new Gson();
+        Message message = gson.fromJson(response,Message.class);
+        return message;
+    }
+
+    public static String listToString(List<Integer> stringList){
+        if(stringList==null) {
+            return null;
+        }
+        StringBuilder result = new StringBuilder();
+        boolean flag=false;
+        for(int string : stringList) {
+            if(flag) {
+                result.append(",");
+            }else{
+                flag=true;
+            }
+            result.append(string);
+        }
+        return result.toString();
     }
 
 

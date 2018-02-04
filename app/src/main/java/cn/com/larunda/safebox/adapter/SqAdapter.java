@@ -9,8 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
 import cn.com.larunda.safebox.MyApplication;
+
 import com.larunda.safebox.R;
+
 import cn.com.larunda.safebox.recycler.MySq;
 
 import java.util.List;
@@ -85,7 +88,9 @@ public class SqAdapter extends RecyclerView.Adapter<SqAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MySq sq = sqList.get(position);
-        Glide.with(MyApplication.getContext()).load(sq.getUserImg()).error(R.mipmap.user_img).into(holder.userImg);
+        if (sq.getUserImg() != null) {
+            Glide.with(MyApplication.getContext()).load(sq.getUserImg()).error(R.mipmap.user_img).into(holder.userImg);
+        }
         holder.userName.setText(sq.getUserName());
         holder.xlh.setText(sq.getUserXLH());
         holder.date.setText(sq.getDate());

@@ -9,17 +9,27 @@ public class MySq {
     private String userName;
     private String userXLH;
     private String date;
+    private String id;
 
     public MySq() {
         super();
     }
 
-    public MySq(String userImg, String userName, String userXLH, String date) {
+    public MySq(String id, String userImg, String userName, String userXLH, String date) {
+        this.id = id;
         this.userImg = userImg;
         this.userName = userName;
         this.userXLH = userXLH;
         this.date = date;
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserImg() {

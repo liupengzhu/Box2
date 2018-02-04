@@ -49,7 +49,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     LinearLayoutManager manager;
     List<DetailedSound> detailedSoundList = new ArrayList<>();
     private String id;
-    public static final String SOUND_URL = "http://safebox.dsmcase.com:90/api/box/record?_token=";
+    public static final String SOUND_URL = Util.URL+"box/record"+Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
     private String code;
@@ -216,7 +216,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             textView.setText("");
         }
         if (img != null) {
-            Glide.with(this).load(img).into(box_img);
+            Glide.with(this).load(img).error(R.mipmap.box).into(box_img);
         }
 
     }

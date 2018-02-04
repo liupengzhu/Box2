@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class SqData {
 
+    public String id;
     public String user_pic;
     public String user;
     public String code;

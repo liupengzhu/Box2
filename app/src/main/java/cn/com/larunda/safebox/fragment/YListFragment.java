@@ -35,6 +35,9 @@ import cn.com.larunda.safebox.util.Util;
 
 import com.larunda.selfdialog.ConfirmDialog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ import okhttp3.Response;
 public class YListFragment extends Fragment implements View.OnClickListener {
 
     public static final String YCSQ_URI = Util.URL + "authorize" + Util.TOKEN;
-
+    public static final String POST_URL = Util.URL + "authorize/approve" + Util.TOKEN;
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
     RecyclerView recyclerView;
     SqAdapter adapter;
@@ -134,7 +137,7 @@ public class YListFragment extends Fragment implements View.OnClickListener {
         //确定按钮的点击事件
         adapter.setQrOnClickListener(new SqAdapter.QrOnClickListener() {
             @Override
-            public void onClick(View v, MySq sq) {
+            public void onClick(View v, final MySq sq) {
 
                 final ConfirmDialog dialog = new ConfirmDialog(getContext());
                 String content = sq.getUserName() + "于" + sq.getDate() + "对递送箱序列号为" + sq.getUserXLH() +
@@ -147,6 +150,13 @@ public class YListFragment extends Fragment implements View.OnClickListener {
                         dialog.cancel();
                     }
                 });
+                dialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick(View v) {
+                        sendPostRequest(sq.getId(),1);
+                        dialog.cancel();
+                    }
+                });
 
                 dialog.show();
             }
@@ -154,7 +164,7 @@ public class YListFragment extends Fragment implements View.OnClickListener {
         //取消按钮的点击事件
         adapter.setQxOnClickListener(new SqAdapter.QxOnClickListener() {
             @Override
-            public void onClick(View v, MySq sq) {
+            public void onClick(View v, final MySq sq) {
 
                 final ConfirmDialog dialog = new ConfirmDialog(getContext());
                 String content = "驳回" + sq.getUserName() + "于" + sq.getDate() + "对递送箱序列号为" + sq.getUserXLH() +
@@ -167,10 +177,79 @@ public class YListFragment extends Fragment implements View.OnClickListener {
                         dialog.cancel();
                     }
                 });
+                dialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick(View v) {
+                        sendPostRequest(sq.getId(),2);
+                        dialog.cancel();
+                    }
+                });
 
                 dialog.show();
             }
         });
+    }
+
+    /**
+     * 发送post请求
+     * @param id
+     * @param i
+     */
+    private void sendPostRequest(String id, int i) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id",id);
+            jsonObject.put("state",i);
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(POST_URL + MainActivity.token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(),"网络错误",Toast.LENGTH_SHORT).show();
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析返回数据
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if(content.startsWith("{")){
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.putExtra("token_timeout", "登录超时");
+            MainActivity.preferences.edit().putString("token", null).commit();
+            startActivity(intent);
+            getActivity().finish();
+
+        }else if(content!=null&&Integer.parseInt(content)>0){
+            Toast.makeText(getContext(),"操作成功",Toast.LENGTH_SHORT).show();
+            sendRequest();
+        }else {
+            Toast.makeText(getContext(),"授权失败",Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -234,12 +313,40 @@ public class YListFragment extends Fragment implements View.OnClickListener {
     private void initSqList(SqInfo sqInfo) {
 
         sqList.clear();
-        for (SqData sqData : sqInfo.sqDataList) {
+        if (sqInfo.sqDataList != null) {
+            for (SqData sqData : sqInfo.sqDataList) {
+                MySq mySq = new MySq();
+                String img_uri;
+                if (sqData.user_pic != null) {
+                    img_uri = sqData.user_pic.replace('\\', ' ');
+                    mySq.setUserImg(img_uri);
+                } else {
+                    mySq.setUserImg(null);
+                }
+                if (sqData.user != null) {
+                    mySq.setUserName(sqData.user);
+                } else {
+                    mySq.setUserName("");
+                }
+                if (sqData.code != null) {
+                    mySq.setUserXLH(sqData.code);
+                } else {
+                    mySq.setUserXLH("");
+                }
+                if (sqData.date != null) {
+                    mySq.setDate(sqData.date);
+                } else {
+                    mySq.setDate("");
+                }
+                if (sqData.id != null) {
+                    mySq.setId(sqData.id);
+                } else {
+                    mySq.setId("");
+                }
 
-            String img_uri = sqData.user_pic.replace('\\', ' ');
-            MySq mySq = new MySq(IMG_URI + img_uri, sqData.user, sqData.code, sqData.date);
-            sqList.add(mySq);
+                sqList.add(mySq);
 
+            }
         }
         adapter.notifyDataSetChanged();
 
@@ -259,7 +366,7 @@ public class YListFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.y_list_ensure_button:
-                if (searchText!=null&&!TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
                 } else {
                     Toast.makeText(getContext(), "请输入搜索内容", Toast.LENGTH_SHORT).show();

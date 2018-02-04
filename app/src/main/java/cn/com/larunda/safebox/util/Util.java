@@ -47,6 +47,9 @@ import java.util.List;
 
 public class Util {
 
+    public static final String URL = "http://safebox.dsmcase.com:90/api/";
+    public static final String TOKEN = "?_token=";
+
     public static Home handleHomeInfo(String response) {
 
         Gson gson = new Gson();
@@ -213,13 +216,13 @@ public class Util {
         return message;
     }
 
-    public static String listToString(List<Integer> stringList){
+    public static String listToString(List<String> stringList){
         if(stringList==null) {
             return null;
         }
         StringBuilder result = new StringBuilder();
         boolean flag=false;
-        for(int string : stringList) {
+        for(String string : stringList) {
             if(flag) {
                 result.append(",");
             }else{

@@ -39,6 +39,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+
 public class AddEnclosureActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
@@ -98,7 +99,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      */
     private void sendRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback(){
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -308,6 +309,22 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onFailure(Call call, IOException e) {
 
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    Log.d("main",content);
+                    Log.d("main",token);
+                    Log.d("main",id);
+                    Log.d("main",areaId+"");
+                    Log.d("main",jsonObject.toString());
+                }
+            });
+            /*HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -327,14 +344,14 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                     Log.d("main",id);
                     Log.d("main",areaId+"");
                     Log.d("main",jsonObject.toString());
-                    /*runOnUiThread(new Runnable() {
+                    *//*runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             parseResponse(content);
                         }
-                    });*/
+                    });*//*
                 }
-            });
+            });*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -374,10 +391,10 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      * @return
      */
     private boolean isEmpty(String enclosure, String position) {
-        if (TextUtils.isEmpty(enclosure)) {
+        if (TextUtils.isEmpty(enclosure)||enclosure.equals("请选择区域")) {
             Toast.makeText(this, "区域不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(position)) {
+        } else if (TextUtils.isEmpty(position)||position.equals("请选择区域内外")) {
             Toast.makeText(this, "区域内外不能为空", Toast.LENGTH_SHORT).show();
             return true;
         }

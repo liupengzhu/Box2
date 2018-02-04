@@ -44,10 +44,10 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
 
     private List<String> levelList = new ArrayList<>();
     private ChooseDialog levelDialog;
-    private ArrayList<Integer> idList = new ArrayList<>();
+    private ArrayList<String> idList = new ArrayList<>();
 
     private Button postButton;
-    public static final String LEVEL_URL = "http://safebox.dsmcase.com:90/api/box/set_encrypt_level?_token=";
+    public static final String LEVEL_URL = Util.URL + "box/set_encrypt_level" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -64,7 +64,7 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        idList = getIntent().getIntegerArrayListExtra("id");
+        idList = getIntent().getStringArrayListExtra("id");
         initData();
         initView();
         initEvent();
@@ -150,9 +150,9 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
                 levelDialog.show();
                 break;
             case R.id.setting_qx_button:
-                if(levelText!=null){
+                if (levelText != null) {
                     String level = levelText.getText().toString().trim();
-                    if(!isEmpty(level)){
+                    if (!isEmpty(level)) {
                         sendPostRequest(level);
                     }
                 }
@@ -164,19 +164,20 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * 发送加密等级
+     *
      * @param level
      */
     private void sendPostRequest(String level) {
         JSONObject jsonObject = new JSONObject();
         final String id = Util.listToString(idList);
         try {
-            jsonObject.put("code",id);
-            if(level.equals("三级加密")){
-                jsonObject.put("level",3);
-            }else if(level.equals("二级加密")){
-                jsonObject.put("level",2);
-            }else{
-                jsonObject.put("level",1);
+            jsonObject.put("code", id);
+            if (level.equals("三级加密")) {
+                jsonObject.put("level", 3);
+            } else if (level.equals("二级加密")) {
+                jsonObject.put("level", 2);
+            } else {
+                jsonObject.put("level", 1);
             }
             refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(LEVEL_URL + token, jsonObject.toString(), new Callback() {
@@ -185,10 +186,11 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(SettingQxActivity.this,"网络错误",Toast.LENGTH_SHORT).show();
+                            refreshLayout.setRefreshing(false);
+                            Toast.makeText(SettingQxActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    refreshLayout.setRefreshing(false);
+
                 }
 
                 @Override
@@ -212,18 +214,19 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * 解析数据
+     *
      * @param content
      */
     private void parseMessage(String content) {
-        if(content.equals("success")){
-            Toast.makeText(SettingQxActivity.this,"设置成功",Toast.LENGTH_SHORT).show();
-        }else {
+        if (content.equals("success")) {
+            Toast.makeText(SettingQxActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
+        } else {
             cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
-            if(message!=null&&message.error==null){
-                if(message.message!=null){
-                    Toast.makeText(SettingQxActivity.this,"网络链接超时",Toast.LENGTH_SHORT).show();
+            if (message != null && message.error == null) {
+                if (message.message != null) {
+                    Toast.makeText(SettingQxActivity.this, message.message, Toast.LENGTH_SHORT).show();
                 }
-            }else {
+            } else {
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
@@ -236,12 +239,13 @@ public class SettingQxActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * 检测有没有选择等级
+     *
      * @param level
      * @return
      */
     private boolean isEmpty(String level) {
-        if(TextUtils.isEmpty(level)||level.equals("请选择加密等级")){
-            Toast.makeText(this,"请选择加密等级",Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(level) || level.equals("请选择加密等级")) {
+            Toast.makeText(this, "请选择加密等级", Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;

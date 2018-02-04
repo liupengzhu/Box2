@@ -10,94 +10,72 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
 
-    <RelativeLayout
-        android:id="@+id/setting_lock"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/setting_status_refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/white">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:text="锁定"
-            android:textColor="@color/list_text_h"
-            android:textSize="15sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/setting_lock_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="50dp"
-            android:text="请选择是否锁定" />
+            <RelativeLayout
+                android:id="@+id/setting_lock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/white">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/right_jian" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="15dp"
+                    android:text="锁定"
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
 
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/setting_lock_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="50dp"
+                    android:text="请选择是否锁定" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/line"
-        android:orientation="vertical" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/right_jian" />
 
-    <RelativeLayout
-        android:id="@+id/setting_bf"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white">
+            </RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:text="布防"
-            android:textColor="@color/list_text_h"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/setting_bf_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="50dp"
-            android:text="请选择是否布防" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/right_jian" />
-
-    </RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line"
+                android:orientation="vertical" />
 
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/menu_sz_color"
-        android:text="保存"
-        android:textColor="@color/white"
-        android:textSize="20dp" />
+            <Button
+                android:id="@+id/setting_states_button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/menu_sz_color"
+                android:text="保存"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

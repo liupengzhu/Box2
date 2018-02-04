@@ -74,7 +74,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private EditText searchText;
     private ImageView cancelButton;
     private TextView ensureButton;
-    private ArrayList<Integer> idList = new ArrayList<>();
+    private ArrayList<String> idList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -238,7 +238,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
                 MyBox box = new MyBox();
                 String img_url = null;
-                if(boxData.code!=null){
+                if (boxData.code != null) {
                     box.setCode(boxData.code);
                 }
                 if (boxData.f_pic != null) {
@@ -318,7 +318,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         idList.clear();
         for (MyBox box : myBoxList) {
             if (box.isImgIsChecked()) {
-                idList.add(Integer.valueOf(box.getCode()));
+                idList.add(box.getCode());
             }
         }
     }
@@ -340,15 +340,21 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                 checkIsChecked();
                 if (idList.size() != 0) {
                     Intent settingQxIntent = new Intent(getContext(), SettingQxActivity.class);
-                    settingQxIntent.putIntegerArrayListExtra("id", idList);
+                    settingQxIntent.putStringArrayListExtra("id", idList);
                     startActivity(settingQxIntent);
                 } else {
                     Toast.makeText(getContext(), "还没有选中箱子", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.dsx_list_setting_state:
-                Intent settingStatesIntent = new Intent(getContext(), SettingStatesActivity.class);
-                startActivity(settingStatesIntent);
+                checkIsChecked();
+                if (idList.size() != 0) {
+                    Intent settingStatesIntent = new Intent(getContext(), SettingStatesActivity.class);
+                    settingStatesIntent.putStringArrayListExtra("id", idList);
+                    startActivity(settingStatesIntent);
+                } else {
+                    Toast.makeText(getContext(), "还没有选中箱子", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.list_cancel_button:
                 if (searchText != null) {

@@ -45,10 +45,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     private TitleBar titleBar;
 
-    public static final String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/app/user_info/company_lists?_token=";
-    public static final String ADD_USER_URL = "http://safebox.dsmcase.com:90/api/box/add_bind_user?_token=";
-    public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
-    public static final String PERSON_LIST_URL = "http://safebox.dsmcase.com:90/api/app/box/user_add_lists?_token=";
+    public static final String BIND_USER_URL = Util.URL + "user_info/company_lists" + Util.TOKEN;
+    public static final String ADD_USER_URL = Util.URL + "box/add_bind_user" + Util.TOKEN;
+    public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
+    public static final String PERSON_LIST_URL = Util.URL + "app/box/user_add_lists" + Util.TOKEN;
     private RelativeLayout companyButton;
     private TextView companyText;
     private ChooseDialog companyDialog;
@@ -214,7 +214,6 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         loodingErrorLayout = findViewById(R.id.binding_user_loading_error_layout);
         loodingLayout = findViewById(R.id.binding_user_loading_layout);
         layout = findViewById(R.id.binding_user_layout);
-
         swipeRefreshLayout = findViewById(R.id.binding_user_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         swipeRefreshLayout.setEnabled(false);//设置swipe不可用

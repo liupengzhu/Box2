@@ -48,7 +48,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     private BoxAddUserAdapter adapter;
     private List<BoxAddUser> boxAddUserList = new ArrayList<>();
     private String id;
-    private String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/box/bind_user_lists?_token=";
+    private String BIND_USER_URL = Util.URL+"box/bind_user_lists"+Util.TOKEN;
     private String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
@@ -140,6 +140,12 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        sendRequest();
     }
 
     /**

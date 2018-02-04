@@ -367,7 +367,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
-                    
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

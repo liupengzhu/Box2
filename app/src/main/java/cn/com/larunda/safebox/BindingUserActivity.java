@@ -45,7 +45,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     private TitleBar titleBar;
 
-    public static final String BIND_USER_URL = Util.URL + "user_info/company_lists" + Util.TOKEN;
+    public static final String BIND_USER_URL = Util.URL + "app/user_info/company_lists" + Util.TOKEN;
     public static final String ADD_USER_URL = Util.URL + "box/add_bind_user" + Util.TOKEN;
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
     public static final String PERSON_LIST_URL = Util.URL + "app/box/user_add_lists" + Util.TOKEN;
@@ -123,6 +123,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
+                Log.d("main",content);
                 final CompanyList companyList = Util.handleCompanyList(content);
                 if (companyList != null && companyList.getError() == null) {
                     runOnUiThread(new Runnable() {

@@ -83,8 +83,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     TextView fingerprintText;
     TextView levelText;
 
+    
     private boolean isChangeCompany = false;
     private boolean isChangeDepartmetn = false;
+
 
     public static final String PERSONSL_INFO_URL = Util.URL+"user/";
     public static final String COMPANY_URL = Util.URL+"company/";
@@ -170,6 +172,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                     companyData.add(company.name.trim());
                 }
             }
+        }
+        if(userInfo.config.user.change_user!=null){
+
+
         }
         if (userInfo.config.user.change_company != null) {
             if (userInfo.config.user.change_company.equals("1")) {

@@ -98,6 +98,43 @@
                         />
 
                 </RelativeLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="允许上传头像"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="18sp" />
+
+                    <Switch
+                        android:id="@+id/personal_setting_pic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="20dp"
+                        android:checked="true"
+                        android:switchMinWidth="0dp"
+                        android:textOff=""
+                        android:textOn=""
+                        android:thumb="@drawable/thumb"
+                        android:track="@drawable/track"
+
+                        />
+
+                </RelativeLayout>
 
                 <ImageView
                     android:layout_width="match_parent"

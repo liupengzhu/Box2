@@ -86,10 +86,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private boolean isChangeCompany = false;
     private boolean isChangeDepartmetn = false;
 
-    public static final String PERSONSL_INFO_URL = "http://safebox.dsmcase.com:90/api/user/";
-    public static final String COMPANY_URL = "http://safebox.dsmcase.com:90/api/company/";
-    public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
-    public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
+    public static final String PERSONSL_INFO_URL = Util.URL+"user/";
+    public static final String COMPANY_URL = Util.URL+"company/";
+    public static final String DEPARTMENT_URL = Util.URL+"department/";
+    public static final String DEPARTMENT_LIST_URL = Util.URL+"app/user_info/department_lists"+Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private String userId = "";
     private SharedPreferences preferences;
@@ -119,7 +119,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * 请求网络数据
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId +Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -249,7 +249,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      */
     private void sendRequestForDepartment(String department_id) {
 
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id +Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -287,7 +287,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id +Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -431,15 +431,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             case R.id.personal_info_department:
                 if (isChangeDepartmetn) {
                     if (isCheckedCompany()) {
-                        departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
-                        departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                            @Override
-                            public void OnClick(View v, int positon) {
-                                departmentText.setText(departmentData.get(positon));
-                                departmentDialog.cancel();
-                            }
-                        });
-                        departmentDialog.show();
+                        if (departmentData.size() == 0) {
+                            Toast.makeText(PersonalInfoActivity.this,"当前单位没有更多部门",Toast.LENGTH_SHORT).show();
+                        } else {
+                            departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
+                            departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                                @Override
+                                public void OnClick(View v, int positon) {
+                                    departmentText.setText(departmentData.get(positon));
+                                    departmentDialog.cancel();
+                                }
+                            });
+                            departmentDialog.show();
+                        }
                     }
                 }
 
@@ -656,6 +660,11 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        sendRequest();
+    }
 
     private String getImagePath(Uri externalContentUri, String selection) {
         String path = null;

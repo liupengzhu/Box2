@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class Config {
     public User user;
     public static class User {
+        public String upload_pic;
         public String change_user;
         public String change_pwd;
         public String change_phone;

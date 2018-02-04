@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,10 +17,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -35,6 +40,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
     private TitleBar titleBar;
     private Switch changeName;
     private Switch changePwd;
+    private Switch changePic;
     private Switch changePhone;
     private Switch changeEmail;
     private Switch changeCompany;
@@ -76,6 +82,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
      */
     private void initEvent() {
         loodingErrorLayout.setOnClickListener(this);
+        postButton.setOnClickListener(this);
     }
 
     /**
@@ -153,6 +160,15 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
         } else {
             changePwd.setChecked(false);
         }
+        if (config.user.upload_pic != null) {
+            if (config.user.upload_pic.equals("1")) {
+                changePic.setChecked(true);
+            } else {
+                changePic.setChecked(false);
+            }
+        } else {
+            changePic.setChecked(false);
+        }
 
         if (config.user.change_phone != null) {
             if (config.user.change_phone.equals("1")) {
@@ -216,6 +232,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
 
         changeName = findViewById(R.id.personal_setting_name);
         changePwd = findViewById(R.id.personal_setting_pwd);
+        changePic = findViewById(R.id.personal_setting_pic);
         changePhone = findViewById(R.id.personal_setting_phone);
         changeEmail = findViewById(R.id.personal_setting_email);
         changeCompany = findViewById(R.id.personal_setting_company);
@@ -264,8 +281,128 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
             case R.id.personal_setting_loading_error_layout:
                 sendRequest();
                 break;
+            case R.id.personal_setting_button:
+                sendPostRequest();
+                break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 发送post请求
+     */
+    private void sendPostRequest() {
+        JSONObject userJson = new JSONObject();
+        JSONObject alarmJson = new JSONObject();
+        JSONObject dataJson = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (changeName.isChecked()) {
+                userJson.put("change_user", 1);
+            } else {
+                userJson.put("change_user", 0);
+            }
+            if (changePwd.isChecked()) {
+                userJson.put("change_pwd", 1);
+            } else {
+                userJson.put("change_pwd", 0);
+            }
+            if (changePic.isChecked()) {
+                userJson.put("upload_pic", 1);
+            } else {
+                userJson.put("upload_pic", 0);
+            }
+            if (changePhone.isChecked()) {
+                userJson.put("change_phone", 1);
+            } else {
+                userJson.put("change_phone", 0);
+            }
+            if (changeEmail.isChecked()) {
+                userJson.put("change_mail", 1);
+            } else {
+                userJson.put("change_mail", 0);
+            }
+            if (changeCompany.isChecked()) {
+                userJson.put("change_company", 1);
+            } else {
+                userJson.put("change_company", 0);
+            }
+            if (changeDepartment.isChecked()) {
+                userJson.put("change_department", 1);
+            } else {
+                userJson.put("change_department", 0);
+            }
+            if (changeFingerPrint.isChecked()) {
+                userJson.put("upload_fingerprint", 1);
+            } else {
+                userJson.put("upload_fingerprint", 0);
+            }
+            userJson.put("face_identification", null);
+            alarmJson.put("sound", null);
+            alarmJson.put("use_default_sound", null);
+            alarmJson.put("sound_path", null);
+            dataJson.put("user", userJson);
+            dataJson.put("alarm", alarmJson);
+            jsonObject.put("f_data", dataJson);
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(CONFIG_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(PersonalSettingActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseMessage(content);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 解析数据
+     *
+     * @param content
+     */
+    private void parseMessage(String content) {
+        if (content.equals("true")) {
+            Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+        } else if (content.equals("false")) {
+            Toast.makeText(this, "设置失败", Toast.LENGTH_SHORT).show();
+        } else {
+            cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
+            if (message != null && message.error == null) {
+                if (message.message != null) {
+                    Toast.makeText(this, message.message, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
         }
     }
 }

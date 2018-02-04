@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +34,9 @@ import cn.com.larunda.safebox.util.HttpUtil;
 
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +80,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private TextView allCheckedText;
     private RelativeLayout top_layout;
     private LinearLayout bottom_layout;
+
+    private Button deleteButton;
+    private ArrayList<String> idList = new ArrayList<>();
 
 
     @Override
@@ -160,6 +167,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
+
+        deleteButton.setOnClickListener(this);
     }
 
 
@@ -264,6 +273,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         preferences = PreferenceManager.getDefaultSharedPreferences(UserInfoActivity.this);
         token = preferences.getString("token", null);
 
+        deleteButton = findViewById(R.id.user_info_delete_button);
+
         titleBar = findViewById(R.id.user_info_title_bar);
         titleBar.setTextViewText("用户管理");
         titleBar.setLeftButtonVisible(View.GONE);
@@ -317,9 +328,93 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.user_info_all_checked_text:
                 allCheckedClick();
                 break;
+            case R.id.user_info_delete_button:
+                checkIsChecked();
+                if (idList.size() == 0) {
+                    Toast.makeText(UserInfoActivity.this, "还没有选择用户", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendDeleteRequest();
+                }
+                break;
             default:
                 break;
 
+        }
+    }
+
+    /**
+     * 发送删除请求
+     */
+    private void sendDeleteRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id",Util.listToString(idList));
+            refreshLayout.setRefreshing(true);
+            HttpUtil.sendDeleteWithHttp( USER_INFO_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                        }
+                    });
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析删除请求返回信息
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            refreshLayout.setRefreshing(false);
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+    /**
+     * 检查选中的用户
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (MyUserInfo myUserInfo : myUserInfoList) {
+            if (myUserInfo.isImgIsChecked()) {
+                idList.add(myUserInfo.getUserId());
+            }
         }
     }
 

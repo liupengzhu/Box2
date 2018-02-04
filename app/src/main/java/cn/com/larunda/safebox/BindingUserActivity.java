@@ -348,10 +348,8 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            Toast.makeText(BindingUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                             swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.GONE);
-                            layout.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -374,6 +372,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 解析添加人员返回信息
+     *
      * @param content
      */
     private void parseResponse(String content) {
@@ -383,7 +382,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         } else if (content != null && content.equals("false")) {
             swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

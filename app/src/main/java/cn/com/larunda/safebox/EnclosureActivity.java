@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +39,9 @@ import okhttp3.Response;
 
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +66,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private ImageView cancelButton;
     private TextView ensureButton;
 
+    private Button deleteButton;
+
     /**
      * 是否在长按状态
      */
@@ -73,9 +79,11 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private boolean isAllChecked = false;
     private ImageView allCheckedImage;
     private TextView allCheckedText;
-    public static final String ENCLOSURE_URL = "http://safebox.dsmcase.com:90/api/area?_token=";
+    public static final String ENCLOSURE_URL = Util.URL + "area" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
+
+    private ArrayList<String> idList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +99,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         }
 
         initView();
+        initEvent();
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -108,6 +117,34 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         sendRequest();
 
 
+    }
+
+    /**
+     * 初始化点击事件
+     */
+    private void initEvent() {
+        titleBar.setOnClickListener(new TitleListener() {
+            @Override
+            public void onLeftButtonClickListener(View v) {
+
+
+            }
+
+            @Override
+            public void onLeftBackButtonClickListener(View v) {
+                finish();
+            }
+
+            @Override
+            public void onRightButtonClickListener(View v) {
+
+            }
+        });
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
     }
 
     /**
@@ -190,28 +227,14 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
         preferences = PreferenceManager.getDefaultSharedPreferences(EnclosureActivity.this);
         token = preferences.getString("token", null);
+
+        deleteButton = findViewById(R.id.enclosure_delete_button);
         titleBar = findViewById(R.id.enclosure_title_bar);
         titleBar.setTextViewText("地理围栏");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
-        titleBar.setOnClickListener(new TitleListener() {
-            @Override
-            public void onLeftButtonClickListener(View v) {
 
-
-            }
-
-            @Override
-            public void onLeftBackButtonClickListener(View v) {
-                finish();
-            }
-
-            @Override
-            public void onRightButtonClickListener(View v) {
-
-            }
-        });
 
         searchText = findViewById(R.id.enclosure_serch_edit);
         cancelButton = findViewById(R.id.enclosure_cancel_button);
@@ -235,10 +258,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         setAdapterClick(adapter);
-        allCheckedImage.setOnClickListener(this);
-        allCheckedText.setOnClickListener(this);
-        cancelButton.setOnClickListener(this);
-        ensureButton.setOnClickListener(this);
+
     }
 
     /**
@@ -344,9 +364,95 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                     sendSearchRequest(searchText.getText().toString().trim());
                 }
                 break;
+            case R.id.enclosure_delete_button:
+                checkIsChecked();
+                if (idList.size() == 0) {
+                    Toast.makeText(EnclosureActivity.this, "还没有选择地理围栏", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendDeleteRequest();
+                }
+                break;
             default:
                 break;
 
+        }
+    }
+
+    /**
+     * 发送删除请求
+     */
+    private void sendDeleteRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", Util.listToString(idList));
+            refreshLayout.setRefreshing(true);
+            HttpUtil.sendDeleteWithHttp(ENCLOSURE_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                        }
+                    });
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析返回信息
+     *
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            refreshLayout.setRefreshing(false);
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+    /**
+     * 检查选中的条目
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (Enclosure enclosure : enclosureList) {
+            if (enclosure.isImgIsChecked()) {
+                idList.add(enclosure.getId());
+            }
         }
     }
 

@@ -59,8 +59,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
     LinearLayoutManager manager;
     List<Enclosure> enclosureList = new ArrayList<>();
-    private RelativeLayout top_layout;
-    private LinearLayout bottom_layout;
+
 
     private EditText searchText;
     private ImageView cancelButton;
@@ -79,6 +78,9 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private boolean isAllChecked = false;
     private ImageView allCheckedImage;
     private TextView allCheckedText;
+    private RelativeLayout top_layout;
+    private LinearLayout bottom_layout;
+
     public static final String ENCLOSURE_URL = Util.URL + "area" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;

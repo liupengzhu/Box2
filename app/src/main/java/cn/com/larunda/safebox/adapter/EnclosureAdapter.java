@@ -34,6 +34,7 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
         ImageView checked_button;
         LinearLayout layout;
 
+
         public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.enclosure_name);

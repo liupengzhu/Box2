@@ -11,6 +11,7 @@ public class MyUserInfo {
     private String userId;
     private String userQx;
     private String userImg;
+    private boolean imgIsChecked = false;
 
     public MyUserInfo() {
 
@@ -22,6 +23,14 @@ public class MyUserInfo {
         this.userQx = userQx;
         this.userImg = userImg;
         this.user = user;
+    }
+
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
     }
 
     public String getUser() {

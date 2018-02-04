@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +45,7 @@ import okhttp3.Response;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String USER_INFO_URL = Util.URL+"user"+Util.TOKEN;
+    public static final String USER_INFO_URL = Util.URL + "user" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private TitleBar titleBar;
 
@@ -61,6 +62,20 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private EditText searchText;
     private ImageView cancelButton;
     private TextView ensureButton;
+
+    /**
+     * 是否在长按状态
+     */
+    public boolean isLongClick = false;
+
+    /**
+     * 是否在全选状态
+     */
+    private boolean isAllChecked = false;
+    private ImageView allCheckedImage;
+    private TextView allCheckedText;
+    private RelativeLayout top_layout;
+    private LinearLayout bottom_layout;
 
 
     @Override
@@ -108,6 +123,18 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intent);
             }
         });
+
+        adapter.setUserInfoOnLongClickListener(new UserInfoAdapter.UserInfoOnLongClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLongClick = true;
+                adapter.setCheckedLayout(true);
+                adapter.notifyDataSetChanged();
+                top_layout.setVisibility(View.GONE);
+                bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
@@ -130,6 +157,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
     }
 
 
@@ -239,6 +269,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        allCheckedImage = findViewById(R.id.user_info_all_checked_image);
+        allCheckedText = findViewById(R.id.user_info_all_checked_text);
+
+        top_layout = findViewById(R.id.user_info_top_layout);
+        bottom_layout = findViewById(R.id.user_info_bottom_layout);
+
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(myUserInfoList);
 
@@ -273,9 +309,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.user_info_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
-                }else {
+                } else {
                     Toast.makeText(UserInfoActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.user_info_all_checked_image:
+            case R.id.user_info_all_checked_text:
+                allCheckedClick();
                 break;
             default:
                 break;
@@ -334,5 +374,56 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (isLongClick) {
+            cancleLongClick();
+
+        } else {
+            finish();
+
+        }
+    }
+
+    /**
+     * 取消多选状态
+     */
+    public void cancleLongClick() {
+        isLongClick = false;
+        adapter.setCheckedLayout(false);
+        adapter.notifyDataSetChanged();
+        top_layout.setVisibility(View.VISIBLE);
+        bottom_layout.setVisibility(View.GONE);
+    }
+
+    /**
+     * 处理全选按钮的点击事件
+     */
+    private void allCheckedClick() {
+        //判断当前全选是否是选中状态
+        if (isAllChecked) {
+            isAllChecked = false;
+            allCheckedImage.setImageResource(R.mipmap.unchecked);
+            List<MyUserInfo> myUserInfos = adapter.getMyUserInfoList();
+            for (MyUserInfo myUserInfo : myUserInfos) {
+                myUserInfo.setImgIsChecked(false);
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            isAllChecked = true;
+            allCheckedImage.setImageResource(R.mipmap.checked);
+            List<MyUserInfo> myUserInfos = adapter.getMyUserInfoList();
+            for (MyUserInfo myUserInfo : myUserInfos) {
+                myUserInfo.setImgIsChecked(true);
+            }
+            adapter.notifyDataSetChanged();
+
+        }
+
     }
 }

@@ -134,7 +134,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="开始日期"
+                                android:text="结束日期"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="12sp" />
 
@@ -143,7 +143,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="开始时间"
+                                android:text="结束时间"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="12sp" />
 

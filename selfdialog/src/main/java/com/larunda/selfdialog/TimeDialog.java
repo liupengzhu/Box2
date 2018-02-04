@@ -59,14 +59,32 @@ public class TimeDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (onOkClickListener != null) {
-                    long moth = datePicker.getMonth()+1;
-                    String date = "";
-                    if(moth<10) {
-                        date = datePicker.getYear() + "-0" + moth + "-" + datePicker.getDayOfMonth();
-                    }else {
-                        date = datePicker.getYear() + "-" + moth + "-" + datePicker.getDayOfMonth();
+                    String day = "";
+                    if (datePicker.getDayOfMonth() < 10) {
+                        day = "0" + datePicker.getDayOfMonth();
+                    } else {
+                        day = "" + datePicker.getDayOfMonth();
                     }
-                    String time = timePicker.getHour() + ":" + timePicker.getMinute() + ":00";
+                    long moth = datePicker.getMonth() + 1;
+                    String date = "";
+                    if (moth < 10) {
+                        date = datePicker.getYear() + "-0" + moth + "-" + day;
+                    } else {
+                        date = datePicker.getYear() + "-" + moth + "-" + day;
+                    }
+                    String hour = "";
+                    if (timePicker.getHour() < 10) {
+                        hour = "0" + timePicker.getHour();
+                    } else {
+                        hour = "" + timePicker.getHour();
+                    }
+                    String minute = "";
+                    if (timePicker.getMinute() < 10) {
+                        minute = "0" + timePicker.getMinute();
+                    } else {
+                        minute = "" + timePicker.getMinute();
+                    }
+                    String time = hour + ":" + minute + ":00";
                     onOkClickListener.OnClick(v, date, time);
                 }
             }

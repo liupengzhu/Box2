@@ -10,7 +10,6 @@ public class BoxData {
     public String id;
     @SerializedName("aliases")
     public String name;
-
     public String code;
     @SerializedName("encrypt_level")
     public String level;

@@ -52,8 +52,9 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     RelativeLayout password_Button;
     RelativeLayout log_Button;
     RelativeLayout sound_Button;
-    public static final String MESSAGE_URI = "http://safebox.dsmcase.com:90/api/box/";
+    public static final String MESSAGE_URI = Util.URL + "box/";
 
+    EditText name_text;
     EditText material_text;
     EditText size_text;
     EditText protect_text;
@@ -91,7 +92,7 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
      */
     private void sendHttpRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -142,6 +143,11 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
      * @param boxMessage
      */
     private void initBoxMessage(BoxMessage boxMessage) {
+        if (boxMessage.name != null) {
+            name_text.setText(boxMessage.name);
+        } else {
+            name_text.setText("");
+        }
         if (boxMessage.material != null) {
             material_text.setText(boxMessage.material);
         } else {
@@ -188,6 +194,8 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);
         sound_Button = view.findViewById(R.id.box_message_sound);
+
+        name_text = view.findViewById(R.id.box_message_info_name_text);
         material_text = view.findViewById(R.id.box_message_info_material_text);
         size_text = view.findViewById(R.id.box_message_info_size_text);
         protect_text = view.findViewById(R.id.box_message_info_protect_text);
@@ -238,12 +246,13 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                 startActivity(soundIntent);
                 break;
             case R.id.box_message_info_button:
-                if (material_text != null && size_text != null && protect_text != null) {
+                if (name_text != null && material_text != null && size_text != null && protect_text != null) {
+                    String name = name_text.getText().toString().trim();
                     String material = material_text.getText().toString().trim();
                     String size = size_text.getText().toString().trim();
                     String protect = protect_text.getText().toString().trim();
-                    if (!isEmpty(material, size, protect)) {
-                        sendPutRequest(material, size, protect);
+                    if (!isEmpty(name, material, size, protect)) {
+                        sendPutRequest(name, material, size, protect);
                     }
                 }
                 break;
@@ -266,8 +275,11 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
      * @param protect
      * @return
      */
-    private boolean isEmpty(String material, String size, String protect) {
-        if (TextUtils.isEmpty(material)) {
+    private boolean isEmpty(String name, String material, String size, String protect) {
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(getContext(), "别名不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(material)) {
             Toast.makeText(getContext(), "材质不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (TextUtils.isEmpty(size)) {
@@ -287,15 +299,16 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
      * @param trim1
      * @param trim2
      */
-    private void sendPutRequest(String trim, String trim1, String trim2) {
+    private void sendPutRequest(String name, String trim, String trim1, String trim2) {
         swipeRefreshLayout.setRefreshing(true);
         final JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("f_aliases", name);
             jsonObject.put("f_material", trim);
             jsonObject.put("f_size", trim1);
             jsonObject.put("f_protect_grade", trim2);
             jsonObject.put("type", "app");
-            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, jsonObject.toString(), new Callback() {
+            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     getActivity().runOnUiThread(new Runnable() {

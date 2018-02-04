@@ -8,6 +8,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class BoxMessage {
     public String id;
+    @SerializedName("f_aliases")
+    public String name;
     @SerializedName("f_material")
     public String material;
     @SerializedName("f_size")

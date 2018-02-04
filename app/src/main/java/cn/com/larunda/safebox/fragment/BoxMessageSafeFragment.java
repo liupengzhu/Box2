@@ -2,13 +2,10 @@ package cn.com.larunda.safebox.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +16,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.com.larunda.safebox.AddEnclosureActivity;
 
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.AreaInfoActivity;
 import cn.com.larunda.safebox.BoxActivity;
 import cn.com.larunda.safebox.LoginActivity;
-import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.TrackActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Result;
@@ -39,11 +34,12 @@ import okhttp3.Response;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.TimeDialog;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +77,7 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     private TimeDialog startDialog;
     private TimeDialog endDialog;
 
-    public static final String MESSAGE_URI = "http://safebox.dsmcase.com:90/api/box/";
+    public static final String MESSAGE_URI = Util.URL + "box/";
     private TextView bind_area_text;
 
     public SwipeRefreshLayout swipeRefreshLayout;
@@ -115,7 +111,7 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
      */
     private void sendHttpRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -319,10 +315,20 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         startDialog.setOnOkClickListener(new TimeDialog.OnOkClickListener() {
             @Override
             public void OnClick(View view, String date, String time) {
-
-                startDateText.setText(date);
-                startTimeText.setText(time);
-                startDialog.cancel();
+                if (checkEndIsSelected()) {
+                    String endDate = endDateText.getText().toString().trim() + " " +
+                            endTimeText.getText().toString().trim();
+                    String startDate = date + " " + time;
+                    if (startDateIsSmall(startDate, endDate)) {
+                        startDateText.setText(date);
+                        startTimeText.setText(time);
+                        startDialog.cancel();
+                    }
+                } else {
+                    startDateText.setText(date);
+                    startTimeText.setText(time);
+                    startDialog.cancel();
+                }
             }
         });
         endDialog.setOnCancelClickListener(new TimeDialog.OnCancelClickListener() {
@@ -334,14 +340,87 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         endDialog.setOnOkClickListener(new TimeDialog.OnOkClickListener() {
             @Override
             public void OnClick(View view, String date, String time) {
-
-                endDateText.setText(date);
-                endTimeText.setText(time);
-                endDialog.cancel();
+                String startDate = startDateText.getText().toString().trim() + " " +
+                        startTimeText.getText().toString().trim();
+                String endDate = date + " " + time;
+                if (endDateIsLarge(startDate, endDate)) {
+                    endDateText.setText(date);
+                    endTimeText.setText(time);
+                    endDialog.cancel();
+                }
             }
         });
         loodingErrorLayout.setOnClickListener(this);
 
+    }
+
+    /**
+     * 检查是否是开始时间小
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private boolean startDateIsSmall(String startDate, String endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            long start = sdf.parse(startDate).getTime();
+            long end = sdf.parse(endDate).getTime();
+            if (end > start) {
+
+                return true;
+            }
+            Toast.makeText(getContext(), "开始时间必须小于结束时间", Toast.LENGTH_SHORT).show();
+            return false;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(), "开始时间必须小于结束时间", Toast.LENGTH_SHORT).show();
+        return false;
+
+    }
+
+    /**
+     * 检查结束时间是否已经选择
+     *
+     * @return
+     */
+    private boolean checkEndIsSelected() {
+        String endDate = endDateText.getText().toString().trim();
+        String endTime = endTimeText.getText().toString().trim();
+        if (TextUtils.isEmpty(endDate) || endDate.equals("结束日期")) {
+            return false;
+        } else if (TextUtils.isEmpty(endTime) || endTime.equals("结束时间")) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 判断结束时间是否大于开始时间
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private boolean endDateIsLarge(String startDate, String endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            long start = sdf.parse(startDate).getTime();
+            long end = sdf.parse(endDate).getTime();
+            if (end > start) {
+
+                return true;
+            }
+            Toast.makeText(getContext(), "结束时间必须大于开始时间", Toast.LENGTH_SHORT).show();
+            return false;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(), "结束时间必须大于开始时间", Toast.LENGTH_SHORT).show();
+        return false;
     }
 
     /**
@@ -380,7 +459,9 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                 startDialog.show();
                 break;
             case R.id.box_message_end:
-                endDialog.show();
+                if (checkStartIsSelected()) {
+                    endDialog.show();
+                }
                 break;
 
             case R.id.box_message_safe_button:
@@ -402,6 +483,24 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
 
         }
 
+    }
+
+    /**
+     * 检查开始时间是否已经选择
+     *
+     * @return
+     */
+    private boolean checkStartIsSelected() {
+        String startDate = startDateText.getText().toString().trim();
+        String startTime = startTimeText.getText().toString().trim();
+        if (TextUtils.isEmpty(startDate) || startDate.equals("开始日期")) {
+            Toast.makeText(getContext(), "开始日期不能为空", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (TextUtils.isEmpty(startTime) || startTime.equals("开始时间")) {
+            Toast.makeText(getContext(), "开始时间不能为空", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -433,13 +532,13 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
                 jsonObject.put("f_is_locked", 0);
             }
             jsonObject.put("type", "app");
-            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + "?_token=" + BoxActivity.token, jsonObject.toString(), new Callback() {
+            HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getContext(),"网络异常",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "网络异常", Toast.LENGTH_SHORT).show();
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     });
@@ -481,10 +580,10 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     }
 
     private void parseResult(Result result) {
-        if(result.data!=null&&result.data.equals("true")){
-            Toast.makeText(getContext(),"更新成功",Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(getContext(),"更新失败",Toast.LENGTH_SHORT).show();
+        if (result.data != null && result.data.equals("true")) {
+            Toast.makeText(getContext(), "更新成功", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "更新失败", Toast.LENGTH_SHORT).show();
         }
     }
 

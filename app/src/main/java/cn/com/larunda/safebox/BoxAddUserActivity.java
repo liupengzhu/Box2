@@ -27,6 +27,9 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +55,8 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     private List<BoxAddUser> boxAddUserList = new ArrayList<>();
     private String id;
     private String BIND_USER_URL = Util.URL + "box/bind_user_lists" + Util.TOKEN;
+    private String CANCEL_URL = Util.URL + "box/cancel_bind_user" + Util.TOKEN;
+
     private String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
@@ -205,6 +210,11 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                 } else {
                     boxAddUser.setPhone("");
                 }
+                if (boxAddUserData.user_id != null) {
+                    boxAddUser.setId(boxAddUserData.user_id);
+                } else {
+                    boxAddUser.setId("");
+                }
                 boxAddUserList.add(boxAddUser);
             }
         }
@@ -304,19 +314,95 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
             case R.id.box_add_user_all_checked_text:
                 allCheckedClick();
                 break;
-            /*case R.id.box_add_user_delete_button:
+            case R.id.box_add_user_delete_button:
                 checkIsChecked();
                 if (idList.size() == 0) {
                     Toast.makeText(BoxAddUserActivity.this, "还没有选择用户", Toast.LENGTH_SHORT).show();
                 } else {
                     sendDeleteRequest();
                 }
-                break;*/
+                break;
             default:
                 break;
 
         }
 
+    }
+
+    private void sendDeleteRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("box_id", id);
+            jsonObject.put("user_id", Util.listToString(idList));
+            HttpUtil.sendPostRequestWithHttp(CANCEL_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                        }
+                    });
+
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析post请求返回数据
+     *
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            refreshLayout.setRefreshing(false);
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(BoxAddUserActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+    /**
+     * 检查选中的用户
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (BoxAddUser boxAddUser : boxAddUserList) {
+            if (boxAddUser.isImgIsChecked()) {
+                idList.add(boxAddUser.getId());
+            }
+        }
     }
 
 

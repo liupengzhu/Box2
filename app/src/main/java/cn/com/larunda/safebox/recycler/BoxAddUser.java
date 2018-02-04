@@ -11,6 +11,7 @@ public class BoxAddUser {
     private String phone;
     private String pic;
     private boolean imgIsChecked = false;
+    private String id;
 
     public BoxAddUser(String name, String company, String department, String phone) {
         this.name = name;
@@ -69,5 +70,13 @@ public class BoxAddUser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

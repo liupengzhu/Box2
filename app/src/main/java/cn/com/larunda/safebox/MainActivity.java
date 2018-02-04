@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void queryMenuInfo() {
 
-        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback()  {
+        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
@@ -243,29 +243,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    /**
-     * 按键按下监听事件
-     *
-     * @param keyCode
-     * @param event
-     * @return
-     */
-
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //判断递送箱列表是否是多选状态
-            if (DListFragment.isLongClick) {
-
-                DListFragment.cancleLongClick();
-            } else {
-                exitByTwoClick();
-            }
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (DListFragment.isLongClick) {
+            DListFragment.cancleLongClick();
+        } else {
+            exitByTwoClick();
         }
-
-
-        return false;
     }
 
     /**

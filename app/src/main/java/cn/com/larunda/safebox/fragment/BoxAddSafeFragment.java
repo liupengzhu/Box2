@@ -36,8 +36,7 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
     RelativeLayout lockButton;
     TextView lockText;
 
-    RelativeLayout bfButton;
-    TextView bfText;
+
 
     LinearLayout startTimeButton;
     TextView startDateText;
@@ -49,11 +48,9 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
 
     List<String> levelList = new ArrayList<>();
     List<String> lockList = new ArrayList<>();
-    List<String> bfList = new ArrayList<>();
 
     private ChooseDialog chooseDialog;
     private ChooseDialog lockChooseDialog;
-    private ChooseDialog bfChooseDialog;
     private TimeDialog startDialog;
     private TimeDialog endDialog;
 
@@ -79,8 +76,7 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
         levelList.add("三级加密");
         lockList.add("未锁定");
         lockList.add("已锁定");
-        bfList.add("未布防");
-        bfList.add("已布防");
+
     }
 
     /**
@@ -94,8 +90,6 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
         levelText = view.findViewById(R.id.box_add_safe_level_text);
         lockButton = view.findViewById(R.id.box_add_safe_lock);
         lockText = view.findViewById(R.id.box_add_safe_lock_text);
-        bfButton = view.findViewById(R.id.box_add_safe_bf);
-        bfText = view.findViewById(R.id.box_add_safe_bf_text);
         startTimeButton = view.findViewById(R.id.box_add_safe_start);
         startDateText = view.findViewById(R.id.box_add_safe_start_date);
         startTimeText = view.findViewById(R.id.box_add_safe_start_time);
@@ -105,7 +99,6 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
 
         chooseDialog = new ChooseDialog(getContext(), levelList);
         lockChooseDialog = new ChooseDialog(getContext(), lockList);
-        bfChooseDialog = new ChooseDialog(getContext(), bfList);
         startDialog = new TimeDialog(getContext());
         endDialog = new TimeDialog(getContext());
 
@@ -120,7 +113,7 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
         enclosureButton.setOnClickListener(this);
         levelButton.setOnClickListener(this);
         lockButton.setOnClickListener(this);
-        bfButton.setOnClickListener(this);
+
         startTimeButton.setOnClickListener(this);
         endTimeButton.setOnClickListener(this);
 
@@ -139,13 +132,7 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
                 lockChooseDialog.cancel();
             }
         });
-        bfChooseDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-            @Override
-            public void OnClick(View v, int positon) {
-                bfText.setText(bfList.get(positon));
-                bfChooseDialog.cancel();
-            }
-        });
+
 
         startDialog.setOnCancelClickListener(new TimeDialog.OnCancelClickListener() {
             @Override
@@ -196,9 +183,6 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
 
             case R.id.box_add_safe_lock:
                 lockChooseDialog.show();
-                break;
-            case R.id.box_add_safe_bf:
-                bfChooseDialog.show();
                 break;
             case R.id.box_add_safe_start:
                 startDialog.show();

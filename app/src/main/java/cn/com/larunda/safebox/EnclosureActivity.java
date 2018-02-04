@@ -281,25 +281,17 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         bottom_layout.setVisibility(View.GONE);
     }
 
-    /**
-     * 按键事件监听
-     *
-     * @param keyCode
-     * @param event
-     * @return
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //判断递送箱列表是否是多选状态
-            if (isLongClick) {
-                cancleLongClick();
 
-            } else {
-                finish();
-            }
+    @Override
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (isLongClick) {
+            cancleLongClick();
+
+        } else {
+            finish();
+
         }
-        return false;
     }
 
     /**

@@ -10,6 +10,7 @@ public class BoxAddUser {
     private String department;
     private String phone;
     private String pic;
+    private boolean imgIsChecked = false;
 
     public BoxAddUser(String name, String company, String department, String phone) {
         this.name = name;
@@ -20,6 +21,14 @@ public class BoxAddUser {
 
     public BoxAddUser() {
 
+    }
+
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
     }
 
     public String getPic() {

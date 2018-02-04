@@ -44,8 +44,8 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
 
     private TitleBar titleBar;
     private String id;
-    public static final String ADD_ENCLOSURE_URL = "http://safebox.dsmcase.com:90/api/app/box/area_add_lists?_token=";
-    public static final String POST_URL = "http://safebox.dsmcase.com:90/api/box/add_bind_area?_token=";
+    public static final String ADD_ENCLOSURE_URL = Util.URL+"app/box/area_add_lists"+Util.TOKEN;
+    public static final String POST_URL = Util.URL+"box/add_bind_area"+Util.TOKEN;
 
     private RelativeLayout enclosureButton;
     private TextView enclosureText;
@@ -294,18 +294,18 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      */
     private void sendPostRequest(String position) {
 
-        final JSONObject jsonObject = new JSONObject();
-        try {
+        JSONObject jsonObject = new JSONObject();
+        /*try {*/
 
-            jsonObject.put("area_id", areaId);
-            jsonObject.put("box_id", id);
-            if (position.equals("内")) {
+            /*jsonObject.put("area_id", areaId);
+            jsonObject.put("box_id", id);*/
+            /*if (position.equals("内")) {
                 jsonObject.put("f_in_or_out ", 0);
             } else {
                 jsonObject.put("f_in_or_out ", 1);
-            }
+            }*/
             /*swipeRefreshLayout.setRefreshing(true);*/
-            HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
+            HttpUtil.sendPostRequestWithHttp(POST_URL + token+"&box_id="+id+"&area_id="+areaId+"&f_in_or_out="+0, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
 
@@ -318,7 +318,6 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                     Log.d("main",token);
                     Log.d("main",id);
                     Log.d("main",areaId+"");
-                    Log.d("main",jsonObject.toString());
                 }
             });
             /*HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
@@ -352,9 +351,9 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                     });*//*
                 }
             });*/
-        } catch (JSONException e) {
+        /*} catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     /**

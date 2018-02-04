@@ -1,102 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/box_add_user_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="@color/white">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/box_add_user_item_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
+    <ImageView
+        android:id="@+id/box_add_user_check_button"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="15dp"
-        android:src="@mipmap/user_img" />
+        android:src="@mipmap/unchecked"
+        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/box_add_user_item_dw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@id/box_add_user_item_img"
-        android:text="单位:"
-        android:textColor="@color/list_text_l" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/white">
 
-    <TextView
-        android:id="@+id/box_add_user_item_dw_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/box_add_user_item_dw"
-        android:text="化工厂"
-        android:textColor="@color/list_text_l" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/box_add_user_item_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@mipmap/user_img" />
 
-    <TextView
-        android:id="@+id/box_add_user_item_bm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/box_add_user_item_dw_text"
-        android:text="部门:"
-        android:textColor="@color/list_text_l" />
+        <TextView
+            android:id="@+id/box_add_user_item_dw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/box_add_user_item_img"
+            android:text="单位:"
+            android:textColor="@color/list_text_l" />
 
-    <TextView
-        android:id="@+id/box_add_user_item_bm_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/box_add_user_item_bm"
-        android:text="生产一部"
-        android:textColor="@color/list_text_l" />
+        <TextView
+            android:id="@+id/box_add_user_item_dw_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/box_add_user_item_dw"
+            android:text="化工厂"
+            android:textColor="@color/list_text_l" />
 
+        <TextView
+            android:id="@+id/box_add_user_item_bm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/box_add_user_item_dw_text"
+            android:text="部门:"
+            android:textColor="@color/list_text_l" />
 
-    <TextView
-        android:id="@+id/box_add_user_item_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/box_add_user_item_dw"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@id/box_add_user_item_img"
-        android:text="姓名:"
-        android:textColor="@color/list_text_h" />
-
-    <TextView
-        android:id="@+id/box_add_user_item_dw_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/box_add_user_item_dw_text"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/box_add_user_item_name"
-        android:text="张三"
-        android:textColor="@color/list_text_h" />
-
-    <TextView
-        android:id="@+id/box_add_user_item_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/box_add_user_item_dw"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="2dp"
-        android:layout_toRightOf="@id/box_add_user_item_img"
-        android:text="手机:"
-        android:textColor="@color/list_text_l" />
-
-    <TextView
-        android:id="@+id/box_add_user_item_dw_phone_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/box_add_user_item_dw_text"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="2dp"
-        android:layout_toRightOf="@id/box_add_user_item_phone"
-        android:text="18802541588"
-        android:textColor="@color/list_text_l" />
+        <TextView
+            android:id="@+id/box_add_user_item_bm_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/box_add_user_item_bm"
+            android:text="生产一部"
+            android:textColor="@color/list_text_l" />
 
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/box_add_user_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/box_add_user_item_dw"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/box_add_user_item_img"
+            android:text="姓名:"
+            android:textColor="@color/list_text_h" />
+
+        <TextView
+            android:id="@+id/box_add_user_item_dw_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/box_add_user_item_dw_text"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/box_add_user_item_name"
+            android:text="张三"
+            android:textColor="@color/list_text_h" />
+
+        <TextView
+            android:id="@+id/box_add_user_item_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/box_add_user_item_dw"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/box_add_user_item_img"
+            android:text="手机:"
+            android:textColor="@color/list_text_l" />
+
+        <TextView
+            android:id="@+id/box_add_user_item_dw_phone_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/box_add_user_item_dw_text"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/box_add_user_item_phone"
+            android:text="18802541588"
+            android:textColor="@color/list_text_l" />
+
+
+    </RelativeLayout>
+</LinearLayout>

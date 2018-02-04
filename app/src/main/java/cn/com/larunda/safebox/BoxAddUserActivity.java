@@ -18,7 +18,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
@@ -48,7 +51,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     private BoxAddUserAdapter adapter;
     private List<BoxAddUser> boxAddUserList = new ArrayList<>();
     private String id;
-    private String BIND_USER_URL = Util.URL+"box/bind_user_lists"+Util.TOKEN;
+    private String BIND_USER_URL = Util.URL + "box/bind_user_lists" + Util.TOKEN;
     private String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
@@ -58,6 +61,22 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
     private NestedScrollView layout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
+    /**
+     * 是否在长按状态
+     */
+    public boolean isLongClick = false;
+
+    /**
+     * 是否在全选状态
+     */
+    private boolean isAllChecked = false;
+    private ImageView allCheckedImage;
+    private TextView allCheckedText;
+    private LinearLayout bottom_layout;
+
+    private Button deleteButton;
+    private ArrayList<String> idList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +232,21 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
             }
         });
         addButton.setOnClickListener(this);
+
+        adapter.setBoxAddUserOnLongClickListener(new BoxAddUserAdapter.BoxAddUserOnLongClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLongClick = true;
+                adapter.setCheckedLayout(true);
+                adapter.notifyDataSetChanged();
+                bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+
+        deleteButton.setOnClickListener(this);
     }
 
 
@@ -220,6 +254,11 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
      * 初始化View
      */
     private void initView() {
+
+        allCheckedImage = findViewById(R.id.box_add_user_all_checked_image);
+        allCheckedText = findViewById(R.id.box_add_user_all_checked_text);
+        bottom_layout = findViewById(R.id.box_add_user_bottom_layout);
+        deleteButton = findViewById(R.id.box_add_user_delete_button);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -261,8 +300,71 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                     startActivity(bindingUserIntent);
                 }
                 break;
+            case R.id.box_add_user_all_checked_image:
+            case R.id.box_add_user_all_checked_text:
+                allCheckedClick();
+                break;
+            /*case R.id.box_add_user_delete_button:
+                checkIsChecked();
+                if (idList.size() == 0) {
+                    Toast.makeText(BoxAddUserActivity.this, "还没有选择用户", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendDeleteRequest();
+                }
+                break;*/
             default:
                 break;
+
+        }
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (isLongClick) {
+            cancleLongClick();
+
+        } else {
+            finish();
+
+        }
+    }
+
+    /**
+     * 取消多选状态
+     */
+    public void cancleLongClick() {
+        isLongClick = false;
+        adapter.setCheckedLayout(false);
+        adapter.notifyDataSetChanged();
+        bottom_layout.setVisibility(View.GONE);
+    }
+
+    /**
+     * 处理全选按钮的点击事件
+     */
+    private void allCheckedClick() {
+        //判断当前全选是否是选中状态
+        if (isAllChecked) {
+            isAllChecked = false;
+            allCheckedImage.setImageResource(R.mipmap.unchecked);
+            List<BoxAddUser> boxAddUserList = adapter.getBoxAddUserList();
+            for (BoxAddUser boxAddUser : boxAddUserList) {
+                boxAddUser.setImgIsChecked(false);
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            isAllChecked = true;
+            allCheckedImage.setImageResource(R.mipmap.checked);
+            List<BoxAddUser> boxAddUserList = adapter.getBoxAddUserList();
+            for (BoxAddUser boxAddUser : boxAddUserList) {
+                boxAddUser.setImgIsChecked(true);
+            }
+            adapter.notifyDataSetChanged();
 
         }
 

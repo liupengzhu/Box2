@@ -273,8 +273,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         preferences = PreferenceManager.getDefaultSharedPreferences(UserInfoActivity.this);
         token = preferences.getString("token", null);
 
-        deleteButton = findViewById(R.id.user_info_delete_button);
-
         titleBar = findViewById(R.id.user_info_title_bar);
         titleBar.setTextViewText("用户管理");
         titleBar.setLeftButtonVisible(View.GONE);
@@ -282,7 +280,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         allCheckedImage = findViewById(R.id.user_info_all_checked_image);
         allCheckedText = findViewById(R.id.user_info_all_checked_text);
-
+        deleteButton = findViewById(R.id.user_info_delete_button);
         top_layout = findViewById(R.id.user_info_top_layout);
         bottom_layout = findViewById(R.id.user_info_bottom_layout);
 

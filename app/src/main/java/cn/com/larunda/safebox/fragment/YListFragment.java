@@ -9,12 +9,16 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
@@ -22,6 +26,7 @@ import cn.com.larunda.safebox.MainActivity;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.SqAdapter;
+import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.SqData;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.recycler.MySq;
@@ -42,9 +47,9 @@ import okhttp3.Response;
  * Created by sddt on 18-1-15.
  */
 
-public class YListFragment extends Fragment {
+public class YListFragment extends Fragment implements View.OnClickListener {
 
-    public static final String YCSQ_URI = "http://safebox.dsmcase.com:90/api/authorize?_token=";
+    public static final String YCSQ_URI = Util.URL + "authorize" + Util.TOKEN;
 
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
     RecyclerView recyclerView;
@@ -56,16 +61,29 @@ public class YListFragment extends Fragment {
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.y_list_fragment, container, false);
         initView(view);
+        initEvent();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         return view;
+    }
+
+    /**
+     * 初始化点击事件
+     */
+    private void initEvent() {
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
     @Override
@@ -90,6 +108,10 @@ public class YListFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.y_recycler_view);
         swipeRefreshLayout = view.findViewById(R.id.yc_swipe);
+
+        searchText = view.findViewById(R.id.y_list_serch_edit);
+        cancelButton = view.findViewById(R.id.y_list_cancel_button);
+        ensureButton = view.findViewById(R.id.y_list_ensure_button);
 
         loodingErrorLayout = view.findViewById(R.id.y_loading_error_layout);
         loodingLayout = view.findViewById(R.id.y_loading_layout);
@@ -223,4 +245,83 @@ public class YListFragment extends Fragment {
 
     }
 
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.y_list_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.y_list_ensure_button:
+                if (searchText!=null&&!TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                } else {
+                    Toast.makeText(getContext(), "请输入搜索内容", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 发送搜索
+     *
+     * @param name
+     */
+    private void sendSearchRequest(String name) {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(YCSQ_URI + MainActivity.token + "&search=" + name, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final SqInfo sqInfo = Util.handleSqInfo(content);
+                if (sqInfo != null && sqInfo.error == null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initSqList(sqInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
 }

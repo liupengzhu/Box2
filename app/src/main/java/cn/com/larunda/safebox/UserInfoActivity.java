@@ -44,7 +44,7 @@ import okhttp3.Response;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String USER_INFO_URL = "http://safebox.dsmcase.com:90/api/user?_token=";
+    public static final String USER_INFO_URL = Util.URL+"user"+Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private TitleBar titleBar;
 
@@ -273,6 +273,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.user_info_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
+                }else {
+                    Toast.makeText(UserInfoActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

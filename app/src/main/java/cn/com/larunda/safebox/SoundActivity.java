@@ -47,7 +47,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private List<SoundInfo> soundInfoList = new ArrayList<>();
-    public static final String BOX_URL = "http://safebox.dsmcase.com:90/api/box?_token=";
+    public static final String BOX_URL = Util.URL+"box"+Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
@@ -275,6 +275,8 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             case R.id.sound_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
+                }else {
+                    Toast.makeText(SoundActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

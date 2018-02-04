@@ -362,6 +362,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             case R.id.enclosure_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
+                } else {
+                    Toast.makeText(EnclosureActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.enclosure_delete_button:

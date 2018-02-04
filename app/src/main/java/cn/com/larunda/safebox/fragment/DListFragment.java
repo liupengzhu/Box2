@@ -48,7 +48,7 @@ import okhttp3.Response;
 public class DListFragment extends BaseFragment implements View.OnClickListener {
 
 
-    public static final String BOX_URL = "http://safebox.dsmcase.com:90/api/box?_token=";
+    public static final String BOX_URL = Util.URL + "box" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private List<MyBox> myBoxList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -364,6 +364,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             case R.id.list_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
+                } else {
+                    Toast.makeText(getContext(), "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

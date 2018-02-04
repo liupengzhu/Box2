@@ -1,68 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/yc_swipe"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/line" />
 
-    <FrameLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <EditText
+            android:id="@+id/y_list_serch_edit"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/serch_edit"
+            android:hint="用户名/序列号"
+            android:maxLines="1"
+            android:textCursorDrawable="@drawable/color_cursor" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="50dp"
+            android:src="@mipmap/list_serch" />
+
+        <ImageView
+            android:id="@+id/y_list_cancel_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignRight="@+id/y_list_serch_edit"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/list_unsherch" />
+
+        <TextView
+            android:id="@+id/y_list_ensure_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="确定"
+            android:textColor="@color/menu_sz_color"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/yc_swipe"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/line" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/y_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/y_loading_error_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/login_error"
-            android:visibility="invisible">
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_gravity="center"
-                    android:src="@mipmap/loading_error" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="网络链接异常"
-                    android:textSize="20sp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/y_recycler_view"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </android.support.v7.widget.RecyclerView>
+
             </LinearLayout>
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/y_loading_error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="invisible">
 
-        <ImageView
-            android:id="@+id/y_loading_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/login_error"
-            android:visibility="invisible" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
 
-    </FrameLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+                    <ImageView
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/loading_error" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="网络链接异常"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/y_loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="invisible" />
+
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

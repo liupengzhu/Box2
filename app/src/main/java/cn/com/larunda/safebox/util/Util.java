@@ -28,6 +28,7 @@ import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.Message;
+import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
@@ -36,6 +37,8 @@ import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Field;
@@ -232,8 +235,21 @@ public class Util {
         }
         return result.toString();
     }
+    public static PhotoUrl handlePhotoUrl(String response){
+        Gson gson = new Gson();
+        PhotoUrl photoUrl = gson.fromJson(response,PhotoUrl.class);
+        return photoUrl;
+    }
 
 
+    public static boolean isGoodJson(String json) {
+        try {
+            new JsonParser().parse(json);
+            return true;
+        } catch (JsonParseException e) {
+            return false;
+        }
+    }
     /**
      * 设置tablayout下划线宽度的方法
      *

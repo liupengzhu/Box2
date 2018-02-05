@@ -1,11 +1,15 @@
 package cn.com.larunda.safebox.util;
 
 
+import android.util.Log;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -24,7 +28,7 @@ public class HttpUtil {
 
     public final static MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public final static MediaType IMAGE = MediaType.parse("image/jpeg;charset=utf-8");
+    public final static MediaType IMAGE = MediaType.parse("image/png;charset=utf-8");
 
     public final static OkHttpClient client = new OkHttpClient.Builder()
             .readTimeout(READER_TIMEOUT, TimeUnit.SECONDS)
@@ -64,12 +68,17 @@ public class HttpUtil {
     }
 
 
-    public static void sendPutImageWithHttp(String url, String localPath, Callback callback) {
+    public static void sendPostImageWithHttp(String url, String localPath, Callback callback) {
         File file = new File(localPath);
-        RequestBody requestBody = RequestBody.create(IMAGE, file);
+        RequestBody fileBody = RequestBody.create(IMAGE, file);
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file",file.getName(),fileBody)
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
-                .put(requestBody)
+                .post(requestBody)
                 .build();
         client.newCall(request).enqueue(callback);
 

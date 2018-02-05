@@ -46,6 +46,7 @@ import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
+import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -87,16 +88,18 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     EditText emailText;
     TextView fingerprintText;
 
-    public static final String EDIT_USER_URL = "http://safebox.dsmcase.com:90/api/user/";
-    public static final String COMPANY_URL = "http://safebox.dsmcase.com:90/api/company/";
-    public static final String DEPARTMENT_LIST_URL = "http://safebox.dsmcase.com:90/api/app/user_info/department_lists?_token=";
-    public static final String DEPARTMENT_URL = "http://safebox.dsmcase.com:90/api/department/";
+    public static final String EDIT_USER_URL = Util.URL+"user/";
+    public static final String COMPANY_URL = Util.URL+"company/";
+    public static final String DEPARTMENT_LIST_URL = Util.URL+"app/user_info/department_lists"+Util.TOKEN;
+    public static final String DEPARTMENT_URL = Util.URL+"department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
 
-    public static final String UPLOAD = "http://safebox.dsmcase.com:90/api/upload/file?_token=";
+    public static final String UPLOAD = Util.URL+"upload/file"+Util.TOKEN;
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
+
+    String imgUrl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +126,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId +Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -163,7 +166,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param userInfo
      */
     private void initUserInfo(EditUserInfo userInfo) {
-        String imgUrl = null;
+
         companyData.clear();
         companyId.clear();
         if (userInfo.companyList != null) {
@@ -292,7 +295,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param department_id
      */
     private void sendRequestForDepartment(String department_id) {
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -330,7 +333,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -566,6 +569,21 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         Log.d("main",imageUri+"");
 
                         Glide.with(this).load("/sdcard/Android/data/com.example.box//cache/output_image.jpg").into(photo);
+
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", "/sdcard/Android/data/com.example.box//cache/output_image.jpg", new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String content = response.body().string();
+                                Log.d("main",content);
+                            }
+                        });
+
+
                         photoDialog.cancel();
 
                     } catch (FileNotFoundException e) {
@@ -629,13 +647,59 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
-            /*photo.setImageBitmap(BitmapFactory.decodeFile(imagePath));*/
-            Glide.with(this).load(imagePath).into(photo);
+
+            HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseContent(content);
+                        }
+                    });
+
+                }
+            });
             photoDialog.cancel();
         }
 
     }
 
+    /**
+     * 解析服务器返回数据
+     * @param content
+     */
+    private void parseContent(String content) {
+        if(Util.isGoodJson(content)){
+            PhotoUrl photoUrl = Util.handlePhotoUrl(content);
+            if(photoUrl!=null&&photoUrl.getError()==null){
+                if(photoUrl.getMessage()!=null){
+                    Toast.makeText(this,photoUrl.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
+
+        }else {
+            imgUrl = content;
+            if (imgUrl != null) {
+                Toast.makeText(this,"头像上传成功",Toast.LENGTH_SHORT).show();
+                Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
+
+            }
+
+        }
+    }
 
 
     private String getImagePath(Uri externalContentUri, String selection) {

@@ -44,8 +44,8 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
 
     private TitleBar titleBar;
     private String id;
-    public static final String ADD_ENCLOSURE_URL = Util.URL+"app/box/area_add_lists"+Util.TOKEN;
-    public static final String POST_URL = Util.URL+"box/add_bind_area"+Util.TOKEN;
+    public static final String ADD_ENCLOSURE_URL = Util.URL + "app/box/area_add_lists" + Util.TOKEN;
+    public static final String POST_URL = Util.URL + "box/add_bind_area" + Util.TOKEN;
 
     private RelativeLayout enclosureButton;
     private TextView enclosureText;
@@ -99,7 +99,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      */
     private void sendRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback(){
+        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -159,6 +159,8 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
         if (enclosureData.size() == 0) {
             Toast.makeText(this, "没有更多区域", Toast.LENGTH_SHORT).show();
         }
+        enclosureText.setText("请选择区域");
+        positionText.setText("请选择区域内外");
 
     }
 
@@ -295,35 +297,19 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
     private void sendPostRequest(String position) {
 
         JSONObject jsonObject = new JSONObject();
-        /*try {*/
+        try {
 
-            /*jsonObject.put("area_id", areaId);
-            jsonObject.put("box_id", id);*/
-            /*if (position.equals("内")) {
-                jsonObject.put("f_in_or_out ", 0);
+            jsonObject.put("area_id", areaId);
+            jsonObject.put("box_id", id);
+            if (position.equals("内")) {
+                jsonObject.put("f_in_or_out", 0);
             } else {
-                jsonObject.put("f_in_or_out ", 1);
-            }*/
-            /*swipeRefreshLayout.setRefreshing(true);*/
-            HttpUtil.sendPostRequestWithHttp(POST_URL + token+"&box_id="+id+"&area_id="+areaId+"&f_in_or_out="+0, jsonObject.toString(), new Callback() {
+                jsonObject.put("f_in_or_out", 1);
+            }
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    final String content = response.body().string();
-                    Log.d("main",content);
-                    Log.d("main",token);
-                    Log.d("main",id);
-                    Log.d("main",areaId+"");
-                }
-            });
-            /*HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -338,22 +324,18 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
-                    Log.d("main",content);
-                    Log.d("main",token);
-                    Log.d("main",id);
-                    Log.d("main",areaId+"");
-                    Log.d("main",jsonObject.toString());
-                    *//*runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             parseResponse(content);
                         }
-                    });*//*
+                    });
                 }
-            });*/
-        /*} catch (JSONException e) {
+            });
+
+        } catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     /**
@@ -390,10 +372,10 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
      * @return
      */
     private boolean isEmpty(String enclosure, String position) {
-        if (TextUtils.isEmpty(enclosure)||enclosure.equals("请选择区域")) {
+        if (TextUtils.isEmpty(enclosure) || enclosure.equals("请选择区域")) {
             Toast.makeText(this, "区域不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(position)||position.equals("请选择区域内外")) {
+        } else if (TextUtils.isEmpty(position) || position.equals("请选择区域内外")) {
             Toast.makeText(this, "区域内外不能为空", Toast.LENGTH_SHORT).show();
             return true;
         }

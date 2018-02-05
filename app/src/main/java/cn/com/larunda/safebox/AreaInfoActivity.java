@@ -47,7 +47,7 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     private BindAreaAdapter adapter;
     private List<BindArea> bindAreaList = new ArrayList<>();
     private String id;
-    private String BIND_USER_URL = "http://safebox.dsmcase.com:90/api/box/bind_area_lists?_token=";
+    private String BIND_USER_URL = Util.URL+"box/bind_area_lists"+Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -137,6 +137,12 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        sendRequest();
     }
 
     /**

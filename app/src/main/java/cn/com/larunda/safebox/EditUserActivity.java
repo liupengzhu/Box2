@@ -15,18 +15,25 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.SparseArrayCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.PhotoDialog;
@@ -88,13 +95,19 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     EditText emailText;
     TextView fingerprintText;
 
-    public static final String EDIT_USER_URL = Util.URL+"user/";
-    public static final String COMPANY_URL = Util.URL+"company/";
-    public static final String DEPARTMENT_LIST_URL = Util.URL+"app/user_info/department_lists"+Util.TOKEN;
-    public static final String DEPARTMENT_URL = Util.URL+"department/";
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+    private LinearLayout layout;
+    private Button putButton;
+
+    public static final String EDIT_USER_URL = Util.URL + "user/";
+    public static final String COMPANY_URL = Util.URL + "company/";
+    public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
+    public static final String DEPARTMENT_URL = Util.URL + "depar ment/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
 
-    public static final String UPLOAD = Util.URL+"upload/file"+Util.TOKEN;
+    public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
@@ -115,6 +128,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         }
         userId = getIntent().getStringExtra("id");
         initView();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         if (userId != null) {
             sendRequest();
         }
@@ -126,10 +143,19 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId +Util.TOKEN + token, new Callback() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(EDIT_USER_URL + userId + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -140,6 +166,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void run() {
                             initUserInfo(userInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
 
@@ -239,22 +269,34 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * @param company_id
      */
     private void sendRequestForDepartmentList(String company_id) {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
                 final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
-
                 if (departmentInfo != null && departmentInfo.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             initDepartmentList(departmentInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -298,30 +340,46 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
 
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final Department department = Util.handleDepartment(response.body().string());
-                if (department != null && department.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            departmentText.setText(department.f_name);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final Department department = Util.handleDepartment(content);
+                    if (department != null && department.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                departmentText.setText(department.f_name);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -336,7 +394,15 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -348,6 +414,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void run() {
                             companyText.setText(company.f_name);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -410,6 +480,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 chooseFromAlbum();
             }
         });
+        loodingErrorLayout.setOnClickListener(this);
     }
 
     /**
@@ -456,6 +527,14 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         token = preferences.getString("token", null);
         settingPhoto = findViewById(R.id.edit_user_setting_photo);
         photo = findViewById(R.id.edit_user_photo);
+
+        putButton = findViewById(R.id.edit_user_button);
+        loodingErrorLayout = findViewById(R.id.edit_user_loading_error_layout);
+        loodingLayout = findViewById(R.id.edit_user_loading_layout);
+        layout = findViewById(R.id.edit_user_layout);
+        swipeRefreshLayout = findViewById(R.id.edit_user_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
 
         levelButton = findViewById(R.id.edit_user_level);
         levelText = findViewById(R.id.edit_user_level_text);
@@ -519,17 +598,24 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.edit_user_department:
                 if (isCheckedCompany()) {
-                    departmentDialog = new ChooseDialog(EditUserActivity.this, departmentData);
-                    departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                        @Override
-                        public void OnClick(View v, int positon) {
-                            departmentText.setText(departmentData.get(positon));
-                            departmentDialog.cancel();
-                        }
-                    });
-                    departmentDialog.show();
+                    if (departmentData.size() == 0) {
+                        Toast.makeText(this, "没有更多部门", Toast.LENGTH_SHORT).show();
+                    } else {
+                        departmentDialog = new ChooseDialog(EditUserActivity.this, departmentData);
+                        departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                            @Override
+                            public void OnClick(View v, int positon) {
+                                departmentText.setText(departmentData.get(positon));
+                                departmentDialog.cancel();
+                            }
+                        });
+                        departmentDialog.show();
+                    }
                 }
 
+                break;
+            case R.id.edit_user_loading_error_layout:
+                sendRequest();
                 break;
             default:
                 break;
@@ -565,25 +651,31 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        /*photo.setImageBitmap(bitmap);*/
-                        Log.d("main",imageUri+"");
-
-                        Glide.with(this).load("/sdcard/Android/data/com.example.box//cache/output_image.jpg").into(photo);
-
-                        HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", "/sdcard/Android/data/com.example.box//cache/output_image.jpg", new Callback() {
+                        String path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        swipeRefreshLayout.setRefreshing(true);
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
-
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
 
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
-                                String content = response.body().string();
-                                Log.d("main",content);
+                                final String content = response.body().string();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        parseContent(content);
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                });
                             }
                         });
-
-
                         photoDialog.cancel();
 
                     } catch (FileNotFoundException e) {
@@ -647,12 +739,18 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
-
+            swipeRefreshLayout.setRefreshing(true);
             HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
+
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
@@ -660,6 +758,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void run() {
                             parseContent(content);
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -672,16 +771,17 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     /**
      * 解析服务器返回数据
+     *
      * @param content
      */
     private void parseContent(String content) {
-        if(Util.isGoodJson(content)){
+        if (Util.isGoodJson(content)) {
             PhotoUrl photoUrl = Util.handlePhotoUrl(content);
-            if(photoUrl!=null&&photoUrl.getError()==null){
-                if(photoUrl.getMessage()!=null){
-                    Toast.makeText(this,photoUrl.getMessage(),Toast.LENGTH_SHORT).show();
+            if (photoUrl != null && photoUrl.getError() == null) {
+                if (photoUrl.getMessage() != null) {
+                    Toast.makeText(this, photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            }else {
+            } else {
                 Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
@@ -690,10 +790,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             }
 
 
-        }else {
+        } else {
             imgUrl = content;
             if (imgUrl != null) {
-                Toast.makeText(this,"头像上传成功",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
                 Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
 
             }

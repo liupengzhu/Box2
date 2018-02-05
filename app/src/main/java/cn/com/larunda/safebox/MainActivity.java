@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         menu_user_name.setText(menuUserInfo.userName);
         menu_user_tell.setText(menuUserInfo.userTell);
         String img_uri = menuUserInfo.userImg.replace('\\', ' ');
-        Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
+        Glide.with(this).load(IMG_URI + img_uri).placeholder(R.mipmap.user_img).error(R.mipmap.user_img).into(menu_user_img);
         id = menuUserInfo.id;
         if (menuUserInfo.level.equals("2")) {
             user_info.setVisibility(View.GONE);

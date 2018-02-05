@@ -8,4 +8,5 @@ public class BindAreaData {
     public String f_name;
     public String in_or_out;
     public String created_at;
+    public String area_id;
 }

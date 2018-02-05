@@ -1,82 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/area_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="@color/white">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/area_item_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
+    <ImageView
+        android:id="@+id/area_check_button"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="15dp"
-        android:src="@drawable/area" />
+        android:src="@mipmap/unchecked"
+        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/area_item_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@id/area_item_img"
-        android:text="设定时间:"
-        android:textColor="@color/list_text_l" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/white">
 
-    <TextView
-        android:id="@+id/area_item_time_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/area_item_time"
-        android:text="2017-12-19 15:16:51"
-        android:textColor="@color/list_text_l" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/area_item_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/area" />
 
+        <TextView
+            android:id="@+id/area_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/area_item_img"
+            android:text="设定时间:"
+            android:textColor="@color/list_text_l" />
 
-    <TextView
-        android:id="@+id/area_item_area"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/area_item_time"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@id/area_item_img"
-        android:text="区域名称:"
-        android:textColor="@color/list_text_h" />
-
-    <TextView
-        android:id="@+id/area_item_area_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/area_item_time_text"
-        android:layout_marginBottom="2dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/area_item_area"
-        android:text="苏州市"
-        android:textColor="@color/list_text_h" />
-
-    <TextView
-        android:id="@+id/area_item_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/area_item_time"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="2dp"
-        android:layout_toRightOf="@id/area_item_img"
-        android:text="区域内外:"
-        android:textColor="@color/list_text_l" />
-
-    <TextView
-        android:id="@+id/area_item_position_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/area_item_time_text"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="2dp"
-        android:layout_toRightOf="@id/area_item_position"
-        android:text="里"
-        android:textColor="@color/list_text_l" />
+        <TextView
+            android:id="@+id/area_item_time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/area_item_time"
+            android:text="2017-12-19 15:16:51"
+            android:textColor="@color/list_text_l" />
 
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/area_item_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/area_item_time"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/area_item_img"
+            android:text="区域名称:"
+            android:textColor="@color/list_text_h" />
+
+        <TextView
+            android:id="@+id/area_item_area_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/area_item_time_text"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/area_item_area"
+            android:text="苏州市"
+            android:textColor="@color/list_text_h" />
+
+        <TextView
+            android:id="@+id/area_item_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_item_time"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/area_item_img"
+            android:text="区域内外:"
+            android:textColor="@color/list_text_l" />
+
+        <TextView
+            android:id="@+id/area_item_position_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/area_item_time_text"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/area_item_position"
+            android:text="里"
+            android:textColor="@color/list_text_l" />
+
+
+    </RelativeLayout>
+</LinearLayout>

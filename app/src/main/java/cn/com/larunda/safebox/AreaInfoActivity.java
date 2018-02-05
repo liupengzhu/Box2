@@ -17,18 +17,23 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.BindAreaAdapter;
-import cn.com.larunda.safebox.adapter.BoxAddUserAdapter;
 import cn.com.larunda.safebox.gson.BindAreaData;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.recycler.BindArea;
@@ -47,7 +52,8 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     private BindAreaAdapter adapter;
     private List<BindArea> bindAreaList = new ArrayList<>();
     private String id;
-    private String BIND_USER_URL = Util.URL+"box/bind_area_lists"+Util.TOKEN;
+    private final  String  BIND_USER_URL = Util.URL + "box/bind_area_lists" + Util.TOKEN;
+    private final  String  CANCEL_URL = Util.URL +"box/cancel_bind_area"+Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -55,6 +61,22 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
     private NestedScrollView layout;
+
+    /**
+     * 是否在长按状态
+     */
+    public boolean isLongClick = false;
+
+    /**
+     * 是否在全选状态
+     */
+    private boolean isAllChecked = false;
+    private ImageView allCheckedImage;
+    private TextView allCheckedText;
+    private LinearLayout bottom_layout;
+
+    private Button deleteButton;
+    private ArrayList<String> idList = new ArrayList<>();
 
 
     @Override
@@ -153,6 +175,11 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
         if (bindAreaInfo.dataList != null) {
             for (BindAreaData data : bindAreaInfo.dataList) {
                 BindArea bindArea = new BindArea();
+                if (data.area_id != null) {
+                    bindArea.setId(data.area_id);
+                } else {
+                    bindArea.setId("");
+                }
                 if (data.f_name != null) {
                     bindArea.setName(data.f_name);
                 } else {
@@ -199,6 +226,20 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         addButton.setOnClickListener(this);
+
+        adapter.setBindAreaOnLongClickListener(new BindAreaAdapter.BindAreaOnLongClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLongClick = true;
+                adapter.setCheckedLayout(true);
+                adapter.notifyDataSetChanged();
+                bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
     }
 
 
@@ -206,6 +247,11 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
      * 初始化View
      */
     private void initView() {
+
+        allCheckedImage = findViewById(R.id.area_info_all_checked_image);
+        allCheckedText = findViewById(R.id.area_info_all_checked_text);
+        bottom_layout = findViewById(R.id.area_info_bottom_layout);
+        deleteButton = findViewById(R.id.area_info_delete_button);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -247,6 +293,18 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                     startActivity(intent);
                 }
                 break;
+            case R.id.area_info_all_checked_image:
+            case R.id.area_info_all_checked_text:
+                allCheckedClick();
+                break;
+            case R.id.area_info_delete_button:
+                checkIsChecked();
+                if (idList.size() == 0) {
+                    Toast.makeText(AreaInfoActivity.this, "还没有选择区域", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendDeleteRequest();
+                }
+                break;
             default:
                 break;
 
@@ -254,8 +312,131 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    private void sendDeleteRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("box_id", id);
+            jsonObject.put("area_id", Util.listToString(idList));
+            HttpUtil.sendPostRequestWithHttp(CANCEL_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                        }
+                    });
+
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析post请求返回数据
+     *
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            refreshLayout.setRefreshing(false);
+            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(AreaInfoActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+
+    /**
+     * 检查选中的用户
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (BindArea bindArea : bindAreaList) {
+            if (bindArea.isImgIsChecked()) {
+                idList.add(bindArea.getId());
+            }
+        }
+    }
+
+
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (isLongClick) {
+            cancleLongClick();
+
+        } else {
+            finish();
+
+        }
+    }
+
+    /**
+     * 取消多选状态
+     */
+    public void cancleLongClick() {
+        isLongClick = false;
+        adapter.setCheckedLayout(false);
+        adapter.notifyDataSetChanged();
+        bottom_layout.setVisibility(View.GONE);
+    }
+
+    /**
+     * 处理全选按钮的点击事件
+     */
+    private void allCheckedClick() {
+        //判断当前全选是否是选中状态
+        if (isAllChecked) {
+            isAllChecked = false;
+            allCheckedImage.setImageResource(R.mipmap.unchecked);
+            List<BindArea> bindAreaList = adapter.getBindAreaList();
+            for (BindArea bindArea : bindAreaList) {
+                bindArea.setImgIsChecked(false);
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            isAllChecked = true;
+            allCheckedImage.setImageResource(R.mipmap.checked);
+            List<BindArea> bindAreaList = adapter.getBindAreaList();
+            for (BindArea bindArea : bindAreaList) {
+                bindArea.setImgIsChecked(true);
+            }
+            adapter.notifyDataSetChanged();
+
+        }
 
     }
 }

@@ -8,6 +8,8 @@ public class BindArea {
     private String name;
     private String time;
     private String in_or_out;
+    private boolean imgIsChecked = false;
+    private String id;
 
     public BindArea() {
         super();
@@ -35,5 +37,21 @@ public class BindArea {
 
     public void setIn_or_out(String in_or_out) {
         this.in_or_out = in_or_out;
+    }
+
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

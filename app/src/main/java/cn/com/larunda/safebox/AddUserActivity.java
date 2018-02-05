@@ -143,9 +143,9 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
      * 初始化数据
      */
     private void initData() {
-        levelData.add("一级权限");
-        levelData.add("二级权限");
-        levelData.add("三级权限");
+        levelData.add("普通用户");
+        levelData.add("管理员");
+
 
         companyData.add("家乐福");
         companyData.add("朗润达");

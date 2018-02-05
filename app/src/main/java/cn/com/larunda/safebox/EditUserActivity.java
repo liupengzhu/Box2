@@ -18,6 +18,7 @@ import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -82,6 +83,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     private TextView departmentText;
     private ChooseDialog departmentDialog;
     private List<String> departmentData = new ArrayList<>();
+    private List<Integer> departmentId = new ArrayList<>();
 
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_ALBUM = 0;
@@ -91,6 +93,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     EditText userText;
     EditText nameText;
+    EditText passwordText;
+    EditText repasswordText;
     EditText telText;
     EditText emailText;
     TextView fingerprintText;
@@ -111,8 +115,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
+    private String path;
+    private String url = null;
+    private int id;
 
-    String imgUrl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +133,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         userId = getIntent().getStringExtra("id");
+        initData();
         initView();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -137,6 +144,14 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         }
         initEvent();
 
+    }
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        levelData.add("普通用户");
+        levelData.add("管理员");
     }
 
     /**
@@ -207,9 +222,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }
-
+        String imgUrl = null;
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
+            url = imgUrl;
             Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
         }
         if (userInfo.user != null) {
@@ -257,6 +273,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             companyText.setText("");
         }
         if (userInfo.department_id != "") {
+            id = Integer.parseInt(userInfo.department_id);
             sendRequestForDepartment(userInfo.department_id);
         } else {
             departmentText.setText("");
@@ -322,10 +339,12 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      */
     private void initDepartmentList(DepartmentInfo departmentInfo) {
         departmentData.clear();
+        departmentId.clear();
         if (departmentInfo.getData() != null) {
             for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
                 if (data.getF_name() != null) {
                     departmentData.add(data.getF_name());
+                    departmentId.add(data.getId());
                 }
             }
         }
@@ -481,6 +500,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         loodingErrorLayout.setOnClickListener(this);
+        putButton.setOnClickListener(this);
     }
 
     /**
@@ -555,6 +575,9 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         emailText = findViewById(R.id.edit_user_email_text);
         fingerprintText = findViewById(R.id.edit_user_fingerprint_text);
 
+        passwordText = findViewById(R.id.edit_user_password_text);
+        repasswordText = findViewById(R.id.edit_user_repassword_text);
+
         titleBar = findViewById(R.id.edit_user_title_bar);
         titleBar.setTextViewText("编辑用户");
         titleBar.setRightButtonSrc(0);
@@ -606,6 +629,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                             @Override
                             public void OnClick(View v, int positon) {
                                 departmentText.setText(departmentData.get(positon));
+                                id = departmentId.get(positon);
                                 departmentDialog.cancel();
                             }
                         });
@@ -617,10 +641,149 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             case R.id.edit_user_loading_error_layout:
                 sendRequest();
                 break;
+            case R.id.edit_user_button:
+                sendPostRequest();
+                break;
             default:
                 break;
         }
 
+    }
+
+    /**
+     * 发送post请求
+     */
+    private void sendPostRequest() {
+        String name = nameText.getText().toString().trim();
+        String user = userText.getText().toString().trim();
+        String password = passwordText.getText().toString().trim();
+        String repassword = repasswordText.getText().toString().trim();
+        String tel = telText.getText().toString().trim();
+        String email = emailText.getText().toString().trim();
+        String level = levelText.getText().toString().trim();
+        String company = companyText.getText().toString().trim();
+        String department = departmentText.getText().toString().trim();
+        if (!isEmpty(name, user, tel, email, level, company, department)) {
+            final JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("f_name", name);
+                jsonObject.put("f_user", user);
+                jsonObject.put("f_tel", tel);
+                jsonObject.put("f_email", email);
+                if (level.equals("管理员")) {
+                    jsonObject.put("f_level", 1);
+                } else {
+                    jsonObject.put("f_level", 2);
+                }
+
+                jsonObject.put("department_id", id);
+                jsonObject.put("f_pic", url);
+                jsonObject.put("f_fingerencode", null);
+                if (password != null && repassword != null) {
+                    if (password.equals(repassword)) {
+                        jsonObject.put("f_password", password);
+                        jsonObject.put("re_password", repassword);
+                    } else {
+                        Toast.makeText(this, "密码于确认密码不一致", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                swipeRefreshLayout.setRefreshing(true);
+                HttpUtil.sendPutRequestWithHttp(EDIT_USER_URL + userId + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.GONE);
+                                loodingErrorLayout.setVisibility(View.VISIBLE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        final String content = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseUpdata(content);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+
+                    }
+                });
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    private void parseUpdata(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+    /**
+     * 判断是否为空
+     *
+     * @param name
+     * @param user
+     * @param tel
+     * @param email
+     * @param level
+     * @param company
+     * @param department @return
+     */
+    private boolean isEmpty(String name, String user, String tel, String email, String level, String company, String department) {
+        if (url == null) {
+            Toast.makeText(this, "头像不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(user)) {
+            Toast.makeText(this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, "姓名不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(tel)) {
+            Toast.makeText(this, "电话不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "邮箱不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(level) || level.equals("请选择权限等级")) {
+            Toast.makeText(this, "权限等级不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(company) || company.equals("请选择单位")) {
+            Toast.makeText(this, "单位不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(department) || department.equals("请选择部门")) {
+            Toast.makeText(this, "部门不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -651,7 +814,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        String path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
                         swipeRefreshLayout.setRefreshing(true);
                         HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
                             @Override
@@ -739,6 +902,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
+            path = imagePath;
             swipeRefreshLayout.setRefreshing(true);
             HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
                 @Override
@@ -791,10 +955,11 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
 
         } else {
-            imgUrl = content;
-            if (imgUrl != null) {
+
+            if (content != null) {
+                url = content;
                 Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
-                Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
+                Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
 
             }
 

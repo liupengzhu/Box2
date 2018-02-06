@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout enclosure;
     private LinearLayout leaving_alram;
     private LinearLayout sound;
+    private LinearLayout setting;
 
     private Button systemSettingButton;
 
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String id;
+    private String img_uri;
 
 
     @Override
@@ -186,6 +188,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingIntent = new Intent(MainActivity.this, PersonalSettingActivity.class);
+                startActivity(settingIntent);
+            }
+        });
 
     }
 
@@ -229,18 +238,19 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void showMenuInfo(MenuUserInfo menuUserInfo) {
-        if(menuUserInfo.userId!=null) {
+        if (menuUserInfo.userId != null) {
             menu_user_id.setText(menuUserInfo.userId);
         }
-        if(menuUserInfo.userName!=null) {
+        if (menuUserInfo.userName != null) {
             menu_user_name.setText(menuUserInfo.userName);
         }
-        if(menuUserInfo.userTell!=null) {
+        if (menuUserInfo.userTell != null) {
             menu_user_tell.setText(menuUserInfo.userTell);
         }
         if (menuUserInfo.userImg != null) {
-            String img_uri = menuUserInfo.userImg.replace('\\', ' ');
+            img_uri = menuUserInfo.userImg.replace('\\', ' ');
             Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
+            Log.d("main", img_uri);
         }
         id = menuUserInfo.id;
         if (menuUserInfo.level.equals("2")) {
@@ -489,6 +499,7 @@ public class MainActivity extends AppCompatActivity {
         enclosure = findViewById(R.id.enclosure_layout);
         leaving_alram = findViewById(R.id.leaving_alarm_layout);
         sound = findViewById(R.id.sound_layout);
+        setting = findViewById(R.id.setting_layout);
 
         systemSettingButton = findViewById(R.id.menu_set_button);
         systemBackButton = findViewById(R.id.menu_back_button);
@@ -551,5 +562,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         queryMenuInfo();
+
     }
 }

@@ -489,41 +489,7 @@
 
 
                         </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:id="@+id/personal_info_setting"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="设置"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="15dp"
-                                android:src="@drawable/right_jian" />
-
-                        </RelativeLayout>
-
-
+                        
                     </LinearLayout>
                 </android.support.v4.widget.NestedScrollView>
 

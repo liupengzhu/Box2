@@ -22,7 +22,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -66,7 +65,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     private TitleBar titleBar;
 
-    RelativeLayout settingButton;
     RelativeLayout photoButton;
     private Uri imageUri;
     public static final int TAKE_PHOTO = 1;
@@ -99,7 +97,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     TextView fingerprintText;
     TextView levelText;
 
-    public SwipeRefreshLayout swipeRefreshLayout;
+    public SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
     private LinearLayout layout;
@@ -154,14 +152,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * 请求网络数据
      */
     private void sendRequest() {
-        swipeRefreshLayout.setRefreshing(true);
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
+                        refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
@@ -178,7 +176,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             initUserInfo(userInfo);
-                            swipeRefreshLayout.setRefreshing(false);
+                            refreshLayout.setRefreshing(false);
                             layout.setVisibility(View.VISIBLE);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -343,14 +341,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param department_id
      */
     private void sendRequestForDepartment(String department_id) {
-        swipeRefreshLayout.setRefreshing(true);
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
+                        refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
@@ -366,7 +364,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             departmentText.setText(department.f_name);
-                            swipeRefreshLayout.setRefreshing(false);
+                            refreshLayout.setRefreshing(false);
                             layout.setVisibility(View.VISIBLE);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -394,14 +392,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        swipeRefreshLayout.setRefreshing(true);
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
+                        refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
@@ -418,7 +416,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             companyText.setText(company.f_name);
-                            swipeRefreshLayout.setRefreshing(false);
+                            refreshLayout.setRefreshing(false);
                             layout.setVisibility(View.VISIBLE);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -460,7 +458,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
-        settingButton.setOnClickListener(this);
         photoButton.setOnClickListener(this);
 
         companyButton.setOnClickListener(this);
@@ -480,9 +477,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         loodingErrorLayout = findViewById(R.id.personal_info_loading_error_layout);
         loodingLayout = findViewById(R.id.personal_info_loading_layout);
         layout = findViewById(R.id.personal_info_layout);
-        swipeRefreshLayout = findViewById(R.id.personal_info_swipe);
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
+        refreshLayout = findViewById(R.id.personal_info_swipe);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setEnabled(false);//设置swipe不可用
 
         companyButton = findViewById(R.id.personal_info_company);
         companyText = findViewById(R.id.personal_info_company_text);
@@ -506,7 +503,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         levelText = findViewById(R.id.personal_info_level_text);
 
         titleBar = findViewById(R.id.personal_info_title_bar);
-        settingButton = findViewById(R.id.personal_info_setting);
         photoButton = findViewById(R.id.personal_info_setting_photo);
         photo = findViewById(R.id.personal_info_photo);
         titleBar.setTextViewText("个人信息");
@@ -525,10 +521,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.personal_info_setting:
-                Intent settingIntent = new Intent(this, PersonalSettingActivity.class);
-                startActivity(settingIntent);
-                break;
+
             case R.id.personal_info_setting_photo:
                 if (isChangePic) {
                     photoDialog = new PhotoDialog(this);
@@ -606,15 +599,16 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      *
      * @param company_id
      */
+
     private void sendRequestForDepartmentList(String company_id) {
-        swipeRefreshLayout.setRefreshing(true);
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
+                        refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
@@ -632,7 +626,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             initDepartmentList(departmentInfo);
-                            swipeRefreshLayout.setRefreshing(false);
+                            refreshLayout.setRefreshing(false);
                             layout.setVisibility(View.VISIBLE);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -728,15 +722,16 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
-                        swipeRefreshLayout.setRefreshing(true);
+                        refreshLayout.setRefreshing(true);
                         HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        swipeRefreshLayout.setRefreshing(false);
+
                                         Toast.makeText(PersonalInfoActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                                        refreshLayout.setRefreshing(false);
                                     }
                                 });
                             }
@@ -748,7 +743,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                     @Override
                                     public void run() {
                                         parseContent(content);
-                                        swipeRefreshLayout.setRefreshing(false);
                                     }
                                 });
                             }
@@ -839,14 +833,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             path = imagePath;
-            swipeRefreshLayout.setRefreshing(true);
+            refreshLayout.setRefreshing(true);
             HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            swipeRefreshLayout.setRefreshing(false);
+                            refreshLayout.setRefreshing(false);
                             Toast.makeText(PersonalInfoActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -859,7 +853,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             parseContent(content);
-                            swipeRefreshLayout.setRefreshing(false);
+
                         }
                     });
 
@@ -869,14 +863,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         }
 
     }
-
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        sendRequest();
-    }
-
 
     private String getImagePath(Uri externalContentUri, String selection) {
         String path = null;
@@ -902,6 +888,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             if (photoUrl != null && photoUrl.getError() == null) {
                 if (photoUrl.getMessage() != null) {
                     Toast.makeText(this, photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
+                    refreshLayout.setRefreshing(false);
                 }
             } else {
                 Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
@@ -911,14 +898,12 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 finish();
             }
 
-
         } else {
-
             if (content != null) {
                 url = content;
-                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
                 Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
-
+                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
+                refreshLayout.setRefreshing(false);
             }
 
         }
@@ -961,14 +946,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         Toast.makeText(this, "密码于确认密码不一致", Toast.LENGTH_SHORT).show();
                     }
                 }
-                swipeRefreshLayout.setRefreshing(true);
+                refreshLayout.setRefreshing(true);
                 HttpUtil.sendPutRequestWithHttp(EDIT_USER_URL + userId + Util.TOKEN + token, jsonObject.toString(), new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
+                                refreshLayout.setRefreshing(false);
                                 layout.setVisibility(View.GONE);
                                 loodingErrorLayout.setVisibility(View.VISIBLE);
                                 loodingLayout.setVisibility(View.GONE);
@@ -983,7 +968,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void run() {
                                 parseUpdata(content);
-                                swipeRefreshLayout.setRefreshing(false);
+
                             }
                         });
 
@@ -1001,10 +986,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
-            sendRequest();
+            refreshLayout.setRefreshing(false);
             Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
         } else if (content != null && content.equals("false")) {
-            swipeRefreshLayout.setRefreshing(false);
+            refreshLayout.setRefreshing(false);
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
         } else {
             runOnUiThread(new Runnable() {

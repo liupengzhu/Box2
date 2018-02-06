@@ -13,8 +13,7 @@
             android:id="@+id/menu_user_img"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/touxiang" />
+            android:layout_centerInParent="true" />
 
         <TextView
             android:id="@+id/menu_user_id"
@@ -22,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/menu_user_img"
             android:layout_centerHorizontal="true"
-            android:text="zq053694"
+
             android:textColor="@color/white"
             android:textSize="20dp" />
 
@@ -37,7 +36,6 @@
                 android:id="@+id/menu_user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="张三"
                 android:textColor="@color/white_low" />
 
             <TextView
@@ -45,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="18965285147"
+
                 android:textColor="@color/white_low" />
 
 
@@ -175,6 +173,34 @@
                 android:layout_marginLeft="20dp"
                 android:layout_weight="1"
                 android:text="录音列表"
+                android:textColor="@color/menu_t_color"
+                android:textSize="20dp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/right_jian" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line" />
+        <LinearLayout
+            android:id="@+id/setting_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:text="权限设置"
                 android:textColor="@color/menu_t_color"
                 android:textSize="20dp" />
 

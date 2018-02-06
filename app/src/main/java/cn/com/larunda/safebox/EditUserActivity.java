@@ -960,8 +960,8 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
             if (content != null) {
                 url = content;
-                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
                 Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
+                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
 
             }
 

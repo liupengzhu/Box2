@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -23,7 +25,9 @@ import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.BoxInfoLogAdapter;
@@ -35,7 +39,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class BoxInfoLogActivity extends AppCompatActivity {
+public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -43,7 +47,7 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private BoxInfoLogAdapter adapter;
     private LinearLayoutManager manager;
     private List<BoxInfoLog> boxInfoLogList = new ArrayList<>();
-    public static final String BOX_LOG_URL = "http://safebox.dsmcase.com:90/api/box/log?_token=";
+    public static final String BOX_LOG_URL = Util.URL+"box/log"+Util.TOKEN;
     private String id;
     private SharedPreferences preferences;
     private String token;
@@ -51,6 +55,12 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+    private Button weekButton;
+    private Button monthButton;
+    private Button yearButton;
+    private String date;
+    private SimpleDateFormat format;
+    private Calendar c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +193,9 @@ public class BoxInfoLogActivity extends AppCompatActivity {
 
             }
         });
+        weekButton.setOnClickListener(this);
+        monthButton.setOnClickListener(this);
+        yearButton.setOnClickListener(this);
     }
 
 
@@ -192,6 +205,10 @@ public class BoxInfoLogActivity extends AppCompatActivity {
     private void initView() {
         preferences = PreferenceManager.getDefaultSharedPreferences(BoxInfoLogActivity.this);
         token = preferences.getString("token", null);
+
+        weekButton = findViewById(R.id.box_info_log_search_week);
+        monthButton = findViewById(R.id.box_info_log_search_month);
+        yearButton = findViewById(R.id.box_info_log_search_year);
 
         refreshLayout = findViewById(R.id.box_info_log_swipe);
         loodingErrorLayout = findViewById(R.id.box_info_log_loading_error_layout);
@@ -211,5 +228,90 @@ public class BoxInfoLogActivity extends AppCompatActivity {
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
 
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.box_info_log_search_week:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.DATE,-7);
+                date = format.format(c.getTime());
+                sendSearchRequest(date);
+                break;
+            case R.id.box_info_log_search_month:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.MONTH,-1);
+                date = format.format(c.getTime());
+                sendSearchRequest(date);
+                break;
+            case R.id.box_info_log_search_year:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.YEAR,-1);
+                date = format.format(c.getTime());
+                sendSearchRequest(date);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 发送搜索请求
+     * @param date
+     */
+    private void sendSearchRequest(String date) {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&id=" + id+"&type="+"app"+"&time="+date, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final BoxInfoLogInfo boxInfoLogInfo = Util.handleBoxInfoLogInfo(content);
+                if (boxInfoLogInfo != null && boxInfoLogInfo.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initData(boxInfoLogInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(BoxInfoLogActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
     }
 }

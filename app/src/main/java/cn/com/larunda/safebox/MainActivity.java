@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         if (menuUserInfo.userImg != null) {
             img_uri = menuUserInfo.userImg.replace('\\', ' ');
             Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
-            Log.d("main", img_uri);
+
         }
         id = menuUserInfo.id;
         if (menuUserInfo.level.equals("2")) {

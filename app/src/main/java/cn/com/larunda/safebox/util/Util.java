@@ -42,6 +42,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -242,6 +244,13 @@ public class Util {
     }
 
 
+
+
+    /**
+     * 判断是否是json对象
+     * @param json
+     * @return
+     */
     public static boolean isGoodJson(String json) {
         try {
             new JsonParser().parse(json);

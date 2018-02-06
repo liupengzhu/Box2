@@ -50,6 +50,7 @@ import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
+import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -80,8 +81,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private ChooseDialog departmentDialog;
     private List<String> departmentData = new ArrayList<>();
 
+    ImageView picImg;
+    ImageView companyImg;
+    ImageView departmentImg;
+
     EditText userText;
     EditText nameText;
+    EditText passwordText;
+    EditText repasswordText;
     EditText telText;
     EditText emailText;
     TextView fingerprintText;
@@ -96,6 +103,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     private boolean isChangeCompany = false;
     private boolean isChangeDepartment = false;
+    private boolean isChangePic = false;
 
 
     public static final String PERSONSL_INFO_URL = Util.URL + "user/";
@@ -103,9 +111,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     public static final String DEPARTMENT_URL = Util.URL + "department/";
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+    public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
+
+    private String path;
+    private String url = null;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,21 +214,62 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             }
         }
         if (userInfo.config.user.change_user != null) {
-
-
+            if (userInfo.config.user.change_user.equals("1")) {
+                userText.setEnabled(true);
+            } else {
+                userText.setEnabled(false);
+            }
         }
+        if (userInfo.config.user.change_pwd != null) {
+            if (userInfo.config.user.change_pwd.equals("1")) {
+                passwordText.setEnabled(true);
+                repasswordText.setEnabled(true);
+            } else {
+                passwordText.setEnabled(false);
+                repasswordText.setEnabled(false);
+            }
+        }
+        if (userInfo.config.user.change_phone != null) {
+            if (userInfo.config.user.change_phone.equals("1")) {
+                telText.setEnabled(true);
+            } else {
+                telText.setEnabled(false);
+            }
+        }
+        if (userInfo.config.user.change_mail != null) {
+            if (userInfo.config.user.change_mail.equals("1")) {
+                emailText.setEnabled(true);
+            } else {
+                emailText.setEnabled(false);
+            }
+        }
+
+        if (userInfo.config.user.upload_pic != null) {
+            if (userInfo.config.user.upload_pic.equals("1")) {
+                isChangePic = true;
+                picImg.setVisibility(View.VISIBLE);
+            } else {
+                isChangePic = false;
+                picImg.setVisibility(View.GONE);
+            }
+        }
+
         if (userInfo.config.user.change_company != null) {
             if (userInfo.config.user.change_company.equals("1")) {
                 isChangeCompany = true;
+                companyImg.setVisibility(View.VISIBLE);
             } else {
                 isChangeCompany = false;
+                companyImg.setVisibility(View.GONE);
             }
         }
         if (userInfo.config.user.change_department != null) {
             if (userInfo.config.user.change_department.equals("1")) {
                 isChangeDepartment = true;
+                departmentImg.setVisibility(View.VISIBLE);
             } else {
                 isChangeDepartment = false;
+                departmentImg.setVisibility(View.GONE);
             }
         }
 
@@ -268,6 +322,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             companyText.setText("");
         }
         if (userInfo.department_id != "") {
+            id = Integer.parseInt(userInfo.department_id);
             sendRequestForDepartment(userInfo.department_id);
         } else {
             departmentText.setText("");
@@ -427,8 +482,15 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         departmentButton = findViewById(R.id.personal_info_department);
         departmentText = findViewById(R.id.personal_info_department_text);
 
+        picImg = findViewById(R.id.personal_info_photo_img);
+        companyImg = findViewById(R.id.personal_info_company_img);
+        departmentImg = findViewById(R.id.personal_info_department_img);
+
         userText = findViewById(R.id.personal_info_user_text);
         nameText = findViewById(R.id.personal_info_name_text);
+        nameText.setEnabled(false);
+        passwordText = findViewById(R.id.personal_info_password_text);
+        repasswordText = findViewById(R.id.personal_info_repassword_text);
         telText = findViewById(R.id.personal_info_tel_text);
         emailText = findViewById(R.id.personal_info_email_text);
         fingerprintText = findViewById(R.id.personal_info_fingerprint_text);
@@ -460,20 +522,22 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 startActivity(settingIntent);
                 break;
             case R.id.personal_info_setting_photo:
-                photoDialog = new PhotoDialog(this);
-                photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cameraPhoto();
-                    }
-                });
-                photoDialog.setPhotoButtonOnClick(new PhotoDialog.PhotoOnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        chooseFromAlbum();
-                    }
-                });
-                photoDialog.show();
+                if (isChangePic) {
+                    photoDialog = new PhotoDialog(this);
+                    photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cameraPhoto();
+                        }
+                    });
+                    photoDialog.setPhotoButtonOnClick(new PhotoDialog.PhotoOnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            chooseFromAlbum();
+                        }
+                    });
+                    photoDialog.show();
+                }
                 break;
             case R.id.personal_info_company:
                 if (isChangeCompany) {
@@ -649,7 +713,32 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        photo.setImageBitmap(bitmap);
+                        path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        swipeRefreshLayout.setRefreshing(true);
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(false);
+                                        Toast.makeText(PersonalInfoActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                final String content = response.body().string();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        parseContent(content);
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                });
+                            }
+                        });
                         photoDialog.cancel();
 
                     } catch (FileNotFoundException e) {
@@ -703,7 +792,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-
     @TargetApi(19)
     private void handleImageOnKitKat(Intent data) {
         String imagePath = null;
@@ -737,11 +825,38 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
-            photo.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+            path = imagePath;
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(PersonalInfoActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseContent(content);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            });
             photoDialog.cancel();
         }
 
     }
+
 
     @Override
     protected void onRestart() {
@@ -760,6 +875,38 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         }
         return path;
 
+    }
+
+    /**
+     * 解析头像上传信息
+     * @param content
+     */
+    private void parseContent(String content) {
+        if (Util.isGoodJson(content)) {
+            PhotoUrl photoUrl = Util.handlePhotoUrl(content);
+            if (photoUrl != null && photoUrl.getError() == null) {
+                if (photoUrl.getMessage() != null) {
+                    Toast.makeText(this, photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
+
+        } else {
+
+            if (content != null) {
+                url = content;
+                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
+                Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
+
+            }
+
+        }
     }
 
 

@@ -374,6 +374,13 @@
                                 android:text="一般用户"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="15sp" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="15dp"
+                                android:src="@drawable/right_jian" />
 
 
                         </RelativeLayout>
@@ -410,7 +417,13 @@
                                 android:text="未录入"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="15sp" />
-
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="15dp"
+                                android:src="@drawable/right_jian" />
 
                         </RelativeLayout>
 
@@ -462,6 +475,13 @@
                                 android:text="家乐福"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="15sp" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="15dp"
+                                android:src="@drawable/right_jian" />
 
 
                         </RelativeLayout>
@@ -499,6 +519,13 @@
                                 android:text="采购员"
                                 android:textColor="@color/list_text_l"
                                 android:textSize="15sp" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="15dp"
+                                android:src="@drawable/right_jian" />
 
 
                         </RelativeLayout>

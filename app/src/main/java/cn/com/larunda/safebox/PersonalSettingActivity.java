@@ -89,6 +89,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
      * 发送网络请求
      */
     private void sendRequest() {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(CONFIG_URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

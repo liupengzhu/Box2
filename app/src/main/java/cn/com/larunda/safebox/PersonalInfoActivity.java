@@ -21,6 +21,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -39,6 +40,9 @@ import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.PhotoDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -80,6 +84,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private TextView departmentText;
     private ChooseDialog departmentDialog;
     private List<String> departmentData = new ArrayList<>();
+    private List<Integer> departmentId = new ArrayList<>();
 
     ImageView picImg;
     ImageView companyImg;
@@ -112,6 +117,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
+    public static final String EDIT_USER_URL = Util.URL + "user/";
     private String userId = "";
     private SharedPreferences preferences;
     private String token;
@@ -275,6 +281,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
+            url = imgUrl;
             Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
         }
         if (userInfo.user != null) {
@@ -459,6 +466,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         companyButton.setOnClickListener(this);
         departmentButton.setOnClickListener(this);
         loodingErrorLayout.setOnClickListener(this);
+        putButton.setOnClickListener(this);
     }
 
     /**
@@ -570,6 +578,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 @Override
                                 public void OnClick(View v, int positon) {
                                     departmentText.setText(departmentData.get(positon));
+                                    id = departmentId.get(positon);
                                     departmentDialog.cancel();
                                 }
                             });
@@ -581,6 +590,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 break;
             case R.id.personal_info_loading_error_layout:
                 sendRequest();
+                break;
+            case R.id.personal_info_button:
+                sendPostRequest();
                 break;
             default:
                 break;
@@ -649,10 +661,12 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      */
     private void initDepartmentList(DepartmentInfo departmentInfo) {
         departmentData.clear();
+        departmentId.clear();
         if (departmentInfo.getData() != null) {
             for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
                 if (data.getF_name() != null) {
                     departmentData.add(data.getF_name());
+                    departmentId.add(data.getId());
                 }
             }
         }
@@ -822,7 +836,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             path = imagePath;
@@ -864,6 +877,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         sendRequest();
     }
 
+
     private String getImagePath(Uri externalContentUri, String selection) {
         String path = null;
         Cursor cursor = getContentResolver().query(externalContentUri, null, selection, null, null);
@@ -879,6 +893,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
     /**
      * 解析头像上传信息
+     *
      * @param content
      */
     private void parseContent(String content) {
@@ -907,6 +922,142 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
             }
 
         }
+    }
+
+    /**
+     * 发送更新个人信息数据
+     */
+    private void sendPostRequest() {
+        String name = nameText.getText().toString().trim();
+        String user = userText.getText().toString().trim();
+        String password = passwordText.getText().toString().trim();
+        String repassword = repasswordText.getText().toString().trim();
+        String tel = telText.getText().toString().trim();
+        String email = emailText.getText().toString().trim();
+        String level = levelText.getText().toString().trim();
+        String company = companyText.getText().toString().trim();
+        String department = departmentText.getText().toString().trim();
+        if (!isEmpty(name, user, tel, email, level, company, department)) {
+            final JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("f_name", name);
+                jsonObject.put("f_user", user);
+                jsonObject.put("f_tel", tel);
+                jsonObject.put("f_email", email);
+                if (level.equals("管理员")) {
+                    jsonObject.put("f_level", 1);
+                } else {
+                    jsonObject.put("f_level", 2);
+                }
+
+                jsonObject.put("department_id", id);
+                jsonObject.put("f_pic", url);
+                jsonObject.put("f_fingerencode", null);
+                if (password != null && repassword != null) {
+                    if (password.equals(repassword)) {
+                        jsonObject.put("f_password", password);
+                        jsonObject.put("re_password", repassword);
+                    } else {
+                        Toast.makeText(this, "密码于确认密码不一致", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                swipeRefreshLayout.setRefreshing(true);
+                HttpUtil.sendPutRequestWithHttp(EDIT_USER_URL + userId + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.GONE);
+                                loodingErrorLayout.setVisibility(View.VISIBLE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        final String content = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseUpdata(content);
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+
+                    }
+                });
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    private void parseUpdata(String content) {
+        if (content != null && content.equals("true")) {
+            sendRequest();
+            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+        } else if (content != null && content.equals("false")) {
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(PersonalInfoActivity.this, LoginActivity.class);
+                    intent.putExtra("token_timeout", "登录超时");
+                    preferences.edit().putString("token", null).commit();
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+    }
+
+    /**
+     * 判断是否为空
+     *
+     * @param name
+     * @param user
+     * @param tel
+     * @param email
+     * @param level
+     * @param company
+     * @param department @return
+     */
+    private boolean isEmpty(String name, String user, String tel, String email, String level, String company, String department) {
+        if (url == null) {
+            Toast.makeText(this, "头像不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(user)) {
+            Toast.makeText(this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, "姓名不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(tel)) {
+            Toast.makeText(this, "电话不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "邮箱不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(level) || level.equals("请选择权限等级")) {
+            Toast.makeText(this, "权限等级不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(company) || company.equals("请选择单位")) {
+            Toast.makeText(this, "单位不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(department) || department.equals("请选择部门")) {
+            Toast.makeText(this, "部门不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 
 

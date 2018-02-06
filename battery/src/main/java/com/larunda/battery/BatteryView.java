@@ -62,7 +62,7 @@ public class BatteryView extends View{
      * @param w
      * @param h
      * @param oldw
-     * @param oldhmWidth = getWidth();mWidth =mWidth = getWidth();
+     * @param  = getWidth();mWidth =mWidth = getWidth();
         mHeight = getHeight(); getWidth();
         mHeight = getHeight();
         mHeight = getHeight();
@@ -98,8 +98,8 @@ public class BatteryView extends View{
             strokepaint.setColor(getResources().getColor(R.color.high));
             paint.setColor(getResources().getColor(R.color.high));
         }else if(battery >= 33&&battery<66){
-            strokepaint.setColor(getResources().getColor(R.color.normal));
-            paint.setColor(getResources().getColor(R.color.normal));
+            strokepaint.setColor(getResources().getColor(R.color.normalb));
+            paint.setColor(getResources().getColor(R.color.normalb));
         }else if(battery>=0&&battery<33){
             strokepaint.setColor(getResources().getColor(R.color.low));
             paint.setColor(getResources().getColor(R.color.low));

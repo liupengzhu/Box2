@@ -229,12 +229,19 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void showMenuInfo(MenuUserInfo menuUserInfo) {
-
-        menu_user_id.setText(menuUserInfo.userId);
-        menu_user_name.setText(menuUserInfo.userName);
-        menu_user_tell.setText(menuUserInfo.userTell);
-        String img_uri = menuUserInfo.userImg.replace('\\', ' ');
-        Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
+        if(menuUserInfo.userId!=null) {
+            menu_user_id.setText(menuUserInfo.userId);
+        }
+        if(menuUserInfo.userName!=null) {
+            menu_user_name.setText(menuUserInfo.userName);
+        }
+        if(menuUserInfo.userTell!=null) {
+            menu_user_tell.setText(menuUserInfo.userTell);
+        }
+        if (menuUserInfo.userImg != null) {
+            String img_uri = menuUserInfo.userImg.replace('\\', ' ');
+            Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
+        }
         id = menuUserInfo.id;
         if (menuUserInfo.level.equals("2")) {
             user_info.setVisibility(View.GONE);
@@ -540,4 +547,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        queryMenuInfo();
+    }
 }

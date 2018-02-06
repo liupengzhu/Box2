@@ -43,10 +43,12 @@ import java.util.List;
 public class SoundActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
+
     private SoundInfoAdapter adapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager manager;
     private List<SoundInfo> soundInfoList = new ArrayList<>();
+
     public static final String BOX_URL = Util.URL+"box"+Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;

@@ -13,6 +13,7 @@ import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
+import cn.com.larunda.safebox.gson.BoxInitInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CompanyList;
@@ -242,7 +243,11 @@ public class Util {
         PhotoUrl photoUrl = gson.fromJson(response,PhotoUrl.class);
         return photoUrl;
     }
-
+    public static BoxInitInfo handleBoxInitInfo(String response){
+        Gson gson = new Gson();
+        BoxInitInfo boxInitInfo = gson.fromJson(response,BoxInitInfo.class);
+        return boxInitInfo;
+    }
 
 
 

@@ -1,24 +1,57 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.com.larunda.safebox.adapter.BoxInitAdapter;
+import cn.com.larunda.safebox.gson.BoxInitData;
+import cn.com.larunda.safebox.gson.BoxInitInfo;
+import cn.com.larunda.safebox.recycler.BoxInit;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class BoxInitActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private String token;
     private TitleBar titleBar;
+
+    private BoxInitAdapter adapter;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager manager;
+    private List<BoxInit> boxInitList = new ArrayList<>();
+
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+
+    public static final String INIT_URL = Util.URL+"box/add_box_lists"+Util.TOKEN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +66,97 @@ public class BoxInitActivity extends AppCompatActivity {
         }
         initView();
         initEvent();
+        //每次创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        sendRequest();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(INIT_URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(Util.isGoodJson(content)){
+                            BoxInitInfo boxInitInfo = Util.handleBoxInitInfo(content);
+                            if(boxInitInfo!=null&&boxInitInfo.error==null){
+                                initData(boxInitInfo);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                                refreshLayout.setRefreshing(false);
+                            }else {
+                                Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+
+
+                        }else {
+                            refreshLayout.setRefreshing(false);
+                            Toast.makeText(BoxInitActivity.this,"服务器异常",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    /**
+     * 解析数据
+     * @param boxInitInfo
+     */
+    private void initData(BoxInitInfo boxInitInfo) {
+        boxInitList.clear();
+        if(boxInitInfo.boxInitDataList!=null){
+            for(BoxInitData boxInitData : boxInitInfo.boxInitDataList){
+                BoxInit boxInit = new BoxInit();
+                if(boxInitData.code!=null){
+                    boxInit.setCode(boxInitData.code);
+                }else {
+                    boxInit.setCode("");
+                }
+                if(boxInitData.created_at!=null){
+                    boxInit.setTime(boxInitData.created_at);
+                }else {
+                    boxInit.setTime("");
+                }
+                if(boxInitData.id!=null){
+                    boxInit.setId(boxInitData.id);
+                }else {
+                    boxInit.setId("");
+                }
+            }
+
+        }
+        adapter.notifyDataSetChanged();
+        if(boxInitList.size()==0){
+            Toast.makeText(BoxInitActivity.this,"暂无未初始化递送箱",Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -64,11 +188,31 @@ public class BoxInitActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(BoxInitActivity.this);
         token = preferences.getString("token", null);
 
+        refreshLayout = findViewById(R.id.box_init_swiper);
+        loodingErrorLayout = findViewById(R.id.box_init_loading_error_layout);
+        loodingLayout = findViewById(R.id.box_init_loading_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
         titleBar = findViewById(R.id.box_init_title_bar);
         titleBar.setTextViewText("递送箱初始化");
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
+
+        adapter = new BoxInitAdapter(this, boxInitList);
+        recyclerView = findViewById(R.id.box_init_recycler);
+        manager = new LinearLayoutManager(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
     }
 
 }

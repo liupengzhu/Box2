@@ -18,13 +18,17 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,15 +87,21 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     TextView fingerprintText;
     TextView levelText;
 
-    
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+    private LinearLayout layout;
+    private Button putButton;
+
+
     private boolean isChangeCompany = false;
-    private boolean isChangeDepartmetn = false;
+    private boolean isChangeDepartment = false;
 
 
-    public static final String PERSONSL_INFO_URL = Util.URL+"user/";
-    public static final String COMPANY_URL = Util.URL+"company/";
-    public static final String DEPARTMENT_URL = Util.URL+"department/";
-    public static final String DEPARTMENT_LIST_URL = Util.URL+"app/user_info/department_lists"+Util.TOKEN;
+    public static final String PERSONSL_INFO_URL = Util.URL + "user/";
+    public static final String COMPANY_URL = Util.URL + "company/";
+    public static final String DEPARTMENT_URL = Util.URL + "department/";
+    public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private String userId = "";
     private SharedPreferences preferences;
@@ -112,6 +122,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         userId = getIntent().getStringExtra("id");
         initView();
         initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         if (userId != null) {
             sendRequest();
         }
@@ -121,10 +135,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * 请求网络数据
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId +Util.TOKEN + token, new Callback() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(PERSONSL_INFO_URL + userId + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -136,6 +159,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             initUserInfo(userInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
 
@@ -173,7 +200,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         }
-        if(userInfo.config.user.change_user!=null){
+        if (userInfo.config.user.change_user != null) {
 
 
         }
@@ -186,9 +213,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         }
         if (userInfo.config.user.change_department != null) {
             if (userInfo.config.user.change_department.equals("1")) {
-                isChangeDepartmetn = true;
+                isChangeDepartment = true;
             } else {
-                isChangeDepartmetn = false;
+                isChangeDepartment = false;
             }
         }
 
@@ -254,11 +281,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param department_id
      */
     private void sendRequestForDepartment(String department_id) {
-
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id +Util.TOKEN + token, new Callback() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -269,6 +304,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             departmentText.setText(department.f_name);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -293,10 +332,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param company_id
      */
     private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id +Util.TOKEN + token, new Callback() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -308,6 +356,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             companyText.setText(company.f_name);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {
@@ -351,6 +403,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
 
         companyButton.setOnClickListener(this);
         departmentButton.setOnClickListener(this);
+        loodingErrorLayout.setOnClickListener(this);
     }
 
     /**
@@ -359,6 +412,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private void initView() {
         preferences = PreferenceManager.getDefaultSharedPreferences(PersonalInfoActivity.this);
         token = preferences.getString("token", null);
+
+        putButton = findViewById(R.id.personal_info_button);
+        loodingErrorLayout = findViewById(R.id.personal_info_loading_error_layout);
+        loodingLayout = findViewById(R.id.personal_info_loading_layout);
+        layout = findViewById(R.id.personal_info_layout);
+        swipeRefreshLayout = findViewById(R.id.personal_info_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
 
         companyButton = findViewById(R.id.personal_info_company);
         companyText = findViewById(R.id.personal_info_company_text);
@@ -435,10 +496,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
             case R.id.personal_info_department:
-                if (isChangeDepartmetn) {
+                if (isChangeDepartment) {
                     if (isCheckedCompany()) {
                         if (departmentData.size() == 0) {
-                            Toast.makeText(PersonalInfoActivity.this,"当前单位没有更多部门",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PersonalInfoActivity.this, "当前单位没有更多部门", Toast.LENGTH_SHORT).show();
                         } else {
                             departmentDialog = new ChooseDialog(PersonalInfoActivity.this, departmentData);
                             departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
@@ -454,6 +515,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 }
 
                 break;
+            case R.id.personal_info_loading_error_layout:
+                sendRequest();
+                break;
             default:
                 break;
 
@@ -467,10 +531,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
      * @param company_id
      */
     private void sendRequestForDepartmentList(String company_id) {
+        swipeRefreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
             }
 
             @Override
@@ -483,6 +556,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                         @Override
                         public void run() {
                             initDepartmentList(departmentInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
                         }
                     });
                 } else {

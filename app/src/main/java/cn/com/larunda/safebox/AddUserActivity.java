@@ -263,7 +263,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
      * 初始化数据
      */
     private void initData() {
-        levelData.add("普通用户");
+        levelData.add("一般用户");
         levelData.add("管理员");
     }
 

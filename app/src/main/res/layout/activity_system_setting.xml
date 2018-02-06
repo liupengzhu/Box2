@@ -26,9 +26,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="8dp"
             android:text="系统设置"
-            android:textColor="@color/black"
+            android:textColor="@color/list_text_h"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            />
 
         <ImageView
             android:layout_width="match_parent"
@@ -268,9 +268,8 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="8dp"
             android:text="关于软件"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textColor="@color/list_text_h"
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="match_parent"

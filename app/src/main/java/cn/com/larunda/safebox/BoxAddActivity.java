@@ -1,7 +1,9 @@
 package cn.com.larunda.safebox;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -30,6 +32,9 @@ public class BoxAddActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
+    public static String id;
+    public static SharedPreferences preferences;
+    public static String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,7 @@ public class BoxAddActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        id = getIntent().getStringExtra("id");
         init();
         initView();
     }
@@ -61,7 +67,8 @@ public class BoxAddActivity extends AppCompatActivity {
      * 初始化view
      */
     private void initView() {
-
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        token = preferences.getString("token", null);
 
         tabLayout = findViewById(R.id.box_add_tabLayout);
         viewPager = findViewById(R.id.box_add_viewPager);

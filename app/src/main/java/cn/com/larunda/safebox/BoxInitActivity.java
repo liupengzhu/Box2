@@ -59,7 +59,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView cancelButton;
     private TextView ensureButton;
 
-    public static final String INIT_URL = Util.URL+"box/add_box_lists"+Util.TOKEN;
+    public static final String INIT_URL = Util.URL + "box/add_box_lists" + Util.TOKEN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,15 +106,15 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(Util.isGoodJson(content)){
+                        if (Util.isGoodJson(content)) {
                             BoxInitInfo boxInitInfo = Util.handleBoxInitInfo(content);
-                            if(boxInitInfo!=null&&boxInitInfo.error==null){
+                            if (boxInitInfo != null && boxInitInfo.error == null) {
                                 initData(boxInitInfo);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.VISIBLE);
                                 refreshLayout.setRefreshing(false);
-                            }else {
+                            } else {
                                 Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
@@ -123,9 +123,9 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                             }
 
 
-                        }else {
+                        } else {
                             refreshLayout.setRefreshing(false);
-                            Toast.makeText(BoxInitActivity.this,"服务器异常",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BoxInitActivity.this, "服务器异常", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -136,26 +136,27 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
 
     /**
      * 解析数据
+     *
      * @param boxInitInfo
      */
     private void initData(BoxInitInfo boxInitInfo) {
         boxInitList.clear();
-        if(boxInitInfo.boxInitDataList!=null){
-            for(BoxInitData boxInitData : boxInitInfo.boxInitDataList){
+        if (boxInitInfo.boxInitDataList != null) {
+            for (BoxInitData boxInitData : boxInitInfo.boxInitDataList) {
                 BoxInit boxInit = new BoxInit();
-                if(boxInitData.code!=null){
+                if (boxInitData.code != null) {
                     boxInit.setCode(boxInitData.code);
-                }else {
+                } else {
                     boxInit.setCode("");
                 }
-                if(boxInitData.created_at!=null){
+                if (boxInitData.created_at != null) {
                     boxInit.setTime(boxInitData.created_at);
-                }else {
+                } else {
                     boxInit.setTime("");
                 }
-                if(boxInitData.id!=null){
+                if (boxInitData.id != null) {
                     boxInit.setId(boxInitData.id);
-                }else {
+                } else {
                     boxInit.setId("");
                 }
                 boxInitList.add(boxInit);
@@ -163,8 +164,8 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
 
         }
         adapter.notifyDataSetChanged();
-        if(boxInitList.size()==0){
-            Toast.makeText(BoxInitActivity.this,"暂无未初始化递送箱",Toast.LENGTH_SHORT).show();
+        if (boxInitList.size() == 0) {
+            Toast.makeText(BoxInitActivity.this, "暂无未初始化递送箱", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -190,6 +191,16 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         });
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
+        adapter.setBoxInitAdapterOnClickListener(new BoxInitAdapter.BoxInitAdapterOnClickListener() {
+            @Override
+            public void onClick(View v, String id) {
+                if (!TextUtils.isEmpty(id)) {
+                    Intent intent = new Intent(BoxInitActivity.this, BoxAddActivity.class);
+                    intent.putExtra("id", id);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     /**
@@ -232,11 +243,12 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
 
     /**
      * 点击事件监听
+     *
      * @param v
      */
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.box_init_cancel_button:
                 if (searchText != null) {
                     searchText.setText("");
@@ -245,7 +257,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.box_init_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
                     sendSearchRequest(searchText.getText().toString().trim());
-                }else {
+                } else {
                     Toast.makeText(BoxInitActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -255,12 +267,13 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     /**
-     *发送搜索请求
+     * 发送搜索请求
+     *
      * @param text
      */
     private void sendSearchRequest(String text) {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(INIT_URL + token+"&search="+text, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(INIT_URL + token + "&search=" + text, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -280,15 +293,15 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(Util.isGoodJson(content)){
+                        if (Util.isGoodJson(content)) {
                             BoxInitInfo boxInitInfo = Util.handleBoxInitInfo(content);
-                            if(boxInitInfo!=null&&boxInitInfo.error==null){
+                            if (boxInitInfo != null && boxInitInfo.error == null) {
                                 initData(boxInitInfo);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.VISIBLE);
                                 refreshLayout.setRefreshing(false);
-                            }else {
+                            } else {
                                 Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
@@ -297,9 +310,9 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                             }
 
 
-                        }else {
+                        } else {
                             refreshLayout.setRefreshing(false);
-                            Toast.makeText(BoxInitActivity.this,"服务器异常",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BoxInitActivity.this, "服务器异常", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -307,5 +320,11 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        sendRequest();
     }
 }

@@ -132,6 +132,7 @@
             android:background="@color/line" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/leaving_alarm_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"

@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
@@ -36,7 +40,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class BoxInitActivity extends AppCompatActivity {
+public class BoxInitActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferences preferences;
     private String token;
@@ -50,6 +54,10 @@ public class BoxInitActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
+    private EditText searchText;
+    private ImageView cancelButton;
+    private TextView ensureButton;
 
     public static final String INIT_URL = Util.URL+"box/add_box_lists"+Util.TOKEN;
 
@@ -150,6 +158,7 @@ public class BoxInitActivity extends AppCompatActivity {
                 }else {
                     boxInit.setId("");
                 }
+                boxInitList.add(boxInit);
             }
 
         }
@@ -179,6 +188,8 @@ public class BoxInitActivity extends AppCompatActivity {
 
             }
         });
+        cancelButton.setOnClickListener(this);
+        ensureButton.setOnClickListener(this);
     }
 
     /**
@@ -206,6 +217,10 @@ public class BoxInitActivity extends AppCompatActivity {
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        searchText = findViewById(R.id.box_init_serch_edit);
+        cancelButton = findViewById(R.id.box_init_cancel_button);
+        ensureButton = findViewById(R.id.box_init_ensure_button);
+
         adapter = new BoxInitAdapter(this, boxInitList);
         recyclerView = findViewById(R.id.box_init_recycler);
         manager = new LinearLayoutManager(this);
@@ -215,4 +230,82 @@ public class BoxInitActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 点击事件监听
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.box_init_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.box_init_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    sendSearchRequest(searchText.getText().toString().trim());
+                }else {
+                    Toast.makeText(BoxInitActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     *发送搜索请求
+     * @param text
+     */
+    private void sendSearchRequest(String text) {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(INIT_URL + token+"&search="+text, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(Util.isGoodJson(content)){
+                            BoxInitInfo boxInitInfo = Util.handleBoxInitInfo(content);
+                            if(boxInitInfo!=null&&boxInitInfo.error==null){
+                                initData(boxInitInfo);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                                refreshLayout.setRefreshing(false);
+                            }else {
+                                Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+
+
+                        }else {
+                            refreshLayout.setRefreshing(false);
+                            Toast.makeText(BoxInitActivity.this,"服务器异常",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+    }
 }

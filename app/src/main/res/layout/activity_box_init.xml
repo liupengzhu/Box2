@@ -82,7 +82,7 @@
                 android:layout_height="match_parent">
 
             </android.support.v7.widget.RecyclerView>
-            
+
             <RelativeLayout
                 android:id="@+id/box_init_loading_error_layout"
                 android:layout_width="match_parent"

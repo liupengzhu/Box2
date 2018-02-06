@@ -379,6 +379,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        sendRequest();
+    }
+
     /**
      * 解析删除请求返回信息
      * @param content

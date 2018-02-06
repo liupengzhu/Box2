@@ -105,6 +105,9 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     private LinearLayout layout;
     private Button putButton;
 
+    private SharedPreferences preferences;
+    private String token;
+
     public static final String EDIT_USER_URL = Util.URL + "user/";
     public static final String COMPANY_URL = Util.URL + "company/";
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
@@ -113,8 +116,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
     private String userId = "";
-    private SharedPreferences preferences;
-    private String token;
     private String path;
     private String url = null;
     private int id;
@@ -150,7 +151,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
      * 初始化数据
      */
     private void initData() {
-        levelData.add("普通用户");
+        levelData.add("一般用户");
         levelData.add("管理员");
     }
 
@@ -574,7 +575,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         telText = findViewById(R.id.edit_user_tel_text);
         emailText = findViewById(R.id.edit_user_email_text);
         fingerprintText = findViewById(R.id.edit_user_fingerprint_text);
-
         passwordText = findViewById(R.id.edit_user_password_text);
         repasswordText = findViewById(R.id.edit_user_repassword_text);
 
@@ -822,6 +822,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        swipeRefreshLayout.setRefreshing(false);
                                         Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -910,6 +911,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
                             Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                         }
                     });

@@ -123,7 +123,6 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                Log.d("main",content);
                 final CompanyList companyList = Util.handleCompanyList(content);
                 if (companyList != null && companyList.getError() == null) {
                     runOnUiThread(new Runnable() {
@@ -521,6 +520,10 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
+    /**
+     * 解析部门信息
+     * @param departmentInfo
+     */
     private void initDepartmentList(DepartmentInfo departmentInfo) {
         departmentData.clear();
         departmentId.clear();

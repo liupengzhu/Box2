@@ -3,24 +3,32 @@ package cn.com.larunda.safebox;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.PhotoDialog;
@@ -29,10 +37,19 @@ import com.larunda.titlebar.TitleListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.gson.CompanyList;
+import cn.com.larunda.safebox.gson.DepartmentInfo;
+import cn.com.larunda.safebox.gson.PhotoUrl;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class AddUserActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,17 +66,45 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
     private TextView companyText;
     private ChooseDialog companyDialog;
     private List<String> companyData = new ArrayList<>();
+    private List<Integer> companyId = new ArrayList<>();
 
     private RelativeLayout departmentButton;
     private TextView departmentText;
     private ChooseDialog departmentDialog;
     private List<String> departmentData = new ArrayList<>();
+    private List<Integer> departmentId = new ArrayList<>();
 
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_ALBUM = 0;
     private PhotoDialog photoDialog;
     private Uri imageUri;
     CircleImageView photo;
+
+    EditText userText;
+    EditText nameText;
+    EditText passwordText;
+    EditText repasswordText;
+    EditText telText;
+    EditText emailText;
+    TextView fingerprintText;
+
+    public SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout loodingErrorLayout;
+    private ImageView loodingLayout;
+    private LinearLayout layout;
+    private Button putButton;
+
+    private SharedPreferences preferences;
+    private String token;
+    public static final String COMPANY_URL = Util.URL + "app/user_info/company_lists" + Util.TOKEN;
+    public static final String DEPARTMENT_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
+    public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
+    private int company;
+    private int id;
+
+    private String path;
+    private String url = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +121,82 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
         initData();
         initView();
         initEvent();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
+        sendRequest();
+    }
+
+    /**
+     * 请求公司列表
+     */
+    private void sendRequest() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final CompanyList companyList = Util.handleCompanyList(content);
+                if (companyList != null && companyList.getError() == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initData(companyList);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析公司列表数据
+     *
+     * @param companyList
+     */
+    private void initData(CompanyList companyList) {
+        companyData.clear();
+        companyId.clear();
+        if (companyList.getData() != null) {
+            for (CompanyList.DataBean dataBean : companyList.getData()) {
+                if (dataBean.getF_name() != null) {
+                    companyData.add(dataBean.getF_name());
+                    companyId.add(dataBean.getId());
+                }
+            }
+
+        }
+        /*companyText.setText("请选择单位");
+        departmentText.setText("请选择部门");*/
     }
 
     /**
@@ -108,18 +229,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         companyButton.setOnClickListener(this);
-        companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-            @Override
-            public void OnClick(View v, int positon) {
-                if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
-                    companyDialog.cancel();
-                } else {
-                    companyText.setText(companyData.get(positon));
-                    departmentText.setText("请选择部门");
-                    companyDialog.cancel();
-                }
-            }
-        });
+
         departmentButton.setOnClickListener(this);
 
         settingPhoto.setOnClickListener(this);
@@ -145,18 +255,31 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
     private void initData() {
         levelData.add("普通用户");
         levelData.add("管理员");
-
-
-        companyData.add("家乐福");
-        companyData.add("朗润达");
-        companyData.add("沃尔玛");
-
     }
 
     /**
      * 初始化View
      */
     private void initView() {
+        putButton = findViewById(R.id.add_user_button);
+        loodingErrorLayout = findViewById(R.id.add_user_loading_error_layout);
+        loodingLayout = findViewById(R.id.add_user_loading_layout);
+        layout = findViewById(R.id.add_user_layout);
+        swipeRefreshLayout = findViewById(R.id.add_user_swipe);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
+
+        userText = findViewById(R.id.add_user_user);
+        nameText = findViewById(R.id.add_user_name);
+        telText = findViewById(R.id.add_user_tel);
+        emailText = findViewById(R.id.add_user_email);
+        /*fingerprintText = findViewById(R.id.add_user_fingerprint);*/
+        passwordText = findViewById(R.id.add_user_password);
+        repasswordText = findViewById(R.id.add_user_repassword);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(AddUserActivity.this);
+        token = preferences.getString("token", null);
+
         settingPhoto = findViewById(R.id.add_user_setting_photo);
         photo = findViewById(R.id.add_user_photo);
 
@@ -166,7 +289,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
 
         companyButton = findViewById(R.id.add_user_company);
         companyText = findViewById(R.id.add_user_company_text);
-        companyDialog = new ChooseDialog(this, companyData);
+
 
         departmentButton = findViewById(R.id.add_user_department);
         departmentText = findViewById(R.id.add_user_department_text);
@@ -196,24 +319,120 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                 levelDialog.show();
                 break;
             case R.id.add_user_company:
-                companyDialog.show();
+                if (companyData.size() == 0) {
+                    Toast.makeText(AddUserActivity.this, "没有更多单位", Toast.LENGTH_SHORT).show();
+                } else {
+                    companyDialog = new ChooseDialog(this, companyData);
+                    companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                        @Override
+                        public void OnClick(View v, int positon) {
+                            if (companyText.getText().toString().trim().equals(companyData.get(positon))) {
+                                companyDialog.cancel();
+                            } else {
+                                companyText.setText(companyData.get(positon));
+                                company = companyId.get(positon);
+                                sendRequestForDepartment(company);
+                                departmentText.setText("请选择部门");
+                                companyDialog.cancel();
+                            }
+                        }
+                    });
+                    companyDialog.show();
+                }
                 break;
             case R.id.add_user_department:
                 if (isCheckedCompany()) {
-                    departmentDialog = new ChooseDialog(AddUserActivity.this, departmentData);
-                    departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                        @Override
-                        public void OnClick(View v, int positon) {
-                            departmentText.setText(departmentData.get(positon));
-                            departmentDialog.cancel();
-                        }
-                    });
-                    departmentDialog.show();
+                    if (departmentData.size() == 0) {
+                        Toast.makeText(AddUserActivity.this, "没有更多部门", Toast.LENGTH_SHORT).show();
+                    } else {
+                        departmentDialog = new ChooseDialog(AddUserActivity.this, departmentData);
+                        departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                            @Override
+                            public void OnClick(View v, int positon) {
+                                departmentText.setText(departmentData.get(positon));
+                                id = departmentId.get(positon);
+                                departmentDialog.cancel();
+                            }
+                        });
+                        departmentDialog.show();
+                    }
                 }
 
                 break;
             default:
                 break;
+        }
+
+    }
+
+    /**
+     * 请求部门信息
+     *
+     * @param id
+     */
+    private void sendRequestForDepartment(int id) {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + token + "&company_id=" + id, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+
+                if (departmentInfo != null && departmentInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initDepartmentList(departmentInfo);
+                            swipeRefreshLayout.setRefreshing(false);
+                            layout.setVisibility(View.VISIBLE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析部门信息
+     *
+     * @param departmentInfo
+     */
+    private void initDepartmentList(DepartmentInfo departmentInfo) {
+        departmentData.clear();
+        departmentId.clear();
+        if (departmentInfo.getData() != null) {
+            for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
+                if (data.getF_name() != null) {
+                    departmentData.add(data.getF_name());
+                    departmentId.add(data.getId());
+                }
+            }
         }
 
     }
@@ -263,16 +482,6 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(this, "请先选择单位", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            if (companyText.getText().toString().trim().equals("家乐福")) {
-                departmentData.clear();
-                departmentData.add("导购员");
-            } else if (companyText.getText().toString().trim().equals("朗润达")) {
-                departmentData.clear();
-                departmentData.add("软件部");
-            } else if (companyText.getText().toString().trim().equals("沃尔玛")) {
-                departmentData.clear();
-                departmentData.add("采购部");
-            }
             return true;
         }
     }
@@ -291,7 +500,32 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-                        photo.setImageBitmap(bitmap);
+                        path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        swipeRefreshLayout.setRefreshing(true);
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(false);
+                                        Toast.makeText(AddUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                final String content = response.body().string();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        parseContent(content);
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                });
+                            }
+                        });
                         photoDialog.cancel();
 
                     } catch (FileNotFoundException e) {
@@ -320,7 +554,6 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
         displayImage(imagePath);
 
     }
-
 
     @TargetApi(19)
     private void handleImageOnKitKat(Intent data) {
@@ -355,7 +588,33 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
 
     private void displayImage(String imagePath) {
         if (imagePath != null) {
-            photo.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+            path = imagePath;
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(AddUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseContent(content);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            });
             photoDialog.cancel();
         }
 
@@ -373,5 +632,38 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
         }
         return path;
 
+    }
+
+
+    /**
+     * 解析服务器返回数据
+     * @param content
+     */
+    private void parseContent(String content) {
+        if (Util.isGoodJson(content)) {
+            PhotoUrl photoUrl = Util.handlePhotoUrl(content);
+            if (photoUrl != null && photoUrl.getError() == null) {
+                if (photoUrl.getMessage() != null) {
+                    Toast.makeText(this, photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
+
+        } else {
+
+            if (content != null) {
+                url = content;
+                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
+                Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
+
+            }
+
+        }
     }
 }

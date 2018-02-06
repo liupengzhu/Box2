@@ -32,7 +32,7 @@ import okhttp3.Response;
 
 public class DynamicPasswordActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public final String PASSWORD_URL = "http://safebox.dsmcase.com:90/api/box/show_dynamic_password?_token=";
+    public final String PASSWORD_URL = Util.URL+"box/show_dynamic_password"+Util.TOKEN;
     static HorizontalProgressBarWithNunber progressBar;
     Button backButton;
     private String id;

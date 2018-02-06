@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/login_error"
+    android:orientation="vertical">
+
+    <com.larunda.titlebar.TitleBar
+        android:id="@+id/box_init_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
+
+    </com.larunda.titlebar.TitleBar>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <EditText
+            android:id="@+id/box_init_serch_edit"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/serch_edit"
+            android:hint="序列号"
+            android:maxLines="1"
+            android:textCursorDrawable="@drawable/color_cursor" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="50dp"
+            android:src="@mipmap/list_serch" />
+
+        <ImageView
+            android:id="@+id/box_init_cancel_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignRight="@+id/box_init_serch_edit"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:src="@mipmap/list_unsherch" />
+
+        <TextView
+            android:id="@+id/box_init_ensure_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="确定"
+            android:textColor="@color/menu_sz_color"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/box_init_swiper"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:background="@color/white">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/box_init_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <include layout="@layout/box_init_item" />
+
+
+            <RelativeLayout
+                android:id="@+id/box_init_loading_error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="invisible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/loading_error" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="网络链接异常"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/box_init_loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="invisible" />
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>

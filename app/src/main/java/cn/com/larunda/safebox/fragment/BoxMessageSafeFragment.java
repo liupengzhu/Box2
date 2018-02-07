@@ -602,16 +602,16 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         if (TextUtils.isEmpty(level)) {
             Toast.makeText(getContext(), "权限等级不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(startData)) {
+        } else if (TextUtils.isEmpty(startData) || startData.equals("开始日期")) {
             Toast.makeText(getContext(), "开始日期不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(starttime)) {
+        } else if (TextUtils.isEmpty(starttime) || starttime.equals("开始时间")) {
             Toast.makeText(getContext(), "开始时间不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(endData)) {
+        } else if (TextUtils.isEmpty(endData) || endData.equals("结束日期")) {
             Toast.makeText(getContext(), "结束日期不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(endTime)) {
+        } else if (TextUtils.isEmpty(endTime) || endTime.equals("结束时间")) {
             Toast.makeText(getContext(), "结束时间不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (TextUtils.isEmpty(lock)) {

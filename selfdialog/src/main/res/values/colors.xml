@@ -5,5 +5,6 @@
     <color name="quxiaoline">#DCDee3</color>
     <color name="text_black">#1a1c1e</color>
     <color name="lan">#00B2EE</color>
+    <color name="error">#ff0000</color>
 
 </resources>

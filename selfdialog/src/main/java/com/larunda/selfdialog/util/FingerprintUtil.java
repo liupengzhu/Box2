@@ -1,4 +1,4 @@
-package cn.com.larunda.safebox.util;
+package com.larunda.selfdialog.util;
 
 import android.content.Context;
 import android.annotation.SuppressLint;
@@ -123,7 +123,7 @@ public class FingerprintUtil {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void star() {
+    public void start() {
         cancellationSignal = new CancellationSignal();
         FingerprintManager manager = (FingerprintManager) context.getSystemService(context.FINGERPRINT_SERVICE);
         manager.authenticate(new FingerprintManager.CryptoObject(defaultCipher), cancellationSignal,

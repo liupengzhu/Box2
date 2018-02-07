@@ -1,32 +1,40 @@
 package cn.com.larunda.safebox;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Switch;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.FingerprintDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
-public class SystemSettingActivity extends AppCompatActivity implements View.OnClickListener {
+public class ValidateActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TitleBar titleBar;
-    private Switch fingerprint;
     private SharedPreferences preferences;
     private String token;
+    private TitleBar titleBar;
+
+    private EditText text;
+    private Button button;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private FingerprintDialog fingerprintDialog;
+    private boolean isSeccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_system_setting);
+        setContentView(R.layout.activity_validate);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -55,9 +63,10 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onRightButtonClickListener(View v) {
 
+
             }
         });
-        fingerprint.setOnClickListener(this);
+        button.setOnClickListener(this);
     }
 
     /**
@@ -67,12 +76,19 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
-        titleBar = findViewById(R.id.system_setting_title_bar);
-        titleBar.setTextViewText("");
-        titleBar.setLeftButtonVisible(View.GONE);
+        text = findViewById(R.id.validate_edit);
+        button = findViewById(R.id.validate_button);
+
+        swipeRefreshLayout = findViewById(R.id.validate_swiper);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setEnabled(false);//设置swipe不可用
+
+
+        titleBar = findViewById(R.id.validate_title_bar);
+        titleBar.setTextViewText("身份验证");
         titleBar.setRightButtonSrc(0);
+        titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
-        fingerprint = findViewById(R.id.system_setting_fingerprint);
     }
 
     /**
@@ -83,20 +99,22 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.system_setting_fingerprint:
-                Intent intent = new Intent(SystemSettingActivity.this,ValidateActivity.class);
-                startActivityForResult(intent,1);
+            case R.id.validate_button:
+                fingerprintDialog = new FingerprintDialog(this);
+                fingerprintDialog.setCancelButtonOnclickListener(new FingerprintDialog.CancelButtonOnclickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        fingerprintDialog.cancel();
+                    }
+                });
+                fingerprintDialog.setValidateSeccessListener(new FingerprintDialog.ValidateSeccessListener() {
+                    @Override
+                    public void seccess(FingerprintManager.AuthenticationResult result) {
+                        isSeccess = true;
+                    }
+                });
+                fingerprintDialog.show();
                 break;
-
-            default:
-                break;
-
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
     }
 }

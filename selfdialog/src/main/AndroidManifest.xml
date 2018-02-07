@@ -1,2 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.larunda.selfdialog" />
+    package="com.larunda.selfdialog" >
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+</manifest>

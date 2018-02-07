@@ -89,7 +89,8 @@
         <activity android:name="cn.com.larunda.safebox.TrackActivity" />
         <activity android:name="cn.com.larunda.safebox.EnclosureInfoActivity" />
         <activity android:name="cn.com.larunda.safebox.AreaInfoActivity" />
-        <activity android:name="cn.com.larunda.safebox.BoxInitActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.BoxInitActivity" />
+        <activity android:name="cn.com.larunda.safebox.ValidateActivity"></activity>
     </application>
 
 </manifest>

@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
     private Button systemBackButton;
 
 
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = preferences.edit();
         //获取当前的token
         getToken();
         initView();
@@ -240,9 +242,12 @@ public class MainActivity extends AppCompatActivity {
     private void showMenuInfo(MenuUserInfo menuUserInfo) {
         if (menuUserInfo.userId != null) {
             menu_user_id.setText(menuUserInfo.userId);
+            editor.putString("user_name", menuUserInfo.userId);
+            editor.apply();
         }
         if (menuUserInfo.userName != null) {
             menu_user_name.setText(menuUserInfo.userName);
+
         }
         if (menuUserInfo.userTell != null) {
             menu_user_tell.setText(menuUserInfo.userTell);
@@ -253,6 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
         id = menuUserInfo.id;
+        editor.putString("user_id", id);
+        editor.apply();
         if (menuUserInfo.level.equals("2")) {
             user_info.setVisibility(View.GONE);
         }
@@ -561,6 +568,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         queryMenuInfo();
-
     }
 }

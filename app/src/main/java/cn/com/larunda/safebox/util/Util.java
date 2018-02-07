@@ -36,6 +36,7 @@ import cn.com.larunda.safebox.gson.SqLsInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
+import cn.com.larunda.safebox.gson.ValidateData;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -210,49 +211,58 @@ public class Util {
         AddPerson addPerson = gson.fromJson(response, AddPerson.class);
         return addPerson;
     }
-    public static Result handleResult(String response){
+
+    public static Result handleResult(String response) {
         Gson gson = new Gson();
-        Result result = gson.fromJson(response,Result.class);
+        Result result = gson.fromJson(response, Result.class);
         return result;
     }
 
-    public static Message handleMessage(String response){
+    public static Message handleMessage(String response) {
         Gson gson = new Gson();
-        Message message = gson.fromJson(response,Message.class);
+        Message message = gson.fromJson(response, Message.class);
         return message;
     }
 
-    public static String listToString(List<String> stringList){
-        if(stringList==null) {
+    public static String listToString(List<String> stringList) {
+        if (stringList == null) {
             return null;
         }
         StringBuilder result = new StringBuilder();
-        boolean flag=false;
-        for(String string : stringList) {
-            if(flag) {
+        boolean flag = false;
+        for (String string : stringList) {
+            if (flag) {
                 result.append(",");
-            }else{
-                flag=true;
+            } else {
+                flag = true;
             }
             result.append(string);
         }
         return result.toString();
     }
-    public static PhotoUrl handlePhotoUrl(String response){
+
+    public static PhotoUrl handlePhotoUrl(String response) {
         Gson gson = new Gson();
-        PhotoUrl photoUrl = gson.fromJson(response,PhotoUrl.class);
+        PhotoUrl photoUrl = gson.fromJson(response, PhotoUrl.class);
         return photoUrl;
     }
-    public static BoxInitInfo handleBoxInitInfo(String response){
+
+    public static BoxInitInfo handleBoxInitInfo(String response) {
         Gson gson = new Gson();
-        BoxInitInfo boxInitInfo = gson.fromJson(response,BoxInitInfo.class);
+        BoxInitInfo boxInitInfo = gson.fromJson(response, BoxInitInfo.class);
         return boxInitInfo;
     }
 
+    public static ValidateData handleValidatedata(String response) {
+        Gson gson = new Gson();
+        ValidateData validateData = gson.fromJson(response, ValidateData.class);
+        return validateData;
+    }
 
 
     /**
      * 判断是否是json对象
+     *
      * @param json
      * @return
      */
@@ -264,6 +274,7 @@ public class Util {
             return false;
         }
     }
+
     /**
      * 设置tablayout下划线宽度的方法
      *

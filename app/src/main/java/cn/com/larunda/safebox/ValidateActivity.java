@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
@@ -8,16 +9,31 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.FingerprintDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import cn.com.larunda.safebox.gson.ValidateData;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class ValidateActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +46,10 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
     private SwipeRefreshLayout swipeRefreshLayout;
     private FingerprintDialog fingerprintDialog;
     private boolean isSeccess = false;
+    private String userName;
+    private String userId;
+    public static final String VALIDATE_URL = Util.URL + "app/fingerprint" + Util.TOKEN;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +62,10 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        token = preferences.getString("token", null);
+        userName = preferences.getString("user_name", null);
+        userId = preferences.getString("user_id", null);
         initView();
         initEvent();
     }
@@ -57,6 +81,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onLeftBackButtonClickListener(View v) {
+                setResult(0, getIntent());
                 finish();
             }
 
@@ -73,8 +98,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
      * 初始化view
      */
     private void initView() {
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        token = preferences.getString("token", null);
+
 
         text = findViewById(R.id.validate_edit);
         button = findViewById(R.id.validate_button);
@@ -100,21 +124,103 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.validate_button:
-                fingerprintDialog = new FingerprintDialog(this);
-                fingerprintDialog.setCancelButtonOnclickListener(new FingerprintDialog.CancelButtonOnclickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        fingerprintDialog.cancel();
-                    }
-                });
-                fingerprintDialog.setValidateSeccessListener(new FingerprintDialog.ValidateSeccessListener() {
-                    @Override
-                    public void seccess(FingerprintManager.AuthenticationResult result) {
-                        isSeccess = true;
-                    }
-                });
-                fingerprintDialog.show();
+                password = text.getText().toString().trim();
+                if (password != null && !TextUtils.isEmpty(password)) {
+                    sendRequest(password);
+                } else {
+                    Toast.makeText(ValidateActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
+    }
+
+    /**
+     * 发送验证密码的请求
+     *
+     * @param password
+     */
+    private void sendRequest(String password) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("user_id", userId);
+            jsonObject.put("user_name", userName);
+            jsonObject.put("user_password", password);
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(VALIDATE_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(ValidateActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseContent(content);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * 解析数据
+     *
+     * @param content
+     */
+    private void parseContent(String content) {
+        if (Util.isGoodJson(content)) {
+            ValidateData data = Util.handleValidatedata(content);
+            if (data != null && data.error == null) {
+                if (data.data.equals("success")) {
+                    startDialog();
+                } else {
+                    Toast.makeText(this, "密码错误，请重新输入", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                finish();
+            }
+
+
+        }
+    }
+
+    private void startDialog() {
+        fingerprintDialog = new FingerprintDialog(this);
+        fingerprintDialog.setCancelButtonOnclickListener(new FingerprintDialog.CancelButtonOnclickListener() {
+            @Override
+            public void onClick(View v) {
+                fingerprintDialog.cancel();
+            }
+        });
+        fingerprintDialog.setValidateSeccessListener(new FingerprintDialog.ValidateSeccessListener() {
+            @Override
+            public void seccess(FingerprintManager.AuthenticationResult result) {
+                isSeccess = true;
+                preferences.edit().putString("user_password", password).apply();
+                setResult(1, getIntent());
+                Toast.makeText(ValidateActivity.this, "验证成功", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+        fingerprintDialog.show();
     }
 }

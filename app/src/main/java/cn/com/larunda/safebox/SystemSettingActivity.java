@@ -36,11 +36,18 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
         }
         initView();
         initEvent();
+        boolean fingerprintIs = preferences.getBoolean("fingerprint", false);
+        if (fingerprintIs) {
+            fingerprint.setChecked(true);
+        } else {
+            fingerprint.setChecked(false);
+        }
     }
 
     /**
      * 初始化点击事件
      */
+
     private void initEvent() {
         titleBar.setOnClickListener(new TitleListener() {
             @Override
@@ -84,8 +91,13 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.system_setting_fingerprint:
-                Intent intent = new Intent(SystemSettingActivity.this,ValidateActivity.class);
-                startActivityForResult(intent,1);
+                if (fingerprint.isChecked()) {
+                    Intent intent = new Intent(SystemSettingActivity.this, ValidateActivity.class);
+                    startActivityForResult(intent, 1);
+                } else {
+                    preferences.edit().putString("user_password", null).apply();
+                    preferences.edit().putBoolean("fingerprint", false).apply();
+                }
                 break;
 
             default:
@@ -97,6 +109,16 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        switch (requestCode) {
+            case 1:
+                if (resultCode == 0) {
+                    fingerprint.setChecked(false);
+                    preferences.edit().putBoolean("fingerprint", false).apply();
+                } else if (resultCode == 1) {
+                    fingerprint.setChecked(true);
+                    preferences.edit().putBoolean("fingerprint", true).apply();
+                }
+                break;
+        }
     }
 }

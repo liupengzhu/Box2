@@ -3,6 +3,7 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 
 import com.larunda.safebox.R;
@@ -22,6 +25,10 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
     private Switch fingerprint;
     private SharedPreferences preferences;
     private String token;
+    private ImageView fingerprint_img;
+    private RelativeLayout fingerprint_latout;
+    private FingerprintManager manager;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +41,21 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
+
         initView();
         initEvent();
-        boolean fingerprintIs = preferences.getBoolean("fingerprint", false);
+        userId = preferences.getString("user_id", null);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            manager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+            if (!manager.isHardwareDetected()) {
+                fingerprint_img.setVisibility(View.GONE);
+                fingerprint_latout.setVisibility(View.GONE);
+            }
+        } else {
+            fingerprint_img.setVisibility(View.GONE);
+            fingerprint_latout.setVisibility(View.GONE);
+        }
+        boolean fingerprintIs = preferences.getBoolean(userId+"fingerprint", false);
         if (fingerprintIs) {
             fingerprint.setChecked(true);
         } else {
@@ -74,12 +93,15 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
+
         titleBar = findViewById(R.id.system_setting_title_bar);
         titleBar.setTextViewText("");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         fingerprint = findViewById(R.id.system_setting_fingerprint);
+        fingerprint_img = findViewById(R.id.system_setting_fingerprint_img);
+        fingerprint_latout = findViewById(R.id.system_setting_fingerprint_layout);
     }
 
     /**
@@ -95,8 +117,8 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
                     Intent intent = new Intent(SystemSettingActivity.this, ValidateActivity.class);
                     startActivityForResult(intent, 1);
                 } else {
-                    preferences.edit().putString("user_password", null).apply();
-                    preferences.edit().putBoolean("fingerprint", false).apply();
+                    preferences.edit().putString(userId+"user_password", null).apply();
+                    preferences.edit().putBoolean(userId+"fingerprint", false).apply();
                 }
                 break;
 
@@ -113,10 +135,10 @@ public class SystemSettingActivity extends AppCompatActivity implements View.OnC
             case 1:
                 if (resultCode == 0) {
                     fingerprint.setChecked(false);
-                    preferences.edit().putBoolean("fingerprint", false).apply();
+                    preferences.edit().putBoolean(userId+"fingerprint", false).apply();
                 } else if (resultCode == 1) {
                     fingerprint.setChecked(true);
-                    preferences.edit().putBoolean("fingerprint", true).apply();
+                    preferences.edit().putBoolean(userId+"fingerprint", true).apply();
                 }
                 break;
         }

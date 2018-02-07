@@ -1,11 +1,13 @@
 package cn.com.larunda.safebox;
 
+import android.app.KeyguardManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -50,6 +52,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
     private String userId;
     public static final String VALIDATE_URL = Util.URL + "app/fingerprint" + Util.TOKEN;
     private String password;
+    private FingerprintManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,9 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
         token = preferences.getString("token", null);
         userName = preferences.getString("user_name", null);
         userId = preferences.getString("user_id", null);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            manager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+        }
         initView();
         initEvent();
     }
@@ -162,6 +168,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
                     runOnUiThread(new Runnable() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
                         @Override
                         public void run() {
                             parseContent(content);
@@ -182,12 +189,18 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
      *
      * @param content
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void parseContent(String content) {
         if (Util.isGoodJson(content)) {
             ValidateData data = Util.handleValidatedata(content);
             if (data != null && data.error == null) {
                 if (data.data.equals("success")) {
-                    startDialog();
+                    if (manager.hasEnrolledFingerprints()) {
+                        startDialog();
+                    } else {
+                        Toast.makeText(this, "请先注册指纹", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
                     Toast.makeText(this, "密码错误，请重新输入", Toast.LENGTH_SHORT).show();
                 }
@@ -215,7 +228,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void seccess(FingerprintManager.AuthenticationResult result) {
                 isSeccess = true;
-                preferences.edit().putString("user_password", password).apply();
+                preferences.edit().putString(userId + "user_password", password).apply();
                 setResult(1, getIntent());
                 Toast.makeText(ValidateActivity.this, "验证成功", Toast.LENGTH_SHORT).show();
                 finish();

@@ -251,12 +251,14 @@
 
         </RelativeLayout>
         <ImageView
+            android:id="@+id/system_setting_fingerprint_img"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
             android:orientation="vertical" />
 
         <RelativeLayout
+            android:id="@+id/system_setting_fingerprint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

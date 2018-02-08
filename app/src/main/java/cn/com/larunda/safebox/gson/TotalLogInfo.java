@@ -13,5 +13,6 @@ public class TotalLogInfo {
     public String error;
     @SerializedName("data")
     public List<TotalLogData> totalLogData;
+    public int current_page;
 
 }

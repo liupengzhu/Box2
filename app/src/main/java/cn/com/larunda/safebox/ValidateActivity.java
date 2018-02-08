@@ -137,6 +137,8 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(ValidateActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
                 }
                 break;
+
+
         }
     }
 

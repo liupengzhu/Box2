@@ -22,6 +22,7 @@ import cn.com.larunda.safebox.MainActivity;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.BoxLogAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.TotalLogData;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.recycler.BoxLog;
@@ -56,6 +57,7 @@ public class BoxLogFragment extends Fragment {
     private int page;
     private int lastVisibleItem;
     private int count;
+    private FootAdapter footAdapter;
 
     @Nullable
     @Override
@@ -148,15 +150,15 @@ public class BoxLogFragment extends Fragment {
     private void showInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
         count = totalLogInfo.per_page;
-        boxLogList.clear();
-        if (totalLogInfo.totalLogData.size() == 0) {
-            Toast.makeText(getContext(), "没有更多数据", Toast.LENGTH_SHORT).show();
+        if(totalLogInfo.totalLogData.size()==0){
+            footAdapter.setHasMore(false);
         }
+        boxLogList.clear();
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             BoxLog boxLog = new BoxLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             boxLogList.add(boxLog);
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
 
     }
 
@@ -171,9 +173,10 @@ public class BoxLogFragment extends Fragment {
         loodingErrorLayout = view.findViewById(R.id.box_log_loading_error_layout);
         loodingLayout = view.findViewById(R.id.box_log_loading_layout);
         adapter = new BoxLogAdapter(boxLogList);
+        footAdapter = new FootAdapter(getContext(), adapter);
         manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -181,12 +184,26 @@ public class BoxLogFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 //在newState为滑到底部时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter.getItemCount()) {
-                    if (boxLogList.size() < count) {
-                        sendRequest();
-                    } else {
-                        sendAddRequest();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // 如果没有隐藏footView，那么最后一个条目的位置就比我们的getItemCount少1，自己可以算一下
+                    if (footAdapter.isFadeTips() == false && lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        footAdapter.setHasMore(true);
+                        if (boxLogList.size() < count) {
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
                     }
+                    // 如果隐藏了提示条，我们又上拉加载时，那么最后一个条目就要比getItemCount要少2
+                    if (footAdapter.isFadeTips() == true && lastVisibleItem + 2 == footAdapter.getItemCount()) {
+                        footAdapter.setHasMore(true);
+                        if (boxLogList.size() < count) {
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
                 }
             }
 
@@ -261,14 +278,14 @@ public class BoxLogFragment extends Fragment {
      */
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
-        if (totalLogInfo.totalLogData.size() == 0) {
-            Toast.makeText(getContext(), "没有更多数据", Toast.LENGTH_SHORT).show();
+        if(totalLogInfo.totalLogData.size()==0){
+            footAdapter.setHasMore(false);
         }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             BoxLog boxLog = new BoxLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             boxLogList.add(boxLog);
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
 }

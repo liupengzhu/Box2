@@ -51,7 +51,7 @@ public class AppLogFragment extends Fragment {
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
-    public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/log?_token=";
+    public static final String SQLS_URI = Util.URL + "log" + Util.TOKEN;
     public static final String TYPE = "&type=2";
 
     private int page;

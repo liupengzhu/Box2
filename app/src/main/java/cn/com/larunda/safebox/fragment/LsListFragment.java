@@ -51,7 +51,7 @@ public class LsListFragment extends Fragment {
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
-    public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/authorize/history?_token=";
+    public static final String SQLS_URI = Util.URL+"authorize/history"+Util.TOKEN;
 
     @Nullable
     @Override

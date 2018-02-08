@@ -45,7 +45,7 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // 根据条目位置返回ViewType，以供onCreateViewHolder方法内获取不同的Holder
     @Override
     public int getItemViewType(int position) {
-        if (position == getItemCount() - 1) {
+        if (position+1 == getItemCount()&&position>=8) {
             return footType;
         } else {
             return normalType;
@@ -107,7 +107,10 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         } else {
-            adapter.onBindViewHolder(holder, position);
+            if(position+1==getItemCount()) {
+            }else {
+                adapter.onBindViewHolder(holder, position);
+            }
         }
     }
 

@@ -14,5 +14,6 @@ public class TotalLogInfo {
     @SerializedName("data")
     public List<TotalLogData> totalLogData;
     public int current_page;
+    public int per_page;
 
 }

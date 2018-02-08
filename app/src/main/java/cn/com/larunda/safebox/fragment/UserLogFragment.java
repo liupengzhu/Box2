@@ -55,6 +55,7 @@ public class UserLogFragment extends Fragment {
     public static final String TYPE = "&type=0";
     private int page;
     private int lastVisibleItem;
+    private int count;
 
     @Nullable
     @Override
@@ -145,6 +146,7 @@ public class UserLogFragment extends Fragment {
      */
     private void showInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
+        count = totalLogInfo.per_page;
         userLogList.clear();
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             UserLog userLog = new UserLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
@@ -175,7 +177,9 @@ public class UserLogFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 //在newState为滑到底部时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter.getItemCount()) {
+                if (userLogList.size() < count) {
+                    sendRequest();
+                } else {
                     sendAddRequest();
                 }
             }
@@ -251,6 +255,9 @@ public class UserLogFragment extends Fragment {
      */
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
+        if (totalLogInfo.totalLogData.size() == 0) {
+            Toast.makeText(getContext(), "没有更多数据", Toast.LENGTH_SHORT).show();
+        }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             UserLog userLog = new UserLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             userLogList.add(userLog);

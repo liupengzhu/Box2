@@ -34,5 +34,5 @@
         android:layout_weight="1"
         android:clickable="true"></com.baidu.mapapi.map.MapView>
 
-    
+
 </LinearLayout>

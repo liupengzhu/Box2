@@ -13,4 +13,6 @@ public class EnclosureInfo {
     public List<EnclosureData> enclosureDataList;
 
     public String error;
+    public int current_page;
+    public int per_page;
 }

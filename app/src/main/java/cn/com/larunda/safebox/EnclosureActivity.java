@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.EnclosureAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.EnclosureData;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.recycler.Enclosure;
@@ -87,6 +88,13 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
     private ArrayList<String> idList = new ArrayList<>();
 
+    private String search;
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private static FootAdapter footAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +114,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                search = null;
                 sendRequest();
 
             }
@@ -115,7 +124,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
-
+        search = null;
         sendRequest();
 
 
@@ -147,14 +156,129 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (enclosureList.size() < count) {
+                            search = null;
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+    }
+
+    /**
+     * 请求下一页
+     */
+    private void sendAddRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page ="+page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final EnclosureInfo enclosureInfo = Util.handleEnclosureInfo(response.body().string());
+                if (enclosureInfo != null && enclosureInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addEnclosureInfo(enclosureInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 添加地理围栏
+     * @param enclosureInfo
+     */
+    private void addEnclosureInfo(EnclosureInfo enclosureInfo) {
+        page = enclosureInfo.current_page + 1;
+        if (enclosureInfo.enclosureDataList.size() == 0) {
+            footAdapter.setHasMore(false);
+        }
+        if (enclosureList != null) {
+            for (EnclosureData enclosureData : enclosureInfo.enclosureDataList) {
+                Enclosure enclosure = new Enclosure();
+                enclosure.setId(enclosureData.id);
+                if (enclosureData.name != null) {
+                    enclosure.setName(enclosureData.name);
+                } else {
+                    enclosure.setName("");
+                }
+                enclosureList.add(enclosure);
+            }
+        }
+        footAdapter.notifyDataSetChanged();
+
     }
 
     /**
      * 发送网络请求
      */
     private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = 1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -202,6 +326,11 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
      * 解析地理围栏信息
      */
     private void initEnclosureInfo(EnclosureInfo enclosureInfo) {
+        page = enclosureInfo.current_page + 1;
+        count = enclosureInfo.per_page;
+        if (enclosureInfo.enclosureDataList.size() == 0 || enclosureInfo.enclosureDataList.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         enclosureList.clear();
         if (enclosureList != null) {
             for (EnclosureData enclosureData : enclosureInfo.enclosureDataList) {
@@ -218,7 +347,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         if (enclosureList.size() == 0) {
             Toast.makeText(this, "地理围栏不存在", Toast.LENGTH_SHORT).show();
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
 
@@ -250,13 +379,14 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         allCheckedText = findViewById(R.id.enclosure_all_checked_text);
 
         adapter = new EnclosureAdapter(enclosureList);
+        footAdapter = new FootAdapter(this, adapter);
         recyclerView = findViewById(R.id.enclosure_recycler);
         refreshLayout = findViewById(R.id.enclosure_swiper);
         loodingErrorLayout = findViewById(R.id.enclosure_loading_error_layout);
         loodingLayout = findViewById(R.id.enclosure_loading_layout);
 
         manager = new LinearLayoutManager(this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         setAdapterClick(adapter);
@@ -298,7 +428,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     public void cancleLongClick() {
         isLongClick = false;
         adapter.setCheckedLayout(false);
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
         top_layout.setVisibility(View.VISIBLE);
         bottom_layout.setVisibility(View.GONE);
     }
@@ -328,7 +458,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             for (Enclosure enclosure : enclosures) {
                 enclosure.setImgIsChecked(false);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
 
         } else {
@@ -338,7 +468,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             for (Enclosure enclosure : enclosures) {
                 enclosure.setImgIsChecked(true);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
         }
 
@@ -363,7 +493,8 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.enclosure_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
-                    sendSearchRequest(searchText.getText().toString().trim());
+                    search = searchText.getText().toString().trim();
+                    sendRequest();
                 } else {
                     Toast.makeText(EnclosureActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
@@ -460,57 +591,6 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    /**
-     * 搜索
-     *
-     * @param name
-     */
-    private void sendSearchRequest(String name) {
-
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + "&search=" + name, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final EnclosureInfo enclosureInfo = Util.handleEnclosureInfo(response.body().string());
-                if (enclosureInfo != null && enclosureInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initEnclosureInfo(enclosureInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-                }
-            }
-        });
-    }
 }
 
 

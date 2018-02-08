@@ -408,7 +408,6 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private void initBoxList(BoxInfo boxInfo) {
         page = boxInfo.current_page + 1;
         count = boxInfo.per_page;
-        Log.d("main", count + "");
         myBoxList.clear();
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);

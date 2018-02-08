@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.adapter.UserInfoAdapter;
 import cn.com.larunda.safebox.gson.UserData;
 import cn.com.larunda.safebox.gson.UserInfo;
@@ -83,6 +84,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private Button deleteButton;
     private ArrayList<String> idList = new ArrayList<>();
+    private String serch;
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private static FootAdapter footAdapter;
 
 
     @Override
@@ -105,6 +112,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                serch = null;
                 sendRequest();
 
             }
@@ -114,6 +122,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        serch = null;
         sendRequest();
 
     }
@@ -136,7 +145,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public void onClick(View v) {
                 isLongClick = true;
                 adapter.setCheckedLayout(true);
-                adapter.notifyDataSetChanged();
+                footAdapter.notifyDataSetChanged();
                 top_layout.setVisibility(View.GONE);
                 bottom_layout.setVisibility(View.VISIBLE);
             }
@@ -167,8 +176,138 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
-
         deleteButton.setOnClickListener(this);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (myUserInfoList.size() < count) {
+                            serch = null;
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+    }
+
+    /**
+     * 发送加载下一页
+     */
+    private void sendAddRequest() {
+        String searchText;
+        if (serch != null) {
+            searchText = "&search=" + serch;
+        } else {
+            searchText = "";
+        }
+
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=" + page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final UserInfo userInfo = Util.handleUserInfo(response.body().string());
+                if (userInfo != null && userInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addUserInfo(userInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+
+
+    }
+
+    /**
+     * 添加数据
+     *
+     * @param userInfo
+     */
+    private void addUserInfo(UserInfo userInfo) {
+        page = userInfo.current_page + 1;
+        if (userInfo.userData.size() == 0) {
+            footAdapter.setHasMore(false);
+        }
+        if (userInfo.userData != null) {
+            for (UserData userData : userInfo.userData) {
+                MyUserInfo myUserInfo = new MyUserInfo();
+                String imgUrl = null;
+                if (userData.pic != null) {
+                    imgUrl = userData.pic.replace('\\', ' ');
+                    myUserInfo.setUserImg(IMG_URL + imgUrl);
+                } else {
+                    myUserInfo.setUserImg(null);
+                }
+                if (userData.id != null) {
+                    myUserInfo.setUserId(userData.id);
+                }
+                if (userData.level != null) {
+                    if (userData.level.equals("1")) {
+                        myUserInfo.setUserQx("管理员");
+                    } else {
+                        myUserInfo.setUserQx("一般用户");
+                    }
+                }
+                if (userData.name != null) {
+                    myUserInfo.setUserName(userData.name);
+                }
+                if (userData.user != null) {
+                    myUserInfo.setUser(userData.user);
+                }
+                myUserInfoList.add(myUserInfo);
+            }
+        }
+        footAdapter.notifyDataSetChanged();
+
     }
 
 
@@ -176,8 +315,15 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      * 发送网络请求
      */
     private void sendRequest() {
+        String searchText;
+        if (serch != null) {
+            searchText = "&search=" + serch;
+        } else {
+            searchText = "";
+        }
+
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -230,6 +376,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      * @param userInfo
      */
     private void initUserInfo(UserInfo userInfo) {
+        page = userInfo.current_page + 1;
+        count = userInfo.per_page;
+        if (userInfo.userData.size() == 0 || userInfo.userData.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         myUserInfoList.clear();
         if (userInfo.userData != null) {
             for (UserData userData : userInfo.userData) {
@@ -263,7 +414,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (myUserInfoList.size() == 0) {
             Toast.makeText(this, "用户不存在", Toast.LENGTH_SHORT).show();
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -286,6 +437,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(myUserInfoList);
+        footAdapter = new FootAdapter(this, adapter);
 
         refreshLayout = findViewById(R.id.user_info_swiper);
         loodingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
@@ -297,7 +449,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
     }
@@ -317,7 +469,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.user_info_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
-                    sendSearchRequest(searchText.getText().toString().trim());
+                    serch = searchText.getText().toString().trim();
+                    sendRequest();
                 } else {
                     Toast.makeText(UserInfoActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
@@ -346,9 +499,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void sendDeleteRequest() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id",Util.listToString(idList));
+            jsonObject.put("id", Util.listToString(idList));
             refreshLayout.setRefreshing(true);
-            HttpUtil.sendDeleteWithHttp( USER_INFO_URL + token, jsonObject.toString(), new Callback() {
+            HttpUtil.sendDeleteWithHttp(USER_INFO_URL + token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     runOnUiThread(new Runnable() {
@@ -382,11 +535,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onRestart() {
         super.onRestart();
+        serch = null;
         sendRequest();
     }
 
     /**
      * 解析删除请求返回信息
+     *
      * @param content
      */
     private void parseResponse(String content) {
@@ -422,59 +577,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    /**
-     * 搜索用户
-     *
-     * @param name
-     */
-    private void sendSearchRequest(String name) {
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + "&search=" + name, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                final UserInfo userInfo = Util.handleUserInfo(content);
-                if (userInfo != null && userInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initUserInfo(userInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     @Override
     public void onBackPressed() {
         //判断递送箱列表是否是多选状态
@@ -493,7 +595,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     public void cancleLongClick() {
         isLongClick = false;
         adapter.setCheckedLayout(false);
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
         top_layout.setVisibility(View.VISIBLE);
         bottom_layout.setVisibility(View.GONE);
     }
@@ -510,7 +612,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             for (MyUserInfo myUserInfo : myUserInfos) {
                 myUserInfo.setImgIsChecked(false);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
 
         } else {
@@ -520,7 +622,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             for (MyUserInfo myUserInfo : myUserInfos) {
                 myUserInfo.setImgIsChecked(true);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
         }
 

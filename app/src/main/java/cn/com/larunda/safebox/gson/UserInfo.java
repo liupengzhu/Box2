@@ -12,4 +12,6 @@ public class UserInfo {
     @SerializedName("data")
     public List<UserData> userData;
     public String error;
+    public int current_page;
+    public int per_page;
 }

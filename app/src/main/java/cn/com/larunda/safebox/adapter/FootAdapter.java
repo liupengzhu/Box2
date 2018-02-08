@@ -23,7 +23,7 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private int footType = 1;       // 第二种ViewType，底部的提示View
 
     private boolean hasMore = true;   // 变量，是否有更多数据
-    private boolean fadeTips = true; // 变量，是否隐藏了底部的提示
+    private boolean fadeTips = false; // 变量，是否隐藏了底部的提示
 
     private Handler mHandler = new Handler(Looper.getMainLooper()); //获取主线程的Handler
 
@@ -82,12 +82,12 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (hasMore == true) {
                 // 不隐藏footView提示
                 fadeTips = false;
-                if (adapter.getItemCount() > 10) {
+                if (adapter.getItemCount() > 0) {
                     // 如果查询数据发现增加之后，就显示正在加载更多
                     ((FootHolder) holder).tips.setText("正在加载更多...");
                 }
             } else {
-                if (adapter.getItemCount() > 10) {
+                if (adapter.getItemCount() > 0) {
                     // 如果查询数据发现并没有增加时，就显示没有更多数据了
                     ((FootHolder) holder).tips.setText("没有更多数据了");
 
@@ -101,6 +101,7 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             fadeTips = true;
                             // hasMore设为true是为了让再次拉到底时，会先显示正在加载更多
                             hasMore = true;
+
                         }
                     }, 500);
                 }

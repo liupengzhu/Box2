@@ -22,6 +22,7 @@ import cn.com.larunda.safebox.MainActivity;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.AppLogAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.TotalLogData;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.recycler.AppLog;
@@ -57,6 +58,7 @@ public class AppLogFragment extends Fragment {
     private int page;
     private int lastVisibleItem;
     private int count;
+    private FootAdapter footAdapter;
 
     @Nullable
     @Override
@@ -148,11 +150,14 @@ public class AppLogFragment extends Fragment {
         page = totalLogInfo.current_page + 1;
         count = totalLogInfo.per_page;
         appLogList.clear();
+        if (totalLogInfo.totalLogData.size() == 0 || totalLogInfo.totalLogData.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             AppLog appLog = new AppLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             appLogList.add(appLog);
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
 
     }
 
@@ -167,9 +172,10 @@ public class AppLogFragment extends Fragment {
         loodingErrorLayout = view.findViewById(R.id.app_log_loading_error_layout);
         loodingLayout = view.findViewById(R.id.app_log_loading_layout);
         adapter = new AppLogAdapter(appLogList);
+        footAdapter = new FootAdapter(getContext(), adapter);
         manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -177,12 +183,19 @@ public class AppLogFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 //在newState为滑到底部时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter.getItemCount()) {
-                    if (appLogList.size() < count) {
-                        sendRequest();
-                    } else {
-                        sendAddRequest();
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
                     }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (appLogList.size() < count) {
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
                 }
             }
 
@@ -258,13 +271,13 @@ public class AppLogFragment extends Fragment {
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
         if (totalLogInfo.totalLogData.size() == 0) {
-            Toast.makeText(getContext(), "没有更多数据", Toast.LENGTH_SHORT).show();
+            footAdapter.setHasMore(false);
         }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             AppLog appLog = new AppLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
             appLogList.add(appLog);
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
 }

@@ -150,7 +150,7 @@ public class BoxLogFragment extends Fragment {
     private void showInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
         count = totalLogInfo.per_page;
-        if(totalLogInfo.totalLogData.size()==0){
+        if (totalLogInfo.totalLogData.size() == 0 || totalLogInfo.totalLogData.size() < count) {
             footAdapter.setHasMore(false);
         }
         boxLogList.clear();
@@ -184,19 +184,12 @@ public class BoxLogFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 //在newState为滑到底部时
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // 如果没有隐藏footView，那么最后一个条目的位置就比我们的getItemCount少1，自己可以算一下
-                    if (footAdapter.isFadeTips() == false && lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         footAdapter.setHasMore(true);
-                        if (boxLogList.size() < count) {
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
-                        }
+                        footAdapter.notifyDataSetChanged();
                     }
-                    // 如果隐藏了提示条，我们又上拉加载时，那么最后一个条目就要比getItemCount要少2
-                    if (footAdapter.isFadeTips() == true && lastVisibleItem + 2 == footAdapter.getItemCount()) {
-                        footAdapter.setHasMore(true);
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         if (boxLogList.size() < count) {
                             sendRequest();
                         } else {
@@ -278,7 +271,7 @@ public class BoxLogFragment extends Fragment {
      */
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
-        if(totalLogInfo.totalLogData.size()==0){
+        if (totalLogInfo.totalLogData.size() == 0) {
             footAdapter.setHasMore(false);
         }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {

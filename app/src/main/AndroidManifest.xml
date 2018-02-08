@@ -36,7 +36,9 @@
             android:name="cn.com.larunda.safebox.MainActivity"
             android:launchMode="singleTask" />
         <activity android:name="cn.com.larunda.safebox.LoginActivity" />
-        <activity android:name="cn.com.larunda.safebox.LaunchActivity">
+        <activity
+            android:name="cn.com.larunda.safebox.LaunchActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

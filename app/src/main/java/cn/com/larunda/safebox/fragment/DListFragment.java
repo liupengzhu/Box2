@@ -30,6 +30,7 @@ import com.larunda.safebox.R;
 import cn.com.larunda.safebox.SettingQxActivity;
 import cn.com.larunda.safebox.SettingStatesActivity;
 import cn.com.larunda.safebox.adapter.BoxAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.BoxData;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.recycler.MyBox;
@@ -75,26 +76,17 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private ImageView cancelButton;
     private TextView ensureButton;
     private ArrayList<String> idList = new ArrayList<>();
+    private String search;
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private static FootAdapter footAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
-
         initView(view);
 
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
-        manager = new LinearLayoutManager(container.getContext());
-        adapter = new BoxAdapter(myBoxList);
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
-        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                sendRequest();
-
-            }
-        });
 
         //每次fragment创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
@@ -105,7 +97,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
         if (isLongClick) {
             adapter.setCheckedLayout(true);
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
             top_layout.setVisibility(View.GONE);
             bottom_layout.setVisibility(View.VISIBLE);
             MainActivity.tabLayout.setVisibility(View.GONE);
@@ -139,6 +131,184 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         cancelButton = view.findViewById(R.id.list_cancel_button);
         ensureButton = view.findViewById(R.id.list_ensure_button);
 
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        manager = new LinearLayoutManager(getContext());
+        adapter = new BoxAdapter(myBoxList);
+        footAdapter = new FootAdapter(getContext(), adapter);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(footAdapter);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                search = null;
+                sendRequest();
+
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (myBoxList.size() < count) {
+                            search = null;
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+
+    }
+
+    /**
+     * 加载下一页
+     */
+    private void sendAddRequest() {
+        refreshLayout.setRefreshing(true);
+        String searchText = "";
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=" + page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+
+                if (boxInfo != null && boxInfo.error == null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addBoxList(boxInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            MainActivity.preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    });
+                }
+
+            }
+        });
+
+
+    }
+
+    /**
+     * 添加数据
+     *
+     * @param boxInfo
+     */
+    private void addBoxList(BoxInfo boxInfo) {
+        page = boxInfo.current_page + 1;
+        if (boxInfo.boxDataList.size() == 0) {
+            footAdapter.setHasMore(false);
+        }
+        if (boxInfo.boxDataList != null) {
+            for (BoxData boxData : boxInfo.boxDataList) {
+
+                MyBox box = new MyBox();
+                String img_url = null;
+                if (boxData.code != null) {
+                    box.setCode(boxData.code);
+                }
+                if (boxData.f_pic != null) {
+                    img_url = boxData.f_pic.replace('\\', ' ');
+                    box.setBox_img(IMG_URL + img_url);
+                } else {
+                    box.setBox_img(null);
+                }
+                if (boxData.name != null) {
+                    box.setBox_name(boxData.name);
+                } else {
+                    box.setBox_name(null);
+                }
+                if (boxData.electricity != null) {
+                    box.setBox_dl(boxData.electricity);
+                } else {
+                    box.setBox_dl(null);
+                }
+
+                if (boxData.level != null) {
+                    box.setBox_qx(Integer.parseInt(boxData.level));
+                } else {
+                    box.setBox_qx(0);
+                }
+                if (boxData.is_defence != null) {
+                    if (boxData.is_defence == "1") {
+                        box.setIs_bf(true);
+                    } else {
+                        box.setIs_bf(false);
+                    }
+                } else {
+                    box.setIs_bf(false);
+                }
+                if (boxData.is_locked != null) {
+                    if (boxData.is_locked == "1") {
+                        box.setIs_sd(true);
+                    } else {
+                        box.setIs_sd(false);
+                    }
+                } else {
+                    box.setIs_sd(false);
+                }
+
+                if (boxData.id != null) {
+                    box.setId(boxData.id);
+                } else {
+                    box.setId(null);
+                }
+                myBoxList.add(box);
+
+            }
+        }
+        footAdapter.notifyDataSetChanged();
+
+
     }
 
     /**
@@ -151,7 +321,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             public void onLongClick(View v) {
                 isLongClick = true;
                 adapter.setCheckedLayout(true);
-                adapter.notifyDataSetChanged();
+                footAdapter.notifyDataSetChanged();
                 top_layout.setVisibility(View.GONE);
                 bottom_layout.setVisibility(View.VISIBLE);
                 MainActivity.tabLayout.setVisibility(View.GONE);
@@ -179,11 +349,15 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     //发送网络请求
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token, new Callback() {
+        String searchText = "";
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -232,7 +406,13 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
     //解析BoxInfo
     private void initBoxList(BoxInfo boxInfo) {
+        page = boxInfo.current_page + 1;
+        count = boxInfo.per_page;
+        Log.d("main", count + "");
         myBoxList.clear();
+        if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         if (boxInfo.boxDataList != null) {
             for (BoxData boxData : boxInfo.boxDataList) {
 
@@ -294,7 +474,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         if (myBoxList.size() == 0) {
             Toast.makeText(getContext(), "递送箱不存在", Toast.LENGTH_SHORT).show();
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
 
 
     }
@@ -305,7 +485,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     public static void cancleLongClick() {
         isLongClick = false;
         adapter.setCheckedLayout(false);
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
         top_layout.setVisibility(View.VISIBLE);
         bottom_layout.setVisibility(View.GONE);
         MainActivity.tabLayout.setVisibility(View.VISIBLE);
@@ -363,7 +543,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                 break;
             case R.id.list_ensure_button:
                 if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
-                    sendSearchRequest(searchText.getText().toString().trim());
+                    search = searchText.getText().toString().trim();
+                    sendRequest();
                 } else {
                     Toast.makeText(getContext(), "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
@@ -374,60 +555,6 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
     }
 
-    /**
-     * 搜索
-     *
-     * @param name
-     */
-    private void sendSearchRequest(String name) {
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + "&search=" + name, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
-
-                if (boxInfo != null && boxInfo.error == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initBoxList(boxInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    });
-                }
-
-            }
-        });
-    }
 
     /**
      * 处理全选按钮的点击事件
@@ -441,7 +568,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             for (MyBox box : boxes) {
                 box.setImgIsChecked(false);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
 
         } else {
@@ -451,7 +578,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             for (MyBox box : boxes) {
                 box.setImgIsChecked(true);
             }
-            adapter.notifyDataSetChanged();
+            footAdapter.notifyDataSetChanged();
 
         }
 
@@ -464,6 +591,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
     @Override
     protected void loadData() {
+        search = null;
         sendRequest();
     }
 }

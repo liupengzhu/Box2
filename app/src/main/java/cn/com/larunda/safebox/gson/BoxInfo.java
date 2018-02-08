@@ -14,4 +14,7 @@ public class BoxInfo {
     public List<BoxData> boxDataList;
 
     public String error;
+
+    public int current_page;
+    public int per_page;
 }

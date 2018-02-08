@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
@@ -52,6 +53,10 @@ public class AppLogFragment extends Fragment {
 
     public static final String SQLS_URI = "http://safebox.dsmcase.com:90/api/log?_token=";
     public static final String TYPE = "&type=2";
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
 
     @Nullable
     @Override
@@ -140,7 +145,8 @@ public class AppLogFragment extends Fragment {
      * @param totalLogInfo
      */
     private void showInfo(TotalLogInfo totalLogInfo) {
-
+        page = totalLogInfo.current_page + 1;
+        count = totalLogInfo.per_page;
         appLogList.clear();
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
             AppLog appLog = new AppLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
@@ -166,6 +172,99 @@ public class AppLogFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter.getItemCount()) {
+                    if (appLogList.size() < count) {
+                        sendRequest();
+                    } else {
+                        sendAddRequest();
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+    }
+
+    /**
+     * 请求下一页数据
+     */
+    private void sendAddRequest() {
+        swipeRefreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=" + page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        loodingLayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
+                    if (totalLogInfo != null && totalLogInfo.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                addInfo(totalLogInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            }
+                        });
+
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                MainActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
+
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 添加数据
+     *
+     * @param totalLogInfo
+     */
+    private void addInfo(TotalLogInfo totalLogInfo) {
+        page = totalLogInfo.current_page + 1;
+        if (totalLogInfo.totalLogData.size() == 0) {
+            Toast.makeText(getContext(), "没有更多数据", Toast.LENGTH_SHORT).show();
+        }
+        for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
+            AppLog appLog = new AppLog(totalLogData.created_at, totalLogData.info, totalLogData.title);
+            appLogList.add(appLog);
+        }
+        adapter.notifyDataSetChanged();
     }
 
 }

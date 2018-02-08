@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
 
     private String[] titles = {"总览", "箱体列表", "日志"};
-    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.sq1, R.drawable.rz1};
+    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private HomeAdapter adapter;
     public static String token = "";

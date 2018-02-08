@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.adapter.SoundInfoAdapter;
 import cn.com.larunda.safebox.gson.BoxData;
 import cn.com.larunda.safebox.gson.BoxInfo;
@@ -49,7 +50,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayoutManager manager;
     private List<SoundInfo> soundInfoList = new ArrayList<>();
 
-    public static final String BOX_URL = Util.URL+"box"+Util.TOKEN;
+    public static final String BOX_URL = Util.URL + "box" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
     private SharedPreferences preferences;
     private String token;
@@ -61,6 +62,13 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private EditText searchText;
     private ImageView cancelButton;
     private TextView ensureButton;
+
+    private String search;
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private static FootAdapter footAdapter;
 
 
     @Override
@@ -80,6 +88,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                search = null;
                 sendRequest();
 
             }
@@ -89,6 +98,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        search = null;
         sendRequest();
     }
 
@@ -96,8 +106,14 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
      * 发送网络请求
      */
     private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -152,6 +168,11 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
      * @param boxInfo
      */
     private void initBoxList(BoxInfo boxInfo) {
+        page = boxInfo.current_page + 1;
+        count = boxInfo.per_page;
+        if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         soundInfoList.clear();
         if (boxInfo.boxDataList != null) {
             for (BoxData boxData : boxInfo.boxDataList) {
@@ -194,7 +215,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         if (soundInfoList.size() == 0) {
             Toast.makeText(this, "录音不存在", Toast.LENGTH_SHORT).show();
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
 
@@ -253,49 +274,56 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
         adapter = new SoundInfoAdapter(this, soundInfoList);
+        footAdapter = new FootAdapter(this, adapter);
         recyclerView = findViewById(R.id.sound_recycler);
         manager = new LinearLayoutManager(this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (soundInfoList.size() < count) {
+                            search = null;
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+
     }
 
     /**
-     * 点击事件拦截
-     *
-     * @param v
+     * 加载下一页
      */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sound_cancel_button:
-                if (searchText != null) {
-                    searchText.setText("");
-                }
-                break;
-            case R.id.sound_ensure_button:
-                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
-                    sendSearchRequest(searchText.getText().toString().trim());
-                }else {
-                    Toast.makeText(SoundActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                break;
-
+    private void sendAddRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
         }
-
-    }
-
-    /**
-     * 搜索
-     *
-     * @param name
-     */
-    private void sendSearchRequest(String name) {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + "&search=" + name, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page="+page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -318,7 +346,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            initBoxList(boxInfo);
+                            addBoxList(boxInfo);
                             refreshLayout.setRefreshing(false);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -342,4 +370,84 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+
+    /**
+     *
+     * @param boxInfo
+     */
+    private void addBoxList(BoxInfo boxInfo) {
+        page = boxInfo.current_page + 1;
+        if (boxInfo.boxDataList.size() == 0) {
+            footAdapter.setHasMore(false);
+        }
+        if (boxInfo.boxDataList != null) {
+            for (BoxData boxData : boxInfo.boxDataList) {
+                SoundInfo soundInfo = new SoundInfo();
+                String img_url = null;
+                if (boxData.f_pic != null) {
+                    img_url = boxData.f_pic.replace('\\', ' ');
+                    soundInfo.setBox_img(IMG_URL + img_url);
+                } else {
+                    soundInfo.setBox_img(null);
+                }
+                if (boxData.code != null) {
+                    soundInfo.setBoxName(boxData.code);
+                } else {
+                    soundInfo.setBoxName("");
+                }
+                if (boxData.id != null) {
+                    soundInfo.setId(boxData.id);
+                }
+                if (boxData.readNum != null && boxData.unReadNum != null) {
+                    int total = Integer.parseInt(boxData.readNum) + Integer.parseInt(boxData.unReadNum);
+                    soundInfo.setTotal("共" + total + "条录音");
+                } else if (boxData.readNum != null) {
+                    soundInfo.setTotal("共" + boxData.readNum + "条录音");
+                } else if (boxData.unReadNum != null) {
+                    soundInfo.setTotal("共" + boxData.unReadNum + "条录音");
+                } else {
+                    soundInfo.setTotal("共0条录音");
+                }
+                if (boxData.unReadNum != null) {
+                    soundInfo.setUnRead(boxData.unReadNum);
+                } else {
+                    soundInfo.setUnRead("0");
+                }
+
+                soundInfoList.add(soundInfo);
+            }
+
+        }
+        footAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 点击事件拦截
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sound_cancel_button:
+                if (searchText != null) {
+                    searchText.setText("");
+                }
+                break;
+            case R.id.sound_ensure_button:
+                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                    search = searchText.getText().toString().trim();
+                    sendRequest();
+                } else {
+                    Toast.makeText(SoundActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+
+        }
+
+    }
+
+
 }

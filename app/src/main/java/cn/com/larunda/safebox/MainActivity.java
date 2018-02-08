@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
 
-    private String[] titles = {"总览", "箱体列表", "远程授权", "日志"};
+    private String[] titles = {"总览", "箱体列表", "日志"};
     private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.sq1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private HomeAdapter adapter;
@@ -331,10 +331,6 @@ public class MainActivity extends AppCompatActivity {
                         setTitleInfo(1);
                         break;
                     case 2:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sq2);
-                        setTitleInfo(2);
-                        break;
-                    case 3:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz2);
                         setTitleInfo(3);
                         break;
@@ -357,9 +353,6 @@ public class MainActivity extends AppCompatActivity {
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx1);
                         break;
                     case 2:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sq1);
-                        break;
-                    case 3:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz1);
                         break;
                     default:
@@ -523,7 +516,6 @@ public class MainActivity extends AppCompatActivity {
 
         fragments.add(new HomeFragment());
         fragments.add(new DListFragment());
-        fragments.add(new SListFragment());
         fragments.add(new TotalLogFragment());
     }
 

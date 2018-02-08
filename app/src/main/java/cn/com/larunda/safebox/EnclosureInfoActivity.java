@@ -56,7 +56,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
     private BaiduMap baiduMap;
     private MyLocationListener myListener = new MyLocationListener();
     private String id;
-    public static final String ENCLOSURE_INFO_URL = "http://safebox.dsmcase.com:90/api/area/";
+    public static final String ENCLOSURE_INFO_URL = Util.URL+"area/";
     private List<LatLng> points = new ArrayList<>();
     private TextView textView;
 
@@ -123,7 +123,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
      * 请求数据
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + "?_token=" + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 

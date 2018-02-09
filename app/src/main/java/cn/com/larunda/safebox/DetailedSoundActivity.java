@@ -230,7 +230,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                                 }
                             });
                         } else {
-                            if (lastId != id) {
+                            if (lastId!=id) {
                                 mediaPlayer.stop();
                                 mediaPlayer = null;
                                 lastButton.setChecked(false);

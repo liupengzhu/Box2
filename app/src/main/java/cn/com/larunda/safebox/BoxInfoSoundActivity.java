@@ -3,7 +3,11 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +19,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.larunda.horizontalprogressbar.HorizontalProgressBarWithNunber;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -63,7 +71,32 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
     private String date;
     private SimpleDateFormat format;
     private Calendar c;
+    private MediaPlayer mediaPlayer;
+    private String lastId;
+    private CheckBox lastButton;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    if (mediaPlayer != null) {
+                        int position = mediaPlayer.getCurrentPosition();
+                        int time = mediaPlayer.getDuration();
+                        progressBar.setProgress(100 * position / time);
+                        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");//初始化Formatter的转换格式。
+                        String hms = formatter.format(position);
+                        textView.setText(hms);
+                    }
+                    break;
 
+            }
+        }
+    };
+    private TextView textView;
+    private HorizontalProgressBarWithNunber progressBar;
+    private TextView lastTextView;
+    private HorizontalProgressBarWithNunber lastProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +127,23 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         date = null;
+        //后台线程发送消息进行更新进度条
+        final int milliseconds = 100;
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        sleep(milliseconds);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    mHandler.sendEmptyMessage(0);
+                }
+            }
+        }.start();
+
         sendRequest();
     }
 
@@ -159,14 +209,14 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
             for (DetailedSoundData data : detailedSoundInfo.detailedSoundDataList) {
                 BoxInfoSound boxInfoSound = new BoxInfoSound();
                 if (data.id != null) {
-                    boxInfoSound.setSoundName(data.id);
+                    boxInfoSound.setId(data.id);
                 } else {
                     boxInfoSound.setId("");
                 }
                 if (data.f_record != null) {
-                    boxInfoSound.setPath(data.f_record);
+                    boxInfoSound.setPath(Util.PATH + data.f_record);
                 } else {
-                    boxInfoSound.setPath("");
+                    boxInfoSound.setPath(null);
                 }
                 if (data.f_is_play != null && data.f_is_play.equals("0")) {
                     boxInfoSound.setSoundIsPlay(false);
@@ -174,9 +224,14 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
                     boxInfoSound.setSoundIsPlay(true);
                 }
                 if (data.f_time_length != null) {
-                    boxInfoSound.setSoundTime(data.f_time_length);
+                    long ms = (Integer.parseInt(data.f_time_length)) * 1000;//毫秒数
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");//初始化Formatter的转换格式。
+
+                    String hms = formatter.format(ms);
+                    boxInfoSound.setSoundTime(hms);
                 } else {
-                    boxInfoSound.setSoundTime("");
+                    boxInfoSound.setSoundTime("00:00");
                 }
                 if (data.created_at != null) {
                     boxInfoSound.setSoundDate(data.created_at);
@@ -184,9 +239,9 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
                     boxInfoSound.setSoundDate("");
                 }
                 if (data.is_exist != null && data.is_exist.equals("1")) {
-                    boxInfoSound.setSoundIsPlay(true);
+                    boxInfoSound.setIs_exist(true);
                 } else {
-                    boxInfoSound.setSoundIsPlay(false);
+                    boxInfoSound.setIs_exist(false);
                 }
                 boxInfoSoundList.add(boxInfoSound);
             }
@@ -220,6 +275,77 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
         monthButton.setOnClickListener(this);
         yearButton.setOnClickListener(this);
         allButton.setOnClickListener(this);
+        adapter.setBoxInfoSoundOnClickListener(new BoxInfoSoundAdapter.BoxInfoSoundOnClickListener() {
+
+            @Override
+            public void onClick(View view, String path, String id, boolean isExist, int position) {
+                final CheckBox checkBox = (CheckBox) view;
+                textView = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_current_time);
+                progressBar = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_progress);
+
+                if (path != null && isExist) {
+                    try {
+                        if (mediaPlayer == null) {
+                            mediaPlayer = new MediaPlayer();
+                            mediaPlayer.setDataSource(path);
+                            mediaPlayer.prepare();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    checkBox.setChecked(false);
+                                    progressBar.setProgress(100);
+                                    mediaPlayer = null;
+
+                                }
+                            });
+                        } else {
+                            if (lastId != id) {
+                                mediaPlayer.stop();
+                                mediaPlayer = null;
+                                lastButton.setChecked(false);
+                                lastTextView.setText("00:00");
+                                lastProgressBar.setProgress(0);
+                                mediaPlayer = new MediaPlayer();
+                                mediaPlayer.setDataSource(path);
+                                mediaPlayer.prepare();
+                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        checkBox.setChecked(false);
+                                        progressBar.setProgress(100);
+                                        mediaPlayer = null;
+                                    }
+                                });
+                            }
+
+                        }
+                        if (checkBox.isChecked()) {
+                            lastId = id;
+                            lastButton = checkBox;
+                            lastTextView = textView;
+                            lastProgressBar = progressBar;
+                            mediaPlayer.start();
+
+                        } else {
+                            lastId = id;
+                            lastButton = checkBox;
+                            lastTextView = textView;
+                            lastProgressBar = progressBar;
+                            mediaPlayer.pause();
+                        }
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(BoxInfoSoundActivity.this, "录音不存在", Toast.LENGTH_SHORT).show();
+                    checkBox.setChecked(false);
+                }
+
+            }
+
+        });
     }
 
 
@@ -291,5 +417,20 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 }

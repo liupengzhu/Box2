@@ -165,7 +165,7 @@ public class HorizontalProgressBarWithNunber extends ProgressBar {
         //当前进度和总值的比例
         float radio = getProgress() * 1.0f / getMax();
         //已到达的宽度
-        float progressPosX = (int) (mRealWidth * radio);
+        float progressPosX = mRealWidth * radio;
 
 
         // 绘制未到达的进度条

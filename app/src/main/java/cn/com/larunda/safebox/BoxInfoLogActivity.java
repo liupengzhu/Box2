@@ -31,6 +31,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.BoxInfoLogAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.recycler.BoxInfoLog;
 import cn.com.larunda.safebox.util.HttpUtil;
@@ -47,7 +48,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private BoxInfoLogAdapter adapter;
     private LinearLayoutManager manager;
     private List<BoxInfoLog> boxInfoLogList = new ArrayList<>();
-    public static final String BOX_LOG_URL = Util.URL+"box/log"+Util.TOKEN;
+    public static final String BOX_LOG_URL = Util.URL + "box/log" + Util.TOKEN;
     private String id;
     private SharedPreferences preferences;
     private String token;
@@ -61,6 +62,11 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private String date;
     private SimpleDateFormat format;
     private Calendar c;
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private FootAdapter footAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                date = null;
                 sendRequest();
 
             }
@@ -89,6 +96,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        date = null;
         sendRequest();
     }
 
@@ -96,8 +104,14 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
      * 发送网络请求
      */
     private void sendRequest() {
+        String timeText;
+        if (date != null) {
+            timeText = "&type=app&time=" + date;
+        } else {
+            timeText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=1" + "&id=" + id + timeText, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -148,6 +162,9 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
      * @param boxInfoLogInfo
      */
     private void initData(BoxInfoLogInfo boxInfoLogInfo) {
+
+        page = boxInfoLogInfo.current_page + 1;
+        count = boxInfoLogInfo.per_page;
         boxInfoLogList.clear();
         if (boxInfoLogInfo.getData() != null) {
             for (BoxInfoLogInfo.DataBean dataBean : boxInfoLogInfo.getData()) {
@@ -170,7 +187,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
                 boxInfoLogList.add(boxInfoLog);
             }
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -216,9 +233,10 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
 
         recyclerView = findViewById(R.id.box_info_log_recycler);
         adapter = new BoxInfoLogAdapter(this, boxInfoLogList);
+        footAdapter = new FootAdapter(this, adapter);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
 
 
         titleBar = findViewById(R.id.box_info_log_title_bar);
@@ -227,50 +245,49 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (boxInfoLogList.size() < count) {
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+
 
     }
 
     /**
-     * 点击事件监听
-     *
-     * @param v
+     * 请求下一页数据
      */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.box_info_log_search_week:
-                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                c = Calendar.getInstance();
-                c.add(Calendar.DATE,-7);
-                date = format.format(c.getTime());
-                sendSearchRequest(date);
-                break;
-            case R.id.box_info_log_search_month:
-                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                c = Calendar.getInstance();
-                c.add(Calendar.MONTH,-1);
-                date = format.format(c.getTime());
-                sendSearchRequest(date);
-                break;
-            case R.id.box_info_log_search_year:
-                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                c = Calendar.getInstance();
-                c.add(Calendar.YEAR,-1);
-                date = format.format(c.getTime());
-                sendSearchRequest(date);
-                break;
-            default:
-                break;
+    private void sendAddRequest() {
+        String timeText;
+        if (date != null) {
+            timeText = "&type=app&time=" + date;
+        } else {
+            timeText = "";
         }
-    }
-
-    /**
-     * 发送搜索请求
-     * @param date
-     */
-    private void sendSearchRequest(String date) {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&id=" + id+"&type="+"app"+"&time="+date, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=" + page + "&id=" + id + timeText, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -292,7 +309,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            initData(boxInfoLogInfo);
+                            addData(boxInfoLogInfo);
                             refreshLayout.setRefreshing(false);
                             loodingErrorLayout.setVisibility(View.GONE);
                             loodingLayout.setVisibility(View.GONE);
@@ -314,4 +331,71 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
             }
         });
     }
+
+
+    private void addData(BoxInfoLogInfo boxInfoLogInfo) {
+
+        page = boxInfoLogInfo.current_page + 1;
+        if (boxInfoLogInfo.getData().size() == 0) {
+            footAdapter.setHasMore(false);
+        }
+        if (boxInfoLogInfo.getData() != null) {
+            for (BoxInfoLogInfo.DataBean dataBean : boxInfoLogInfo.getData()) {
+                BoxInfoLog boxInfoLog = new BoxInfoLog();
+                if (dataBean.getCreated_at() != null) {
+                    boxInfoLog.setLogTime(dataBean.getCreated_at());
+                } else {
+                    boxInfoLog.setLogTime("");
+                }
+                if (dataBean.getF_info() != null) {
+                    boxInfoLog.setLogContent(dataBean.getF_info());
+                } else {
+                    boxInfoLog.setLogContent("");
+                }
+                if (dataBean.getF_title() != null) {
+                    boxInfoLog.setLogName(dataBean.getF_title());
+                } else {
+                    boxInfoLog.setLogName("");
+                }
+                boxInfoLogList.add(boxInfoLog);
+            }
+        }
+        footAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.box_info_log_search_week:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.DATE, -7);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_log_search_month:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.MONTH, -1);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_log_search_year:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.YEAR, -1);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            default:
+                break;
+        }
+    }
+
+
 }

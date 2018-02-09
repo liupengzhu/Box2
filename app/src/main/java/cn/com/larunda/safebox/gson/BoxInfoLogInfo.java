@@ -25,6 +25,8 @@ public class BoxInfoLogInfo {
 
     private List<DataBean> data;
     private String error;
+    public int current_page;
+    public int per_page;
 
     public String getError() {
         return error;

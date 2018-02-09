@@ -103,7 +103,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id+"&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -267,7 +267,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void sendAddRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id+"&page="+page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + "&page=" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -314,7 +314,11 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void addSound(DetailedSoundInfo detailedSoundInfo) {
 
         page = detailedSoundInfo.current_page + 1;
+
         if (detailedSoundInfo.detailedSoundDataList != null) {
+            if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
+                footAdapter.setHasMore(false);
+            }
             for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
                 DetailedSound detailedSound = new DetailedSound();
                 if (detailedSoundData.id != null) {

@@ -198,7 +198,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page ="+page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page =" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -244,6 +244,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
 
     /**
      * 添加地理围栏
+     *
      * @param enclosureInfo
      */
     private void addEnclosureInfo(EnclosureInfo enclosureInfo) {
@@ -343,9 +344,6 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                 }
                 enclosureList.add(enclosure);
             }
-        }
-        if (enclosureList.size() == 0) {
-            Toast.makeText(this, "地理围栏不存在", Toast.LENGTH_SHORT).show();
         }
         footAdapter.notifyDataSetChanged();
     }

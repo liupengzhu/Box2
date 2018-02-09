@@ -470,9 +470,6 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
 
             }
         }
-        if (myBoxList.size() == 0) {
-            Toast.makeText(getContext(), "递送箱不存在", Toast.LENGTH_SHORT).show();
-        }
         footAdapter.notifyDataSetChanged();
 
 

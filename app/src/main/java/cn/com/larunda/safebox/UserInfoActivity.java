@@ -411,9 +411,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 myUserInfoList.add(myUserInfo);
             }
         }
-        if (myUserInfoList.size() == 0) {
-            Toast.makeText(this, "用户不存在", Toast.LENGTH_SHORT).show();
-        }
         footAdapter.notifyDataSetChanged();
     }
 

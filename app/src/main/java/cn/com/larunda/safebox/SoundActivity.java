@@ -172,6 +172,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
         count = boxInfo.per_page;
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);
+            footAdapter.notifyDataSetChanged();
         }
         soundInfoList.clear();
         if (boxInfo.boxDataList != null) {
@@ -211,9 +212,6 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                 soundInfoList.add(soundInfo);
             }
 
-        }
-        if (soundInfoList.size() == 0) {
-            Toast.makeText(this, "录音不存在", Toast.LENGTH_SHORT).show();
         }
         footAdapter.notifyDataSetChanged();
     }
@@ -323,7 +321,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page="+page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -372,7 +370,6 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     }
 
     /**
-     *
      * @param boxInfo
      */
     private void addBoxList(BoxInfo boxInfo) {

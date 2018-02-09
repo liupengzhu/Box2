@@ -99,12 +99,13 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fadeTips = false;
                 if (adapter.getItemCount() > 0) {
                     // 如果查询数据发现增加之后，就显示正在加载更多
+                    ((FootHolder) holder).layout.setBackground(context.getResources().getDrawable(R.color.white));
                     ((FootHolder) holder).tips.setText("正在加载更多...");
                 }
             } else {
                 if (adapter.getItemCount() > 0) {
                     // 如果查询数据发现并没有增加时，就显示没有更多数据了
-                    ((FootHolder) holder).tips.setText("没有更多数据了");
+                    ((FootHolder) holder).tips.setText("没有更多数据");
                     ((FootHolder) holder).layout.setBackground(context.getResources().getDrawable(R.color.line));
 
                    /* // 然后通过延时加载模拟网络请求的时间，在500ms后执行

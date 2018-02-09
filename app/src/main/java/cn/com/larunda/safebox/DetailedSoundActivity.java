@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.DetailedSoundAdapter;
+import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.DetailedSoundData;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.recycler.DetailedSound;
@@ -57,6 +58,11 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
+    private int page;
+    private int lastVisibleItem;
+    private int count;
+    private FootAdapter footAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +103,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id+"&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -148,6 +154,8 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void initSound(DetailedSoundInfo detailedSoundInfo) {
         detailedSoundList.clear();
+        page = detailedSoundInfo.current_page + 1;
+        count = detailedSoundInfo.per_page;
         if (detailedSoundInfo.detailedSoundDataList != null) {
             if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
                 Toast.makeText(this, "当前递送箱没有录音", Toast.LENGTH_SHORT).show();
@@ -177,7 +185,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
             }
         }
-        adapter.notifyDataSetChanged();
+        footAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -207,8 +215,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         imageView = findViewById(R.id.detailed_sound_item_play_img);
         recyclerView = findViewById(R.id.detailed_sound_recycler);
         adapter = new DetailedSoundAdapter(this, detailedSoundList);
+        footAdapter = new FootAdapter(this, adapter);
         manager = new LinearLayoutManager(this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(footAdapter);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -223,6 +232,115 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             Glide.with(this).load(img).error(R.mipmap.box).into(box_img);
         }
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //在newState为滑到底部时
+                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        footAdapter.setHasMore(true);
+                        footAdapter.notifyDataSetChanged();
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (detailedSoundList.size() < count) {
+                            sendRequest();
+                        } else {
+                            sendAddRequest();
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+
+    }
+
+    /**
+     * 请求下一页参数
+     */
+    private void sendAddRequest() {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id+"&page="+page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        loodingLayout.setVisibility(View.GONE);
+                        loodingErrorLayout.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(response.body().string());
+                if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addSound(detailedSoundInfo);
+                            refreshLayout.setRefreshing(false);
+                            loodingLayout.setVisibility(View.GONE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(DetailedSoundActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void addSound(DetailedSoundInfo detailedSoundInfo) {
+
+        page = detailedSoundInfo.current_page + 1;
+        if (detailedSoundInfo.detailedSoundDataList != null) {
+            for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
+                DetailedSound detailedSound = new DetailedSound();
+                if (detailedSoundData.id != null) {
+                    detailedSound.setSoundId(detailedSoundData.id);
+                } else {
+                    detailedSound.setSoundId("");
+                }
+                if (detailedSoundData.created_at != null) {
+                    detailedSound.setTime(detailedSoundData.created_at);
+                } else {
+                    detailedSound.setTime("");
+                }
+                if (detailedSoundData.f_is_play != null) {
+                    if (detailedSoundData.f_is_play.equals("0")) {
+                        detailedSound.setDownload(false);
+                    } else {
+                        detailedSound.setDownload(true);
+                    }
+                } else {
+                    detailedSound.setDownload(false);
+                }
+                detailedSoundList.add(detailedSound);
+
+            }
+        }
+        footAdapter.notifyDataSetChanged();
     }
 
     /**

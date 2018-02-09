@@ -12,4 +12,6 @@ public class DetailedSoundInfo {
     public String error;
     @SerializedName("data")
     public List<DetailedSoundData> detailedSoundDataList;
+    public int current_page;
+    public int per_page;
 }

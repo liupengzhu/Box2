@@ -190,8 +190,10 @@ public class UserLogFragment extends Fragment {
                     }
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         if (userLogList.size() < count) {
+                            footAdapter.setHasMore(true);
                             sendRequest();
                         } else {
+                            footAdapter.setHasMore(true);
                             sendAddRequest();
                         }
                     }

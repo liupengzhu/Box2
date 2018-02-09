@@ -191,8 +191,10 @@ public class BoxLogFragment extends Fragment {
                     }
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         if (boxLogList.size() < count) {
+                            footAdapter.setHasMore(true);
                             sendRequest();
                         } else {
+                            footAdapter.setHasMore(true);
                             sendAddRequest();
                         }
                     }

@@ -56,6 +56,7 @@ public class Util {
 
     public static final String URL = "http://safebox.dsmcase.com:90/api/";
     public static final String TOKEN = "?_token=";
+    public static final String PATH = "http://safebox.dsmcase.com:90";
 
     public static Home handleHomeInfo(String response) {
 

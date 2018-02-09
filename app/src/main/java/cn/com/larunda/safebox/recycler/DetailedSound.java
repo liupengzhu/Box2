@@ -8,6 +8,8 @@ public class DetailedSound {
     private String soundId;
     private String time;
     private boolean isDownload;
+    private boolean isExist;
+    private String path;
 
     public DetailedSound(String soundId, String time, boolean isDownload) {
         this.soundId = soundId;
@@ -40,5 +42,21 @@ public class DetailedSound {
 
     public void setDownload(boolean download) {
         isDownload = download;
+    }
+
+    public boolean isExist() {
+        return isExist;
+    }
+
+    public void setExist(boolean exist) {
+        isExist = exist;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

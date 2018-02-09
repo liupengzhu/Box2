@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.larunda.safebox.R;
 import cn.com.larunda.safebox.recycler.DetailedSound;
+import cn.com.larunda.safebox.recycler.SoundInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +51,9 @@ public class DetailedSoundAdapter extends RecyclerView.Adapter<DetailedSoundAdap
             @Override
             public void onClick(View v) {
                 viewHolder.isDownloadView.setVisibility(View.GONE);
+                DetailedSound detailedSound = detailedSoundList.get(viewHolder.getAdapterPosition());
                 if(detailedSoundOnClickListener!=null){
-                    detailedSoundOnClickListener.onClick(v);
+                    detailedSoundOnClickListener.onClick(v,detailedSound.getPath(),detailedSound.getSoundId(),detailedSound.isExist());
                 }
             }
         });
@@ -77,7 +79,7 @@ public class DetailedSoundAdapter extends RecyclerView.Adapter<DetailedSoundAdap
     }
 
     public interface DetailedSoundOnClickListener{
-        void onClick(View view);
+        void onClick(View view,String path,String id,boolean isExist);
     }
 
     public void setDetailedSoundOnClickListener(DetailedSoundOnClickListener detailedSoundOnClickListener) {

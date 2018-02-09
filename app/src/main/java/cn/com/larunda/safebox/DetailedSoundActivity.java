@@ -3,6 +3,8 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.icu.text.UnicodeSetSpanner;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -63,6 +66,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private int lastVisibleItem;
     private int count;
     private FootAdapter footAdapter;
+    private MediaPlayer mediaPlayer;
+    private String lastId;
+    private CheckBox lastButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +125,8 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(response.body().string());
+                String content = response.body().string();
+                final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(content);
                 if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -181,6 +188,17 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                 } else {
                     detailedSound.setDownload(false);
                 }
+                if (detailedSoundData.is_exist != null && detailedSoundData.is_exist.equals("1")) {
+                    detailedSound.setExist(true);
+                } else {
+                    detailedSound.setExist(false);
+                }
+                if (detailedSoundData.f_record != null) {
+                    detailedSound.setPath(Util.PATH + detailedSoundData.f_record);
+                } else {
+                    detailedSound.setPath(null);
+                }
+
                 detailedSoundList.add(detailedSound);
 
             }
@@ -194,8 +212,61 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void iniEvent() {
         back_Button.setOnClickListener(this);
         adapter.setDetailedSoundOnClickListener(new DetailedSoundAdapter.DetailedSoundOnClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void onClick(View view, String path, String id, boolean isExist) {
+                final CheckBox checkBox = (CheckBox) view;
+                if (path != null && isExist) {
+                    try {
+                        if (mediaPlayer == null) {
+                            mediaPlayer = new MediaPlayer();
+                            mediaPlayer.setDataSource(path);
+                            mediaPlayer.prepare();
+                            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    checkBox.setChecked(false);
+
+                                }
+                            });
+                        } else {
+                            if (lastId != id) {
+                                mediaPlayer.stop();
+                                mediaPlayer = null;
+                                lastButton.setChecked(false);
+                                mediaPlayer = new MediaPlayer();
+                                mediaPlayer.setDataSource(path);
+                                mediaPlayer.prepare();
+                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        checkBox.setChecked(false);
+                                        mediaPlayer = null;
+                                    }
+                                });
+                            }
+
+                        }
+                        if (checkBox.isChecked()) {
+                            lastId = id;
+                            lastButton = checkBox;
+                            mediaPlayer.start();
+
+                        } else {
+                            lastId = id;
+                            lastButton = checkBox;
+                            mediaPlayer.pause();
+                        }
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(DetailedSoundActivity.this, "录音不存在", Toast.LENGTH_SHORT).show();
+                    checkBox.setChecked(false);
+                }
+
             }
         });
     }
@@ -204,6 +275,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      * 初始化View
      */
     private void initView() {
+
         preferences = PreferenceManager.getDefaultSharedPreferences(DetailedSoundActivity.this);
         token = preferences.getString("token", null);
 
@@ -340,6 +412,18 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                 } else {
                     detailedSound.setDownload(false);
                 }
+
+                if (detailedSoundData.is_exist != null && detailedSoundData.is_exist.equals("1")) {
+                    detailedSound.setExist(true);
+                } else {
+                    detailedSound.setExist(false);
+                }
+                if (detailedSoundData.f_record != null) {
+                    detailedSound.setPath(Util.PATH + detailedSoundData.f_record);
+                } else {
+                    detailedSound.setPath(null);
+                }
+
                 detailedSoundList.add(detailedSound);
 
             }
@@ -363,5 +447,20 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 }

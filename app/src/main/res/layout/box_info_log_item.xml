@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="90dp"
     android:background="@color/white">
 
     <LinearLayout
@@ -40,49 +40,54 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:orientation="vertical"
+        android:layout_margin="15dp"
         android:layout_toRightOf="@id/box_info_log_list_img"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/box_info_log_text"
+        android:orientation="vertical">
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="日常维护"
-            android:layout_marginBottom="5dp"
-            android:textColor="@color/list_text_h"
-            android:textSize="15sp" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/box_info_log_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="授权历史记录"
+                android:textColor="@color/list_text_h"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/box_info_log_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="2017-11-13"
+                android:textColor="@color/list_text_l"
+                android:textSize="10sp" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/box_info_log_data_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="张三于2017/11/06对xxxx00001"
+            android:text="管理员驳回张三于2017/11/06对xxxx00001的开箱请求"
             android:textColor="@color/list_text_n"
             android:textSize="15sp" />
-
     </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/box_info_log_time_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
-        android:text="2017-11-13 13:16:17"
-        android:textColor="@color/list_text_l"
-        android:textSize="10sp" />
-
     <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/box_info_log_list_img"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="70dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
         android:background="@color/line" />
 
 </RelativeLayout>

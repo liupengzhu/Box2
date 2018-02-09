@@ -166,6 +166,9 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
 
         page = boxInfoLogInfo.current_page + 1;
         count = boxInfoLogInfo.per_page;
+        if(boxInfoLogInfo.getData().size()==0||boxInfoLogInfo.getData().size()<count){
+            footAdapter.setHasMore(false);
+        }
         boxInfoLogList.clear();
         if (boxInfoLogInfo.getData() != null) {
             for (BoxInfoLogInfo.DataBean dataBean : boxInfoLogInfo.getData()) {
@@ -258,8 +261,10 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
                     }
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         if (boxInfoLogList.size() < count) {
+                            footAdapter.setHasMore(true);
                             sendRequest();
                         } else {
+                            footAdapter.setHasMore(true);
                             sendAddRequest();
                         }
                     }

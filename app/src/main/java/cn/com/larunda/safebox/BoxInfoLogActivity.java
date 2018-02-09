@@ -56,6 +56,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
+
     private Button weekButton;
     private Button monthButton;
     private Button yearButton;

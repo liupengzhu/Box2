@@ -17,6 +17,7 @@
         android:background="@color/white">
 
         <Button
+            android:id="@+id/box_info_sound_search_all"
             android:layout_width="60dp"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
@@ -28,6 +29,7 @@
             android:textColor="@color/white" />
 
         <Button
+            android:id="@+id/box_info_sound_search_week"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
@@ -39,6 +41,7 @@
             android:textColor="@color/white" />
 
         <Button
+            android:id="@+id/box_info_sound_search_month"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
@@ -50,6 +53,7 @@
             android:textColor="@color/white" />
 
         <Button
+            android:id="@+id/box_info_sound_search_year"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -22,7 +23,9 @@ import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.BoxInfoSoundAdapter;
@@ -35,7 +38,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class BoxInfoSoundActivity extends AppCompatActivity {
+public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -52,7 +55,14 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
     public static final String SOUND_URL = Util.URL + "box/record" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
-    private String search;
+
+    private Button weekButton;
+    private Button monthButton;
+    private Button yearButton;
+    private Button allButton;
+    private String date;
+    private SimpleDateFormat format;
+    private Calendar c;
 
 
     @Override
@@ -73,7 +83,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                search = null;
+                date = null;
                 sendRequest();
 
             }
@@ -83,7 +93,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
-        search = null;
+        date = null;
         sendRequest();
     }
 
@@ -91,8 +101,14 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
      * 请求录音列表
      */
     private void sendRequest() {
+        String timeText;
+        if (date != null) {
+            timeText = "&type=app&time=" + date;
+        } else {
+            timeText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + timeText, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -109,7 +125,6 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                Log.d("main", content);
                 final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(content);
                 if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
                     runOnUiThread(new Runnable() {
@@ -201,6 +216,10 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
 
             }
         });
+        weekButton.setOnClickListener(this);
+        monthButton.setOnClickListener(this);
+        yearButton.setOnClickListener(this);
+        allButton.setOnClickListener(this);
     }
 
 
@@ -208,6 +227,11 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
+
+        weekButton = findViewById(R.id.box_info_sound_search_week);
+        monthButton = findViewById(R.id.box_info_sound_search_month);
+        yearButton = findViewById(R.id.box_info_sound_search_year);
+        allButton = findViewById(R.id.box_info_sound_search_all);
 
         refreshLayout = findViewById(R.id.box_info_sound_swipe);
         loodingErrorLayout = findViewById(R.id.box_info_sound_loading_error_layout);
@@ -229,5 +253,43 @@ public class BoxInfoSoundActivity extends AppCompatActivity {
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
 
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.box_info_sound_search_week:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.DATE, -7);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_sound_search_month:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.MONTH, -1);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_sound_search_year:
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                c = Calendar.getInstance();
+                c.add(Calendar.YEAR, -1);
+                date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_sound_search_all:
+                date = null;
+                sendRequest();
+                break;
+            default:
+                break;
+        }
     }
 }

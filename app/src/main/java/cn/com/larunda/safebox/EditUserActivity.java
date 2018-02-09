@@ -97,7 +97,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     EditText repasswordText;
     EditText telText;
     EditText emailText;
-    TextView fingerprintText;
 
     public SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout loodingErrorLayout;
@@ -258,15 +257,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         } else {
             levelText.setText("一般用户");
         }
-        if (userInfo.fingerprint != null) {
-            if (userInfo.fingerprint.equals("1")) {
-                fingerprintText.setText("已录入");
-            } else {
-                fingerprintText.setText("未录入");
-            }
-        } else {
-            fingerprintText.setText("未录入");
-        }
+
         if (userInfo.company_id != "") {
             sendRequestForCompany(userInfo.company_id);
             sendRequestForDepartmentList(userInfo.company_id);
@@ -574,7 +565,6 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
         nameText = findViewById(R.id.edit_user_name_text);
         telText = findViewById(R.id.edit_user_tel_text);
         emailText = findViewById(R.id.edit_user_email_text);
-        fingerprintText = findViewById(R.id.edit_user_fingerprint_text);
         passwordText = findViewById(R.id.edit_user_password_text);
         repasswordText = findViewById(R.id.edit_user_repassword_text);
 

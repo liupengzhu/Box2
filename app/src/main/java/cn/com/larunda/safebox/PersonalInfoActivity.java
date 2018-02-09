@@ -94,7 +94,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     EditText repasswordText;
     EditText telText;
     EditText emailText;
-    TextView fingerprintText;
     TextView levelText;
 
     public SwipeRefreshLayout refreshLayout;
@@ -311,15 +310,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         } else {
             levelText.setText("一般用户");
         }
-        if (userInfo.fingerprint != null) {
-            if (userInfo.fingerprint.equals("1")) {
-                fingerprintText.setText("已录入");
-            } else {
-                fingerprintText.setText("未录入");
-            }
-        } else {
-            fingerprintText.setText("未录入");
-        }
+
         if (userInfo.company_id != "") {
             sendRequestForCompany(userInfo.company_id);
             sendRequestForDepartmentList(userInfo.company_id);
@@ -498,7 +489,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         repasswordText = findViewById(R.id.personal_info_repassword_text);
         telText = findViewById(R.id.personal_info_tel_text);
         emailText = findViewById(R.id.personal_info_email_text);
-        fingerprintText = findViewById(R.id.personal_info_fingerprint_text);
 
         levelText = findViewById(R.id.personal_info_level_text);
 

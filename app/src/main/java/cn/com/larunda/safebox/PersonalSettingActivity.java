@@ -45,7 +45,6 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
     private Switch changeEmail;
     private Switch changeCompany;
     private Switch changeDepartment;
-    private Switch changeFingerPrint;
     public static final String CONFIG_URL = Util.URL + "config" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
@@ -56,6 +55,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
     private LinearLayout layout;
 
     private Button postButton;
+    private String fingerprintText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,15 +211,8 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
             changeDepartment.setChecked(false);
         }
 
-        if (config.user.upload_fingerprint != null) {
-            if (config.user.upload_fingerprint.equals("1")) {
-                changeFingerPrint.setChecked(true);
-            } else {
-                changeFingerPrint.setChecked(false);
-            }
-        } else {
-            changeFingerPrint.setChecked(false);
-        }
+        fingerprintText = config.user.upload_fingerprint;
+
 
     }
 
@@ -238,7 +231,6 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
         changeEmail = findViewById(R.id.personal_setting_email);
         changeCompany = findViewById(R.id.personal_setting_company);
         changeDepartment = findViewById(R.id.personal_setting_department);
-        changeFingerPrint = findViewById(R.id.personal_setting_fingerprint);
 
         loodingErrorLayout = findViewById(R.id.personal_setting_loading_error_layout);
         loodingLayout = findViewById(R.id.personal_setting_loading_layout);
@@ -335,11 +327,9 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
             } else {
                 userJson.put("change_department", 0);
             }
-            if (changeFingerPrint.isChecked()) {
-                userJson.put("upload_fingerprint", 1);
-            } else {
-                userJson.put("upload_fingerprint", 0);
-            }
+
+            userJson.put("upload_fingerprint", fingerprintText);
+
             userJson.put("face_identification", null);
             alarmJson.put("sound", null);
             alarmJson.put("use_default_sound", null);

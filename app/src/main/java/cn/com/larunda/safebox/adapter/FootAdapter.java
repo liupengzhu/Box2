@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
@@ -34,11 +36,12 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        if(adapter.getItemCount()>=8) {
+        /*if(adapter.getItemCount()>=8) {
             return adapter.getItemCount() + 1;
         }else {
             return adapter.getItemCount();
-        }
+        }*/
+        return adapter.getItemCount() + 1;
     }
 
     // 自定义方法，获取列表中数据源的最后一个位置，比getItemCount少1，因为不计上footView
@@ -49,7 +52,13 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // 根据条目位置返回ViewType，以供onCreateViewHolder方法内获取不同的Holder
     @Override
     public int getItemViewType(int position) {
-        if (position+1 == getItemCount()&&position+1>=9) {
+        /*if (position+1 == getItemCount()&&position+1>=9) {
+            return footType;
+        } else {
+            return normalType;
+        }*/
+
+        if (position + 1 == getItemCount()) {
             return footType;
         } else {
             return normalType;
@@ -59,10 +68,12 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // 底部footView的ViewHolder，用以缓存findView操作
     class FootHolder extends RecyclerView.ViewHolder {
         private TextView tips;
+        private RelativeLayout layout;
 
         public FootHolder(View itemView) {
             super(itemView);
             tips = (TextView) itemView.findViewById(R.id.foot_text);
+            layout = itemView.findViewById(R.id.footer_layout);
         }
     }
 
@@ -72,7 +83,7 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == normalType) {
             return adapter.onCreateViewHolder(parent, viewType);
         } else {
-            return new FootHolder(LayoutInflater.from(context).inflate(R.layout.footer_item, parent,false));
+            return new FootHolder(LayoutInflater.from(context).inflate(R.layout.footer_item, parent, false));
         }
     }
 
@@ -94,8 +105,9 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (adapter.getItemCount() > 0) {
                     // 如果查询数据发现并没有增加时，就显示没有更多数据了
                     ((FootHolder) holder).tips.setText("没有更多数据了");
+                    ((FootHolder) holder).layout.setBackground(context.getResources().getDrawable(R.color.line));
 
-                    // 然后通过延时加载模拟网络请求的时间，在500ms后执行
+                   /* // 然后通过延时加载模拟网络请求的时间，在500ms后执行
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -107,12 +119,12 @@ public class FootAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             hasMore = true;
 
                         }
-                    }, 500);
+                    }, 500);*/
                 }
             }
         } else {
 
-                adapter.onBindViewHolder(holder, position);
+            adapter.onBindViewHolder(holder, position);
 
         }
     }

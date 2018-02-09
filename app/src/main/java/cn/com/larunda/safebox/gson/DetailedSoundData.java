@@ -11,4 +11,5 @@ public class DetailedSoundData {
     public String f_is_play;
     public String created_at;
     public String is_exist;
+    public String f_time_length;
 }

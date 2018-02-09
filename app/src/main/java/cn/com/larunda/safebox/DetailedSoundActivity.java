@@ -49,7 +49,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     LinearLayoutManager manager;
     List<DetailedSound> detailedSoundList = new ArrayList<>();
     private String id;
-    public static final String SOUND_URL = Util.URL+"box/record"+Util.TOKEN;
+    public static final String SOUND_URL = Util.URL + "box/record" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
     private String code;
@@ -86,6 +86,8 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
         //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
+        loodingErrorLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
 
         sendRequest();
     }
@@ -102,8 +104,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                     @Override
                     public void run() {
                         refreshLayout.setRefreshing(false);
+                        loodingLayout.setVisibility(View.GONE);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
             }
@@ -117,8 +120,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                         public void run() {
                             initSound(detailedSoundInfo);
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.INVISIBLE);
-                            loodingLayout.setVisibility(View.INVISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            loodingErrorLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     });
                 } else {
@@ -145,8 +149,8 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void initSound(DetailedSoundInfo detailedSoundInfo) {
         detailedSoundList.clear();
         if (detailedSoundInfo.detailedSoundDataList != null) {
-            if(detailedSoundInfo.detailedSoundDataList.size()==0){
-                Toast.makeText(this,"当前递送箱没有录音",Toast.LENGTH_SHORT).show();
+            if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
+                Toast.makeText(this, "当前递送箱没有录音", Toast.LENGTH_SHORT).show();
             }
             for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
                 DetailedSound detailedSound = new DetailedSound();

@@ -67,11 +67,61 @@
         android:layout_height="0.5dp"
         android:background="@color/line" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/box_info_sound_recycler"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/box_info_sound_swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"></android.support.v7.widget.RecyclerView>
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:background="@color/white">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/box_info_sound_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"></android.support.v7.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/box_info_sound_loading_error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/loading_error" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="网络链接异常"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/box_info_sound_loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:visibility="gone" />
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </LinearLayout>

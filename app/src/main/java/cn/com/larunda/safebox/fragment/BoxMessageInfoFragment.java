@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.com.larunda.safebox.BoxActivity;
+import cn.com.larunda.safebox.BoxAddActivity;
 import cn.com.larunda.safebox.BoxAddUserActivity;
 import cn.com.larunda.safebox.BoxInfoLogActivity;
 import cn.com.larunda.safebox.BoxInfoSoundActivity;
@@ -242,8 +243,11 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
                 }
                 break;
             case R.id.box_message_sound:
-                Intent soundIntent = new Intent(getContext(), BoxInfoSoundActivity.class);
-                startActivity(soundIntent);
+                if (BoxActivity.ID != null) {
+                    Intent soundIntent = new Intent(getContext(), BoxInfoSoundActivity.class);
+                    soundIntent.putExtra("id", BoxActivity.ID);
+                    startActivity(soundIntent);
+                }
                 break;
             case R.id.box_message_info_button:
                 if (name_text != null && material_text != null && size_text != null && protect_text != null) {

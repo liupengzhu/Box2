@@ -11,7 +11,10 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -253,6 +256,39 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
 
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
+
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                search = searchText.getText().toString().trim();
+                sendRequest();
+                return true;
+            }
+        });
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void initView() {
@@ -436,11 +472,9 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                 }
                 break;
             case R.id.sound_ensure_button:
-                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                if (searchText != null) {
                     search = searchText.getText().toString().trim();
                     sendRequest();
-                } else {
-                    Toast.makeText(SoundActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

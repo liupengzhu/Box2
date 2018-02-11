@@ -49,7 +49,8 @@
             android:layout_alignRight="@+id/enclosure_serch_edit"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@mipmap/list_unsherch" />
+            android:src="@mipmap/list_unsherch"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/enclosure_ensure_button"

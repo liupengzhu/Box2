@@ -60,6 +60,7 @@ public class AppLogFragment extends Fragment {
     private int count;
     private FootAdapter footAdapter;
     private int total;
+    private boolean isInit = false;
 
     @Nullable
     @Override
@@ -70,6 +71,7 @@ public class AppLogFragment extends Fragment {
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        isInit = true;
         return view;
     }
 
@@ -187,18 +189,13 @@ public class AppLogFragment extends Fragment {
                 if (page <= total) {
                     //在newState为滑到底部时
                     if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                        /*if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                             footAdapter.setHasMore(true);
                             footAdapter.notifyDataSetChanged();
-                        }*/
+                        }
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                            if (appLogList.size() < count) {
-                                footAdapter.setHasMore(true);
-                                sendRequest();
-                            } else {
-                                footAdapter.setHasMore(true);
-                                sendAddRequest();
-                            }
+                            footAdapter.setHasMore(true);
+                            sendAddRequest();
                         }
                     }
                 }
@@ -284,5 +281,6 @@ public class AppLogFragment extends Fragment {
         }
         footAdapter.notifyDataSetChanged();
     }
+
 
 }

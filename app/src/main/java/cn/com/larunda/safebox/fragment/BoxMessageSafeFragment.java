@@ -55,21 +55,21 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     RelativeLayout trackButton;
 
     RelativeLayout levelButton;
-    TextView levelText;
+    public static TextView levelText;
 
     RelativeLayout lockButton;
-    TextView lockText;
+    public static TextView lockText;
 
     TextView bfText;
     TextView leavingText;
 
     LinearLayout startTimeButton;
-    TextView startDateText;
-    TextView startTimeText;
+    public static TextView startDateText;
+    public static TextView startTimeText;
 
     LinearLayout endTimeButton;
-    TextView endDateText;
-    TextView endTimeText;
+    public static TextView endDateText;
+    public static TextView endTimeText;
 
     List<String> levelList = new ArrayList<>();
     List<String> lockList = new ArrayList<>();
@@ -628,11 +628,10 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
 
     }
 
+
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isInit) {
-            sendHttpRequest();
-        }
+    public void onResume() {
+        super.onResume();
+        sendHttpRequest();
     }
 }

@@ -37,5 +37,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"></android.support.v4.view.ViewPager>
+    <Button
+        android:id="@+id/box_message_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/menu_sz_color"
+        android:text="保存"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
 
 </LinearLayout>

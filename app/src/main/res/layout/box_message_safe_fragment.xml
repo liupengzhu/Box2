@@ -281,7 +281,6 @@
                         android:textSize="15sp" />
 
 
-
                 </RelativeLayout>
 
                 <ImageView
@@ -378,7 +377,8 @@
                 android:background="@color/menu_sz_color"
                 android:text="保存"
                 android:textColor="@color/white"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <RelativeLayout

@@ -55,10 +55,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     RelativeLayout sound_Button;
     public static final String MESSAGE_URI = Util.URL + "box/";
 
-    EditText name_text;
-    EditText material_text;
-    EditText size_text;
-    EditText protect_text;
+    public static EditText name_text;
+    public static EditText material_text;
+    public static EditText size_text;
+    public static EditText protect_text;
     TextView electricity_text;
     TextView bind_user_text;
 
@@ -372,10 +372,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isInit) {
-            sendHttpRequest();
-        }
+    public void onResume() {
+        super.onResume();
+        sendHttpRequest();
     }
 }

@@ -122,7 +122,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
 
         <ImageView
             android:id="@+id/all_checked_image"
@@ -134,10 +135,11 @@
 
         <TextView
             android:id="@+id/all_checked_text"
-            android:layout_width="50dp"
+            android:layout_width="120dp"
             android:layout_height="match_parent"
             android:layout_marginRight="20dp"
-            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
             android:text="全选" />
 
         <Button
@@ -159,16 +161,6 @@
             android:gravity="center"
             android:text="设定状态"
             android:textColor="@color/white" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/log_wdu"
-            android:gravity="center"
-            android:text="解绑"
-            android:textColor="@color/white" />
-
     </LinearLayout>
 
 

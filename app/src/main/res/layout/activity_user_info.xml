@@ -39,7 +39,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="35dp"
             android:src="@mipmap/list_serch" />
 
         <ImageView
@@ -48,7 +48,7 @@
             android:layout_height="20dp"
             android:layout_alignRight="@+id/user_info_serch_edit"
             android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:src="@mipmap/list_unsherch" />
 
         <TextView

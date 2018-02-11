@@ -11,8 +11,11 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -206,6 +209,39 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 lastVisibleItem = manager.findLastVisibleItemPosition();
+            }
+        });
+
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                serch = searchText.getText().toString().trim();
+                sendRequest();
+                return true;
+            }
+        });
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -468,11 +504,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             case R.id.user_info_ensure_button:
-                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                if (searchText != null) {
                     serch = searchText.getText().toString().trim();
                     sendRequest();
-                } else {
-                    Toast.makeText(UserInfoActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.user_info_all_checked_image:

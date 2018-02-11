@@ -811,7 +811,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
 
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
-            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+            finish();
         } else if (content != null && content.equals("false")) {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
         } else if (Util.isGoodJson(content)) {

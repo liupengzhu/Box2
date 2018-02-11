@@ -717,8 +717,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
-            sendRequest();
-            Toast.makeText(this, "更新成功", Toast.LENGTH_SHORT).show();
+            finish();
         } else if (content != null && content.equals("false")) {
             swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();

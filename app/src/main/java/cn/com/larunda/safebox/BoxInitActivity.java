@@ -11,8 +11,11 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -60,6 +63,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     private TextView ensureButton;
 
     public static final String INIT_URL = Util.URL + "box/add_box_lists" + Util.TOKEN;
+    private String search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +82,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+        search = null;
         sendRequest();
     }
 
@@ -85,8 +90,14 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
      * 发送网络请求
      */
     private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(INIT_URL + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(INIT_URL + token + searchText, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -201,6 +212,39 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
         });
+
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                search = searchText.getText().toString().trim();
+                sendRequest();
+                return true;
+            }
+        });
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     /**
@@ -217,6 +261,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                search = null;
                 sendRequest();
 
             }
@@ -255,10 +300,9 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.box_init_ensure_button:
-                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
-                    sendSearchRequest(searchText.getText().toString().trim());
-                } else {
-                    Toast.makeText(BoxInitActivity.this, "请输入搜索内容", Toast.LENGTH_SHORT).show();
+                if (searchText != null) {
+                    search = searchText.getText().toString().trim();
+                    sendRequest();
                 }
                 break;
             default:
@@ -266,61 +310,6 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * 发送搜索请求
-     *
-     * @param text
-     */
-    private void sendSearchRequest(String text) {
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(INIT_URL + token + "&search=" + text, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (Util.isGoodJson(content)) {
-                            BoxInitInfo boxInitInfo = Util.handleBoxInitInfo(content);
-                            if (boxInitInfo != null && boxInitInfo.error == null) {
-                                initData(boxInitInfo);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                                refreshLayout.setRefreshing(false);
-                            } else {
-                                Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                finish();
-                            }
-
-
-                        } else {
-                            refreshLayout.setRefreshing(false);
-                            Toast.makeText(BoxInitActivity.this, "服务器异常", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-            }
-        });
-
-    }
 
     @Override
     protected void onRestart() {

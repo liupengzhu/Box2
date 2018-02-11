@@ -377,7 +377,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
      */
     private void parseMessage(String content) {
         if (content.equals("true")) {
-            Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+            finish();
         } else if (content.equals("false")) {
             Toast.makeText(this, "设置失败", Toast.LENGTH_SHORT).show();
         } else {

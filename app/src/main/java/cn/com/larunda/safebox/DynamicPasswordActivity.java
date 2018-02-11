@@ -32,7 +32,7 @@ import okhttp3.Response;
 
 public class DynamicPasswordActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public final String PASSWORD_URL = Util.URL+"box/show_dynamic_password"+Util.TOKEN;
+    public final String PASSWORD_URL = Util.URL + "box/show_dynamic_password" + Util.TOKEN;
     static HorizontalProgressBarWithNunber progressBar;
     Button backButton;
     private String id;
@@ -127,25 +127,27 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final DynamicPassword dynamicPassword = Util.handleDynamicPassword(content);
-                if (dynamicPassword != null && dynamicPassword.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initPassword(dynamicPassword);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(DynamicPasswordActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final DynamicPassword dynamicPassword = Util.handleDynamicPassword(content);
+                    if (dynamicPassword != null && dynamicPassword.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initPassword(dynamicPassword);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(DynamicPasswordActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });

@@ -107,30 +107,32 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final Config config = Util.handleConfig(content);
-                if (config != null && config.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initData(config);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final Config config = Util.handleConfig(content);
+                    if (config != null && config.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData(config);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
 
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(PersonalSettingActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(PersonalSettingActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });

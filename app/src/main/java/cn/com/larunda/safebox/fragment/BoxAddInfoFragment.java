@@ -37,7 +37,7 @@ import java.io.IOException;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxAddInfoFragment extends BaseFragment implements View.OnClickListener {
+public class BoxAddInfoFragment extends Fragment implements View.OnClickListener {
 
     EditText name_text;
     EditText material_text;
@@ -65,6 +65,7 @@ public class BoxAddInfoFragment extends BaseFragment implements View.OnClickList
     private void initEvent() {
         putButton.setOnClickListener(this);
     }
+
 
     /**
      * 初始化View
@@ -166,26 +167,28 @@ public class BoxAddInfoFragment extends BaseFragment implements View.OnClickList
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String content = response.body().string();
-                    final Result result = Util.handleResult(content);
-                    if (result != null && result.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                parseResult(result);
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                BoxAddActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                    if (Util.isGoodJson(content)) {
+                        final Result result = Util.handleResult(content);
+                        if (result != null && result.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    parseResult(result);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    BoxAddActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
                 }
 
@@ -207,8 +210,4 @@ public class BoxAddInfoFragment extends BaseFragment implements View.OnClickList
         }
     }
 
-    @Override
-    protected void loadData() {
-
-    }
 }

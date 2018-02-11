@@ -138,29 +138,31 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(content);
-                if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initSound(detailedSoundInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingLayout.setVisibility(View.GONE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(DetailedSoundActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(content);
+                    if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initSound(detailedSoundInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingLayout.setVisibility(View.GONE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(DetailedSoundActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -396,29 +398,32 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(response.body().string());
-                if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addSound(detailedSoundInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingLayout.setVisibility(View.GONE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(DetailedSoundActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final DetailedSoundInfo detailedSoundInfo = Util.handleDetailedSoundInfo(content);
+                    if (detailedSoundInfo != null && detailedSoundInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                addSound(detailedSoundInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingLayout.setVisibility(View.GONE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(DetailedSoundActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });

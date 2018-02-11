@@ -59,7 +59,7 @@ public class TrackActivity extends AppCompatActivity {
     private MyLocationListener myListener = new MyLocationListener();
     private String id;
 
-    public static final String PATH_URL = "http://safebox.dsmcase.com:90/api/location/path?_token=";
+    public static final String PATH_URL = Util.URL + "location/path" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -131,21 +131,22 @@ public class TrackActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                Log.d("main",content);
-                LocationInfo locationInfo = Util.handleLocationInfo(content);
-                if (locationInfo != null && locationInfo.error == null) {
-                    showInfo(locationInfo);
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(TrackActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    LocationInfo locationInfo = Util.handleLocationInfo(content);
+                    if (locationInfo != null && locationInfo.error == null) {
+                        showInfo(locationInfo);
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(TrackActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });

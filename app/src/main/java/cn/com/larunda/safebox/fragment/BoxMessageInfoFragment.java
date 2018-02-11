@@ -113,29 +113,31 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final BoxMessage boxMessage = Util.handleBoxMessage(content);
-                if (boxMessage != null && boxMessage.error == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initBoxMessage(boxMessage);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            BoxActivity.preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final BoxMessage boxMessage = Util.handleBoxMessage(content);
+                    if (boxMessage != null && boxMessage.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initBoxMessage(boxMessage);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                BoxActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -330,26 +332,28 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String content = response.body().string();
-                    final Result result = Util.handleResult(content);
-                    if (result != null && result.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                parseResult(result);
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                BoxActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                    if (Util.isGoodJson(content)) {
+                        final Result result = Util.handleResult(content);
+                        if (result != null && result.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    parseResult(result);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    BoxActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
                 }
 

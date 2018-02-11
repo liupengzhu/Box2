@@ -52,8 +52,8 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
     private BindAreaAdapter adapter;
     private List<BindArea> bindAreaList = new ArrayList<>();
     private String id;
-    private final  String  BIND_USER_URL = Util.URL + "box/bind_area_lists" + Util.TOKEN;
-    private final  String  CANCEL_URL = Util.URL +"box/cancel_bind_area"+Util.TOKEN;
+    private final String BIND_USER_URL = Util.URL + "box/bind_area_lists" + Util.TOKEN;
+    private final String CANCEL_URL = Util.URL + "box/cancel_bind_area" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -133,29 +133,31 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final BindAreaInfo bindAreaInfo = Util.handleBindAreaInfo(content);
-                if (bindAreaInfo != null && bindAreaInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initData(bindAreaInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            layout.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(AreaInfoActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final BindAreaInfo bindAreaInfo = Util.handleBindAreaInfo(content);
+                    if (bindAreaInfo != null && bindAreaInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData(bindAreaInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                layout.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(AreaInfoActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -334,13 +336,15 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseResponse(content);
-                        }
-                    });
+                    if (Util.isGoodJson(content)) {
 
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseResponse(content);
+                            }
+                        });
+                    }
                 }
             });
 

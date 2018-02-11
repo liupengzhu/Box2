@@ -218,33 +218,35 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final BoxInfo boxInfo = Util.handleBoxInfo(content);
 
-                if (boxInfo != null && boxInfo.error == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addBoxList(boxInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
+                    if (boxInfo != null && boxInfo.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                addBoxList(boxInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
 
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    });
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                MainActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
                 }
-
             }
         });
 
@@ -416,33 +418,34 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final BoxInfo boxInfo = Util.handleBoxInfo(response.body().string());
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final BoxInfo boxInfo = Util.handleBoxInfo(content);
+                    if (boxInfo != null && boxInfo.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initBoxList(boxInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.VISIBLE);
 
-                if (boxInfo != null && boxInfo.error == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initBoxList(boxInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    });
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                MainActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
                 }
-
             }
         });
 

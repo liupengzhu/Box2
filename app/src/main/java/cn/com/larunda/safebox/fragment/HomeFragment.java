@@ -43,7 +43,7 @@ import okhttp3.Response;
 
 public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
-    public static final String BOX_URI = "http://safebox.dsmcase.com:90/api/app/home?_token=";
+    public static final String BOX_URI = Util.URL + "app/home" + Util.TOKEN;
     TextView totalView;
     TextView defendView;
     TextView lockedView;
@@ -158,37 +158,38 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final Home home = Util.handleHomeInfo(content);
-                if (home != null && home.error == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showInfo(home);
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            layout.setVisibility(View.VISIBLE);
+                if (Util.isGoodJson(content)) {
+                    final Home home = Util.handleHomeInfo(content);
+                    if (home != null && home.error == null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showInfo(home);
+                                swipeRefreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                layout.setVisibility(View.VISIBLE);
 
-                        }
-
-
-                    });
+                            }
 
 
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            MainActivity.preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            getActivity().finish();
-                        }
-                    });
+                        });
+
+
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                MainActivity.preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                    }
+
                 }
-
-
             }
         });
 

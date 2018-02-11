@@ -56,7 +56,7 @@ public class EnclosureInfoActivity extends AppCompatActivity {
     private BaiduMap baiduMap;
     private MyLocationListener myListener = new MyLocationListener();
     private String id;
-    public static final String ENCLOSURE_INFO_URL = Util.URL+"area/";
+    public static final String ENCLOSURE_INFO_URL = Util.URL + "area/";
     private List<LatLng> points = new ArrayList<>();
     private TextView textView;
 
@@ -131,26 +131,28 @@ public class EnclosureInfoActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-                final CoordinateInfo coordinateInfo = Util.handleCoordinateInfo(response.body().string());
-                if (coordinateInfo != null && coordinateInfo.getError() == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showInfo(coordinateInfo);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final CoordinateInfo coordinateInfo = Util.handleCoordinateInfo(content);
+                    if (coordinateInfo != null && coordinateInfo.getError() == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showInfo(coordinateInfo);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });

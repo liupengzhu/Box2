@@ -224,26 +224,28 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String content = response.body().string();
-                    final Result result = Util.handleResult(content);
-                    if (result != null && result.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                parseResult(result);
+                    if (Util.isGoodJson(content)) {
+                        final Result result = Util.handleResult(content);
+                        if (result != null && result.error == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    parseResult(result);
 
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(BoxActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                BoxActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(BoxActivity.this, LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    BoxActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                        }
                     }
                 }
 

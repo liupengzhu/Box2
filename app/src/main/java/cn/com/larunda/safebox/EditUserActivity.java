@@ -175,32 +175,34 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final EditUserInfo userInfo = Util.handleEditUserInfo(response.body().string());
-                if (userInfo != null && userInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initUserInfo(userInfo);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final EditUserInfo userInfo = Util.handleEditUserInfo(content);
+                    if (userInfo != null && userInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initUserInfo(userInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
 
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
-
             }
         });
     }
@@ -296,29 +298,31 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
-                if (departmentInfo != null && departmentInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initDepartmentList(departmentInfo);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+                    if (departmentInfo != null && departmentInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initDepartmentList(departmentInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -418,30 +422,32 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
-                final Company company = Util.handleCompany(response.body().string());
-                if (company != null && company.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            companyText.setText(company.f_name);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final Company company = Util.handleCompany(content);
+                    if (company != null && company.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                companyText.setText(company.f_name);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -695,14 +701,16 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                parseUpdata(content);
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
+                        if (Util.isGoodJson(content)) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    parseUpdata(content);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
 
+                        }
                     }
                 });
 
@@ -909,6 +917,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -916,6 +925,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     });
+
 
                 }
             });

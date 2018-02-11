@@ -123,29 +123,31 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final CompanyList companyList = Util.handleCompanyList(content);
-                if (companyList != null && companyList.getError() == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initData(companyList);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final CompanyList companyList = Util.handleCompanyList(content);
+                    if (companyList != null && companyList.getError() == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData(companyList);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -356,12 +358,14 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseResponse(content);
-                        }
-                    });
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseResponse(content);
+                            }
+                        });
+
                 }
             });
         } catch (JSONException e) {
@@ -418,30 +422,33 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final AddPerson addPerson = Util.handleAddPerson(content);
-                if (addPerson != null && addPerson.getError() == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initPersonData(addPerson);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final AddPerson addPerson = Util.handleAddPerson(content);
+                    if (addPerson != null && addPerson.getError() == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initPersonData(addPerson);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
 
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -490,30 +497,32 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+                if (Util.isGoodJson(content)) {
+                    final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
 
-                if (departmentInfo != null && departmentInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initDepartmentList(departmentInfo);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                    if (departmentInfo != null && departmentInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initDepartmentList(departmentInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(BindingUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -521,6 +530,7 @@ public class BindingUserActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * 解析部门信息
+     *
      * @param departmentInfo
      */
     private void initDepartmentList(DepartmentInfo departmentInfo) {

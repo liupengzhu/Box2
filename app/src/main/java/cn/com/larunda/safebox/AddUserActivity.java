@@ -92,7 +92,6 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
     EditText repasswordText;
     EditText telText;
     EditText emailText;
-    TextView fingerprintText;
 
     public SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout loodingErrorLayout;
@@ -157,29 +156,31 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final CompanyList companyList = Util.handleCompanyList(content);
-                if (companyList != null && companyList.getError() == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initData(companyList);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final CompanyList companyList = Util.handleCompanyList(content);
+                    if (companyList != null && companyList.getError() == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData(companyList);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -405,30 +406,32 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
+                if (Util.isGoodJson(content)) {
+                    final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
 
-                if (departmentInfo != null && departmentInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initDepartmentList(departmentInfo);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                    if (departmentInfo != null && departmentInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initDepartmentList(departmentInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(AddUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -620,6 +623,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -627,6 +631,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     });
+
 
                 }
             });
@@ -736,6 +741,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -743,6 +749,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                                 swipeRefreshLayout.setRefreshing(false);
                             }
                         });
+
 
                     }
                 });

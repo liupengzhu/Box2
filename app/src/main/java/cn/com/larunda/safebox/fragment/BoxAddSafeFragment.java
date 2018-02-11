@@ -45,7 +45,7 @@ import java.util.List;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxAddSafeFragment extends BaseFragment implements View.OnClickListener {
+public class BoxAddSafeFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout enclosureButton;
     RelativeLayout levelButton;
@@ -460,8 +460,4 @@ public class BoxAddSafeFragment extends BaseFragment implements View.OnClickList
 
     }
 
-    @Override
-    protected void loadData() {
-
-    }
 }

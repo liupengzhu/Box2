@@ -215,16 +215,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
-                if (menuUserInfo != null && menuUserInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //显示用户信息
-                            showMenuInfo(menuUserInfo);
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
+                    if (menuUserInfo != null && menuUserInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //显示用户信息
+                                showMenuInfo(menuUserInfo);
+                            }
+                        });
 
+                    }
                 }
 
             }

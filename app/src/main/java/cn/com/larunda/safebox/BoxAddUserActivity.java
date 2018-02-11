@@ -138,29 +138,31 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final BoxAddUserInfo boxAddUserInfo = Util.handleBoxAddUserInfo(content);
-                if (boxAddUserInfo != null && boxAddUserInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initData(boxAddUserInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            layout.setVisibility(View.VISIBLE);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(BoxAddUserActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final BoxAddUserInfo boxAddUserInfo = Util.handleBoxAddUserInfo(content);
+                    if (boxAddUserInfo != null && boxAddUserInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initData(boxAddUserInfo);
+                                refreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                                layout.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(BoxAddUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -351,6 +353,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

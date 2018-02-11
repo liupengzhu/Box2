@@ -140,24 +140,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
 
+                    String content = response.body().string();
+                    if (Util.isGoodJson(content)) {
+                        UserToken userToken = Util.handleLoginInfo(content);
+                        if (userToken != null && userToken.message == null) {
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            editor.putString("token", userToken.token);
+                            editor.apply();
+                            startActivity(intent);
+                            finish();
+                        } else {
 
-                    UserToken userToken = Util.handleLoginInfo(response.body().string());
-
-
-                    if (userToken != null && userToken.message == null) {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        editor.putString("token", userToken.token);
-                        editor.apply();
-                        startActivity(intent);
-                        finish();
-                    } else {
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
                     }
 
                 }

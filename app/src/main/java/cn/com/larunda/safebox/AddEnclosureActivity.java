@@ -116,30 +116,32 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                final AreaInfo areaInfo = Util.handleAreaInfo(content);
-                if (areaInfo != null && areaInfo.getError() == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initAreaInfo(areaInfo);
-                            swipeRefreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.VISIBLE);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                        }
-                    });
+                if (Util.isGoodJson(content)) {
+                    final AreaInfo areaInfo = Util.handleAreaInfo(content);
+                    if (areaInfo != null && areaInfo.getError() == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initAreaInfo(areaInfo);
+                                swipeRefreshLayout.setRefreshing(false);
+                                layout.setVisibility(View.VISIBLE);
+                                loodingErrorLayout.setVisibility(View.GONE);
+                                loodingLayout.setVisibility(View.GONE);
+                            }
+                        });
 
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(AddEnclosureActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(AddEnclosureActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -323,13 +325,16 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+
                     final String content = response.body().string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseResponse(content);
-                        }
-                    });
+                    if (Util.isGoodJson(content)) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseResponse(content);
+                            }
+                        });
+                    }
                 }
             });
 

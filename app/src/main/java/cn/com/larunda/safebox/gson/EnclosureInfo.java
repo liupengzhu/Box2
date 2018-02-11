@@ -15,4 +15,6 @@ public class EnclosureInfo {
     public String error;
     public int current_page;
     public int per_page;
+    public int total;
+    public int last_page;
 }

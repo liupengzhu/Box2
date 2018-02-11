@@ -59,6 +59,7 @@ public class AppLogFragment extends Fragment {
     private int lastVisibleItem;
     private int count;
     private FootAdapter footAdapter;
+    private int total;
 
     @Nullable
     @Override
@@ -91,7 +92,7 @@ public class AppLogFragment extends Fragment {
     private void sendRequest() {
 
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -149,6 +150,7 @@ public class AppLogFragment extends Fragment {
     private void showInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
         count = totalLogInfo.per_page;
+        total = totalLogInfo.last_page;
         appLogList.clear();
         if (totalLogInfo.totalLogData.size() == 0 || totalLogInfo.totalLogData.size() < count) {
             footAdapter.setHasMore(false);
@@ -182,22 +184,23 @@ public class AppLogFragment extends Fragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (appLogList.size() < count) {
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                             footAdapter.setHasMore(true);
-                            sendRequest();
-                        } else {
-                            footAdapter.setHasMore(true);
-                            sendAddRequest();
+                            footAdapter.notifyDataSetChanged();
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (appLogList.size() < count) {
+                                footAdapter.setHasMore(true);
+                                sendRequest();
+                            } else {
+                                footAdapter.setHasMore(true);
+                                sendAddRequest();
+                            }
                         }
                     }
-
                 }
             }
 
@@ -214,7 +217,7 @@ public class AppLogFragment extends Fragment {
      */
     private void sendAddRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -272,7 +275,7 @@ public class AppLogFragment extends Fragment {
      */
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
-        if (totalLogInfo.totalLogData.size() == 0) {
+        if (totalLogInfo.totalLogData.size() == 0 || totalLogInfo.totalLogData.size() < count) {
             footAdapter.setHasMore(false);
         }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {

@@ -90,6 +90,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private int lastVisibleItem;
     private int count;
     private static FootAdapter footAdapter;
+    private int total;
 
 
     @Override
@@ -182,21 +183,22 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (myUserInfoList.size() < count) {
-                            serch = null;
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            footAdapter.setHasMore(true);
+                            footAdapter.notifyDataSetChanged();
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (myUserInfoList.size() < count) {
+                                serch = null;
+                                sendRequest();
+                            } else {
+                                sendAddRequest();
+                            }
                         }
                     }
-
                 }
             }
 
@@ -220,7 +222,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
 
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -274,7 +276,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
      */
     private void addUserInfo(UserInfo userInfo) {
         page = userInfo.current_page + 1;
-        if (userInfo.userData.size() == 0) {
+        if (userInfo.userData.size() == 0 || userInfo.userData.size() < count) {
             footAdapter.setHasMore(false);
         }
         if (userInfo.userData != null) {
@@ -323,7 +325,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         }
 
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -378,6 +380,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void initUserInfo(UserInfo userInfo) {
         page = userInfo.current_page + 1;
         count = userInfo.per_page;
+        total = userInfo.last_page;
         if (userInfo.userData.size() == 0 || userInfo.userData.size() < count) {
             footAdapter.setHasMore(false);
         }

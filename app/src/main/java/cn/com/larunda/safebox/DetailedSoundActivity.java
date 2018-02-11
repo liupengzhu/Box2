@@ -73,6 +73,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private Button searchButton;
     private DateDialog dateDialog;
     private String search;
+    private int total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,12 +116,12 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void sendRequest() {
         String searchText;
         if (search != null) {
-            searchText = "time=" + search;
+            searchText = "&type=app&time=" + search;
         } else {
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -174,6 +175,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         detailedSoundList.clear();
         page = detailedSoundInfo.current_page + 1;
         count = detailedSoundInfo.per_page;
+        total = detailedSoundInfo.last_page;
         if (detailedSoundInfo.detailedSoundDataList.size() == 0 || detailedSoundInfo.detailedSoundDataList.size() < count) {
             footAdapter.setHasMore(false);
         }
@@ -234,7 +236,6 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             @Override
             public void OnClick(View view, String date) {
                 search = date;
-                Log.d("main",date);
                 sendRequest();
                 dateDialog.cancel();
             }
@@ -340,20 +341,22 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (detailedSoundList.size() < count) {
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            footAdapter.setHasMore(true);
+                            footAdapter.notifyDataSetChanged();
                         }
-                    }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (detailedSoundList.size() < count) {
+                                sendRequest();
+                            } else {
+                                sendAddRequest();
+                            }
+                        }
 
+                    }
                 }
             }
 
@@ -372,12 +375,12 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void sendAddRequest() {
         String searchText;
         if (search != null) {
-            searchText = "time=" + search;
+            searchText = "&type=app&time=" + search;
         } else {
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -424,7 +427,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void addSound(DetailedSoundInfo detailedSoundInfo) {
 
         page = detailedSoundInfo.current_page + 1;
-        if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
+        if (detailedSoundInfo.detailedSoundDataList.size() == 0 || detailedSoundInfo.detailedSoundDataList.size() < count) {
             footAdapter.setHasMore(false);
         }
         if (detailedSoundInfo.detailedSoundDataList != null) {

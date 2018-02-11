@@ -68,6 +68,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private int lastVisibleItem;
     private int count;
     private FootAdapter footAdapter;
+    private int total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
             timeText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=1" + "&id=" + id + timeText, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=1" + "&id=" + id + timeText + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -166,7 +167,8 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
 
         page = boxInfoLogInfo.current_page + 1;
         count = boxInfoLogInfo.per_page;
-        if(boxInfoLogInfo.getData().size()==0||boxInfoLogInfo.getData().size()<count){
+        total = boxInfoLogInfo.last_page;
+        if (boxInfoLogInfo.getData().size() == 0 || boxInfoLogInfo.getData().size() < count) {
             footAdapter.setHasMore(false);
         }
         boxInfoLogList.clear();
@@ -253,19 +255,21 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (boxInfoLogList.size() < count) {
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                             footAdapter.setHasMore(true);
-                            sendRequest();
-                        } else {
-                            footAdapter.setHasMore(true);
-                            sendAddRequest();
+                            footAdapter.notifyDataSetChanged();
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (boxInfoLogList.size() < count) {
+                                footAdapter.setHasMore(true);
+                                sendRequest();
+                            } else {
+                                footAdapter.setHasMore(true);
+                                sendAddRequest();
+                            }
                         }
                     }
 
@@ -293,7 +297,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
             timeText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=" + page + "&id=" + id + timeText, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_LOG_URL + token + "&page=" + page + "&id=" + id + timeText + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -342,7 +346,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private void addData(BoxInfoLogInfo boxInfoLogInfo) {
 
         page = boxInfoLogInfo.current_page + 1;
-        if (boxInfoLogInfo.getData().size() == 0) {
+        if (boxInfoLogInfo.getData().size() == 0 || boxInfoLogInfo.getData().size() < count) {
             footAdapter.setHasMore(false);
         }
         if (boxInfoLogInfo.getData() != null) {

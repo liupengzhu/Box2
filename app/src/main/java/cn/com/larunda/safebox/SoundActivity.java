@@ -69,6 +69,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private int lastVisibleItem;
     private int count;
     private static FootAdapter footAdapter;
+    private int total;
 
 
     @Override
@@ -113,7 +114,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -170,6 +171,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
     private void initBoxList(BoxInfo boxInfo) {
         page = boxInfo.current_page + 1;
         count = boxInfo.per_page;
+        total = boxInfo.last_page;
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);
             footAdapter.notifyDataSetChanged();
@@ -283,21 +285,23 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (soundInfoList.size() < count) {
-                            search = null;
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            footAdapter.setHasMore(true);
+                            footAdapter.notifyDataSetChanged();
                         }
-                    }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (soundInfoList.size() < count) {
+                                search = null;
+                                sendRequest();
+                            } else {
+                                sendAddRequest();
+                            }
+                        }
 
+                    }
                 }
             }
 
@@ -321,7 +325,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -374,7 +378,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
      */
     private void addBoxList(BoxInfo boxInfo) {
         page = boxInfo.current_page + 1;
-        if (boxInfo.boxDataList.size() == 0) {
+        if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);
         }
         if (boxInfo.boxDataList != null) {

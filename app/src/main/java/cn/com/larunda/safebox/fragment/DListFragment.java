@@ -81,6 +81,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private int lastVisibleItem;
     private int count;
     private static FootAdapter footAdapter;
+    private int total;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -151,21 +152,22 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (myBoxList.size() < count) {
-                            search = null;
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            footAdapter.setHasMore(true);
+                            footAdapter.notifyDataSetChanged();
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (myBoxList.size() < count) {
+                                search = null;
+                                sendRequest();
+                            } else {
+                                sendAddRequest();
+                            }
                         }
                     }
-
                 }
             }
 
@@ -189,7 +191,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         } else {
             searchText = "";
         }
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -245,7 +247,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
      */
     private void addBoxList(BoxInfo boxInfo) {
         page = boxInfo.current_page + 1;
-        if (boxInfo.boxDataList.size() == 0) {
+        if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);
         }
         if (boxInfo.boxDataList != null) {
@@ -355,7 +357,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         } else {
             searchText = "";
         }
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -408,6 +410,7 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private void initBoxList(BoxInfo boxInfo) {
         page = boxInfo.current_page + 1;
         count = boxInfo.per_page;
+        total = boxInfo.last_page;
         myBoxList.clear();
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);

@@ -94,6 +94,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private int lastVisibleItem;
     private int count;
     private static FootAdapter footAdapter;
+    private int total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,18 +162,21 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                //在newState为滑到底部时
-                if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        footAdapter.setHasMore(true);
-                        footAdapter.notifyDataSetChanged();
-                    }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (enclosureList.size() < count) {
-                            search = null;
-                            sendRequest();
-                        } else {
-                            sendAddRequest();
+                if (page <= total) {
+                    //在newState为滑到底部时
+                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
+                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                            footAdapter.setHasMore(true);
+                            footAdapter.notifyDataSetChanged();
+                        }
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+
+                            if (enclosureList.size() < count) {
+                                search = null;
+                                sendRequest();
+                            } else {
+                                sendAddRequest();
+                            }
                         }
                     }
 
@@ -198,7 +202,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page =" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page =" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -249,7 +253,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
      */
     private void addEnclosureInfo(EnclosureInfo enclosureInfo) {
         page = enclosureInfo.current_page + 1;
-        if (enclosureInfo.enclosureDataList.size() == 0) {
+        if (enclosureInfo.enclosureDataList.size() == 0 || enclosureInfo.enclosureDataList.size() < count) {
             footAdapter.setHasMore(false);
         }
         if (enclosureList != null) {
@@ -279,7 +283,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             searchText = "";
         }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = 1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = 1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -329,6 +333,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
     private void initEnclosureInfo(EnclosureInfo enclosureInfo) {
         page = enclosureInfo.current_page + 1;
         count = enclosureInfo.per_page;
+        total = enclosureInfo.last_page;
         if (enclosureInfo.enclosureDataList.size() == 0 || enclosureInfo.enclosureDataList.size() < count) {
             footAdapter.setHasMore(false);
         }

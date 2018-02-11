@@ -16,4 +16,5 @@ public class TotalLogInfo {
     public int current_page;
     public int per_page;
 
+    public int last_page;
 }

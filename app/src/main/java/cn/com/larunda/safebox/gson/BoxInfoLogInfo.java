@@ -27,6 +27,7 @@ public class BoxInfoLogInfo {
     private String error;
     public int current_page;
     public int per_page;
+    public int last_page;
 
     public String getError() {
         return error;

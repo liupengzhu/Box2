@@ -14,4 +14,5 @@ public class DetailedSoundInfo {
     public List<DetailedSoundData> detailedSoundDataList;
     public int current_page;
     public int per_page;
+    public int last_page;
 }

@@ -80,9 +80,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/box_init_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </android.support.v7.widget.RecyclerView>
+                android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
             <RelativeLayout
                 android:id="@+id/box_init_loading_error_layout"
@@ -121,5 +119,4 @@
                 android:visibility="invisible" />
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
-
 </LinearLayout>

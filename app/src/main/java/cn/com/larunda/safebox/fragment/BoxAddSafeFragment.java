@@ -49,19 +49,19 @@ public class BoxAddSafeFragment extends Fragment implements View.OnClickListener
 
     RelativeLayout enclosureButton;
     RelativeLayout levelButton;
-    TextView levelText;
+    public static TextView levelText;
 
     RelativeLayout lockButton;
-    TextView lockText;
+    public static TextView lockText;
 
 
     LinearLayout startTimeButton;
-    TextView startDateText;
-    TextView startTimeText;
+    public static TextView startDateText;
+    public static TextView startTimeText;
 
     LinearLayout endTimeButton;
-    TextView endDateText;
-    TextView endTimeText;
+    public static TextView endDateText;
+    public static TextView endTimeText;
 
     List<String> levelList = new ArrayList<>();
     List<String> lockList = new ArrayList<>();

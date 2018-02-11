@@ -266,7 +266,8 @@
             android:background="@color/menu_sz_color"
             android:text="保存"
             android:textColor="@color/white"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

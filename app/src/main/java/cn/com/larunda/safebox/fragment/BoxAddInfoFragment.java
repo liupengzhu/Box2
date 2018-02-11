@@ -39,10 +39,10 @@ import java.io.IOException;
 
 public class BoxAddInfoFragment extends Fragment implements View.OnClickListener {
 
-    EditText name_text;
-    EditText material_text;
-    EditText size_text;
-    EditText protect_text;
+    public static EditText name_text;
+    public static EditText material_text;
+    public static EditText size_text;
+    public static EditText protect_text;
 
     private Button putButton;
 

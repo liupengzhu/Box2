@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -29,6 +28,7 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
 
 public class BoxInitActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,9 +62,10 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     private EditText searchText;
     private ImageView cancelButton;
     private TextView ensureButton;
-
     public static final String INIT_URL = Util.URL + "box/add_box_lists" + Util.TOKEN;
     private String search;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +204,8 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         });
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
+
+
         adapter.setBoxInitAdapterOnClickListener(new BoxInitAdapter.BoxInitAdapterOnClickListener() {
             @Override
             public void onClick(View v, String id) {
@@ -305,10 +309,12 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                     sendRequest();
                 }
                 break;
+
             default:
                 break;
         }
     }
+
 
 
     @Override

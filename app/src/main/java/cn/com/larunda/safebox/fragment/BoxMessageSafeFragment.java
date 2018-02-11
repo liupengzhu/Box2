@@ -1,9 +1,11 @@
 package cn.com.larunda.safebox.fragment;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -47,7 +49,7 @@ import java.util.List;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxMessageSafeFragment extends BaseFragment implements View.OnClickListener {
+public class BoxMessageSafeFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout enclosureButton;
     RelativeLayout trackButton;
@@ -87,6 +89,8 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
 
     private Button putButton;
 
+    private boolean isInit = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -98,12 +102,14 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
+        isInit = true;
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        sendHttpRequest();
     }
 
     /**
@@ -623,7 +629,10 @@ public class BoxMessageSafeFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
-    protected void loadData() {
-        sendHttpRequest();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isInit) {
+            sendHttpRequest();
+        }
     }
 }

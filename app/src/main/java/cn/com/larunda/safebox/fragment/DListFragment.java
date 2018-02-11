@@ -49,7 +49,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class DListFragment extends BaseFragment implements View.OnClickListener {
+public class DListFragment extends Fragment implements View.OnClickListener {
 
 
     public static final String BOX_URL = Util.URL + "box" + Util.TOKEN;
@@ -86,6 +86,8 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     private static FootAdapter footAdapter;
     private int total;
 
+    private boolean isInit = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
@@ -106,8 +108,14 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
             bottom_layout.setVisibility(View.VISIBLE);
             MainActivity.tabLayout.setVisibility(View.GONE);
         }
-
+        isInit = true;
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        sendRequest();
     }
 
     /**
@@ -622,8 +630,10 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
     }
 
     @Override
-    protected void loadData() {
-        search = null;
-        sendRequest();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isInit) {
+            sendRequest();
+        }
     }
 }

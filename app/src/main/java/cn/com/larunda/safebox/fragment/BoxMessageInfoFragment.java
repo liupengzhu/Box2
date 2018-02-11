@@ -47,7 +47,7 @@ import java.io.IOException;
  * Created by sddt on 18-1-18.
  */
 
-public class BoxMessageInfoFragment extends BaseFragment implements View.OnClickListener {
+public class BoxMessageInfoFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout bindingUser_Button;
     RelativeLayout password_Button;
@@ -68,6 +68,8 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     private LinearLayout layout;
     private Button putButton;
 
+    private boolean isInit = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
+        isInit = true;
         return view;
     }
 
@@ -85,7 +88,7 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     @Override
     public void onStart() {
         super.onStart();
-
+        sendHttpRequest();
     }
 
     /**
@@ -369,7 +372,10 @@ public class BoxMessageInfoFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
-    protected void loadData() {
-        sendHttpRequest();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isInit) {
+            sendHttpRequest();
+        }
     }
 }

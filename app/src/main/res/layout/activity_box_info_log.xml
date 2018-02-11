@@ -10,49 +10,66 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
 
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/box_info_log_search_week"
-            android:layout_width="wrap_content"
+        <RadioButton
+            android:id="@+id/box_info_log_search_all"
+            android:layout_width="60dp"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/radio_button"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:text="全部"
+            android:textColor="@color/radio_text_color" />
+
+        <RadioButton
+            android:id="@+id/box_info_log_search_week"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/radio_button"
+            android:button="@null"
             android:gravity="center"
             android:text="最近一周"
-            android:textColor="@color/white" />
+            android:textColor="@color/radio_text_color" />
 
-        <Button
+        <RadioButton
             android:id="@+id/box_info_log_search_month"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/radio_button"
+            android:button="@null"
             android:gravity="center"
             android:text="最近一个月"
-            android:textColor="@color/white" />
+            android:textColor="@color/radio_text_color" />
 
-        <Button
+        <RadioButton
             android:id="@+id/box_info_log_search_year"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/radio_button"
+            android:button="@null"
             android:gravity="center"
             android:text="最近一年"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
+            android:textColor="@color/radio_text_color" />
+    </RadioGroup>
 
     <View
         android:layout_width="match_parent"

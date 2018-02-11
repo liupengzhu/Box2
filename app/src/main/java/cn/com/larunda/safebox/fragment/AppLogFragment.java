@@ -187,10 +187,10 @@ public class AppLogFragment extends Fragment {
                 if (page <= total) {
                     //在newState为滑到底部时
                     if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        /*if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                             footAdapter.setHasMore(true);
                             footAdapter.notifyDataSetChanged();
-                        }
+                        }*/
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             if (appLogList.size() < count) {
                                 footAdapter.setHasMore(true);

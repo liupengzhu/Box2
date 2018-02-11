@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
 import com.larunda.safebox.R;
@@ -57,9 +58,10 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
     private RelativeLayout loodingErrorLayout;
     private ImageView loodingLayout;
 
-    private Button weekButton;
-    private Button monthButton;
-    private Button yearButton;
+    private RadioButton weekButton;
+    private RadioButton monthButton;
+    private RadioButton yearButton;
+    private RadioButton allButton;
     private String date;
     private SimpleDateFormat format;
     private Calendar c;
@@ -89,6 +91,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onRefresh() {
                 date = null;
+                allButton.setChecked(true);
                 sendRequest();
 
             }
@@ -219,6 +222,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
         weekButton.setOnClickListener(this);
         monthButton.setOnClickListener(this);
         yearButton.setOnClickListener(this);
+        allButton.setOnClickListener(this);
     }
 
 
@@ -232,6 +236,7 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
         weekButton = findViewById(R.id.box_info_log_search_week);
         monthButton = findViewById(R.id.box_info_log_search_month);
         yearButton = findViewById(R.id.box_info_log_search_year);
+        allButton = findViewById(R.id.box_info_log_search_all);
 
         refreshLayout = findViewById(R.id.box_info_log_swipe);
         loodingErrorLayout = findViewById(R.id.box_info_log_loading_error_layout);
@@ -400,6 +405,10 @@ public class BoxInfoLogActivity extends AppCompatActivity implements View.OnClic
                 c = Calendar.getInstance();
                 c.add(Calendar.YEAR, -1);
                 date = format.format(c.getTime());
+                sendRequest();
+                break;
+            case R.id.box_info_log_search_all:
+                date = null;
                 sendRequest();
                 break;
             default:

@@ -50,9 +50,9 @@ public class ChooseDialog extends Dialog {
          * 动态改变listview的高
          */
         LinearLayout.LayoutParams list = (LinearLayout.LayoutParams) listView.getLayoutParams();
-        if(datas.size()>3){
-            list.height = dp2px(170);
-        }else {
+        if (datas.size() > 6) {
+            list.height = dp2px(340);
+        } else {
             list.height = WindowManager.LayoutParams.WRAP_CONTENT;
         }
 
@@ -98,6 +98,7 @@ public class ChooseDialog extends Dialog {
     public void setOnClickListener(OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
+
     /**
      * dp 2 px
      *

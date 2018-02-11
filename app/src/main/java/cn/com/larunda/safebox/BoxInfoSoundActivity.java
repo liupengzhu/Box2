@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -21,6 +22,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,10 +68,10 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
     private SharedPreferences preferences;
     private String token;
 
-    private Button weekButton;
-    private Button monthButton;
-    private Button yearButton;
-    private Button allButton;
+    private RadioButton weekButton;
+    private RadioButton monthButton;
+    private RadioButton yearButton;
+    private RadioButton allButton;
     private String date;
     private SimpleDateFormat format;
     private Calendar c;
@@ -125,6 +128,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onRefresh() {
                 date = null;
+                allButton.setChecked(true);
                 sendRequest();
 
             }
@@ -371,6 +375,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
     /**
      * 初始化View
      */
+    @SuppressLint("ResourceType")
     private void initView() {
         weekButton = findViewById(R.id.box_info_sound_search_week);
         monthButton = findViewById(R.id.box_info_sound_search_month);

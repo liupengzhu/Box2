@@ -8,8 +8,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -345,6 +348,38 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
         settingState_Button.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                search = searchText.getText().toString().trim();
+                sendRequest();
+                return true;
+            }
+        });
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    if (cancelButton != null) {
+                        cancelButton.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -541,11 +576,9 @@ public class DListFragment extends BaseFragment implements View.OnClickListener 
                 }
                 break;
             case R.id.list_ensure_button:
-                if (searchText != null && !TextUtils.isEmpty(searchText.getText().toString().trim())) {
+                if (searchText != null) {
                     search = searchText.getText().toString().trim();
                     sendRequest();
-                } else {
-                    Toast.makeText(getContext(), "请输入搜索内容", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

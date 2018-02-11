@@ -65,11 +65,11 @@ public class DetailedSoundAdapter extends RecyclerView.Adapter<DetailedSoundAdap
         DetailedSound detailedSound = detailedSoundList.get(position);
         holder.soundId.setText(detailedSound.getSoundId());
         holder.soundTime.setText(detailedSound.getTime());
-        if(detailedSound.isDownload()){
+        /*if(detailedSound.isDownload()){
             holder.isDownloadView.setVisibility(View.GONE);
         }else {
             holder.isDownloadView.setVisibility(View.VISIBLE);
-        }
+        }*/
 
     }
 

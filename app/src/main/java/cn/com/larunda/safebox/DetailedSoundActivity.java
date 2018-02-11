@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.DateDialog;
 
 import cn.com.larunda.safebox.adapter.DetailedSoundAdapter;
 import cn.com.larunda.safebox.adapter.FootAdapter;
@@ -69,6 +70,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private MediaPlayer mediaPlayer;
     private String lastId;
     private CheckBox lastButton;
+    private Button searchButton;
+    private DateDialog dateDialog;
+    private String search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                search = null;
                 sendRequest();
 
             }
@@ -100,7 +105,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
-
+        search = null;
         sendRequest();
     }
 
@@ -108,8 +113,14 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      * 发送网络请求
      */
     private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "time=" + search;
+        } else {
+            searchText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + "&page=1", new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -163,10 +174,11 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         detailedSoundList.clear();
         page = detailedSoundInfo.current_page + 1;
         count = detailedSoundInfo.per_page;
+        if (detailedSoundInfo.detailedSoundDataList.size() == 0 || detailedSoundInfo.detailedSoundDataList.size() < count) {
+            footAdapter.setHasMore(false);
+        }
         if (detailedSoundInfo.detailedSoundDataList != null) {
-            if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
-                Toast.makeText(this, "当前递送箱没有录音", Toast.LENGTH_SHORT).show();
-            }
+
             for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
                 DetailedSound detailedSound = new DetailedSound();
                 if (detailedSoundData.id != null) {
@@ -211,6 +223,23 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      */
     private void iniEvent() {
         back_Button.setOnClickListener(this);
+        searchButton.setOnClickListener(this);
+        dateDialog.setOnCancelClickListener(new DateDialog.OnCancelClickListener() {
+            @Override
+            public void OnClick(View view) {
+                dateDialog.cancel();
+            }
+        });
+        dateDialog.setOnOkClickListener(new DateDialog.OnOkClickListener() {
+            @Override
+            public void OnClick(View view, String date) {
+                search = date;
+                Log.d("main",date);
+                sendRequest();
+                dateDialog.cancel();
+            }
+        });
+
         adapter.setDetailedSoundOnClickListener(new DetailedSoundAdapter.DetailedSoundOnClickListener() {
 
             @Override
@@ -230,7 +259,7 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
                                 }
                             });
                         } else {
-                            if (lastId!=id) {
+                            if (lastId != id) {
                                 mediaPlayer.stop();
                                 mediaPlayer = null;
                                 lastButton.setChecked(false);
@@ -278,6 +307,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
 
         preferences = PreferenceManager.getDefaultSharedPreferences(DetailedSoundActivity.this);
         token = preferences.getString("token", null);
+
+        searchButton = findViewById(R.id.detailed_sound_search_button);
+        dateDialog = new DateDialog(this);
 
         refreshLayout = findViewById(R.id.detailed_sound_swiper);
         loodingErrorLayout = findViewById(R.id.detailed_sound_loading_error_layout);
@@ -338,8 +370,14 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
      * 请求下一页参数
      */
     private void sendAddRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "time=" + search;
+        } else {
+            searchText = "";
+        }
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + "&page=" + page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(SOUND_URL + token + "&id=" + id + searchText + "&page=" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -386,11 +424,11 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
     private void addSound(DetailedSoundInfo detailedSoundInfo) {
 
         page = detailedSoundInfo.current_page + 1;
-
+        if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
+            footAdapter.setHasMore(false);
+        }
         if (detailedSoundInfo.detailedSoundDataList != null) {
-            if (detailedSoundInfo.detailedSoundDataList.size() == 0) {
-                footAdapter.setHasMore(false);
-            }
+
             for (DetailedSoundData detailedSoundData : detailedSoundInfo.detailedSoundDataList) {
                 DetailedSound detailedSound = new DetailedSound();
                 if (detailedSoundData.id != null) {
@@ -441,6 +479,9 @@ public class DetailedSoundActivity extends AppCompatActivity implements View.OnC
         switch (v.getId()) {
             case R.id.detailed_sound_back:
                 finish();
+                break;
+            case R.id.detailed_sound_search_button:
+                dateDialog.show();
                 break;
             default:
                 break;

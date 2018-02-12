@@ -280,7 +280,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
             url = imgUrl;
-            Glide.with(this).load(IMG_URL + imgUrl).error(R.mipmap.user_img).into(photo);
+            Glide.with(this).load(IMG_URL + imgUrl)
+                    .placeholder(R.drawable.user).dontAnimate()
+                    .error(R.mipmap.user_img).into(photo);
         }
         if (userInfo.user != null) {
             userText.setText(userInfo.user);

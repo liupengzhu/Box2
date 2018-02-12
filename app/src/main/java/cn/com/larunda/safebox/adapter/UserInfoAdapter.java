@@ -131,7 +131,9 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             holder.checked_button.setImageResource(R.mipmap.unchecked);
         }
         if (myUserInfo.getUserImg() != null) {
-            Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg()).error(R.mipmap.user_img).into(holder.userImg);
+            Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg())
+                    .placeholder(R.drawable.user).dontAnimate()
+                    .error(R.mipmap.user_img).into(holder.userImg);
         }
         if (myUserInfo.getUserName() != null) {
             holder.userName.setText(myUserInfo.getUserName());

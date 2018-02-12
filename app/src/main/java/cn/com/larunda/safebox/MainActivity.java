@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private Button systemSettingButton;
 
 
-    public static final String MENU_URI = "http://safebox.dsmcase.com:90/api/app/user_info?_token=";
+    public static final String MENU_URI = Util.URL+"app/user_info"+Util.TOKEN;
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
 
     private String[] titles = {"总览", "箱体列表", "日志"};
@@ -256,7 +256,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (menuUserInfo.userImg != null) {
             img_uri = menuUserInfo.userImg.replace('\\', ' ');
-            Glide.with(this).load(IMG_URI + img_uri).error(R.mipmap.user_img).into(menu_user_img);
+            Glide.with(this).load(IMG_URI + img_uri).placeholder(R.drawable.user).dontAnimate()
+                    .error(R.mipmap.user_img)
+                    .into(menu_user_img);
 
         }
         id = menuUserInfo.id;

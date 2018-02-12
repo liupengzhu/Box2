@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +45,10 @@ public class TitleBar extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (mTitleListener != null) {
+                    InputMethodManager imm = (InputMethodManager) mcontext.getSystemService(mcontext.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                     mTitleListener.onLeftButtonClickListener(v);
                 }
             }
@@ -60,6 +65,10 @@ public class TitleBar extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (mTitleListener != null) {
+                    InputMethodManager imm = (InputMethodManager) mcontext.getSystemService(mcontext.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                     mTitleListener.onLeftBackButtonClickListener(v);
                 }
             }

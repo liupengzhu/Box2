@@ -67,7 +67,6 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     private String search;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,7 +222,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 search = searchText.getText().toString().trim();
                 sendRequest();
-                return false;
+                return true;
             }
         });
         searchText.addTextChangedListener(new TextWatcher() {
@@ -315,7 +314,6 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                 break;
         }
     }
-
 
 
     @Override

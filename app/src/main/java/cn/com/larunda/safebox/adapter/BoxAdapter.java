@@ -3,6 +3,7 @@ package cn.com.larunda.safebox.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -165,20 +166,20 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         if (box.isIs_bf()) {
             holder.box_isbf_img.setImageResource(R.mipmap.list_ybf);
             holder.box_isbf_text.setText("已布防");
-            holder.box_isbf_text.setTextColor(R.color.list_text_h);
+            holder.box_isbf_text.setTextColor(context.getResources().getColor(R.color.list_text_h));
         } else {
             holder.box_isbf_img.setImageResource(R.mipmap.list_wbf);
             holder.box_isbf_text.setText("未布防");
-            holder.box_isbf_text.setTextColor(R.color.list_text_l);
+            holder.box_isbf_text.setTextColor(context.getResources().getColor(R.color.list_text_l));
         }
         if (box.isIs_sd()) {
             holder.box_issd_img.setImageResource(R.mipmap.list_ys);
             holder.box_issd_text.setText("已锁定");
-            holder.box_issd_text.setTextColor(R.color.list_text_h);
+            holder.box_issd_text.setTextColor(context.getResources().getColor(R.color.list_text_h));
         } else {
             holder.box_issd_img.setImageResource(R.mipmap.list_ws);
             holder.box_issd_text.setText("未锁定");
-            holder.box_issd_text.setTextColor(R.color.list_text_l);
+            holder.box_issd_text.setTextColor(context.getResources().getColor(R.color.list_text_l));
         }
         if (box.getBox_dl() != null) {
             holder.box_dl_img.setPaintColor(Integer.parseInt(box.getBox_dl()));

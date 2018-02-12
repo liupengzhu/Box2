@@ -111,7 +111,7 @@ public class BoxLogFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
                     if (totalLogInfo != null && totalLogInfo.error == null) {
@@ -140,6 +140,16 @@ public class BoxLogFragment extends Fragment {
                     }
 
 
+                }else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         });

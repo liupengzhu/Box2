@@ -6,11 +6,13 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
@@ -32,7 +34,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
-    public static final String LOGIN_URI = "http://safebox.dsmcase.com:90/api/app_login";
+    public static final String LOGIN_URI = Util.URL+"app_login";
     EditText loginName;
     EditText loginPassword;
     CheckBox checkBox;
@@ -176,8 +178,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton = findViewById(R.id.login_button);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
-
         backButton = findViewById(R.id.back_button);
+        loginPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                login();
+                return false;
+            }
+        });
     }
 
     /**

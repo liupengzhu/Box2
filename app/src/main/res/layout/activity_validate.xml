@@ -45,6 +45,9 @@
                     android:background="@drawable/validate"
                     android:inputType="textPassword"
                     android:hint="请输入密码"
+                    android:imeOptions="actionNext"
+                    android:singleLine="true"
+                    android:nextFocusDown="@id/validate_edit"
                     android:textCursorDrawable="@drawable/color_cursor" />
 
                 <TextView

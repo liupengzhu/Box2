@@ -13,11 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
@@ -98,6 +100,18 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         button.setOnClickListener(this);
+        text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                password = text.getText().toString().trim();
+                if (password != null && !TextUtils.isEmpty(password)) {
+                    sendRequest(password);
+                } else {
+                    Toast.makeText(ValidateActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
     }
 
     /**

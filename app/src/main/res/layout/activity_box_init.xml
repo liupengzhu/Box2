@@ -31,7 +31,10 @@
             android:layout_marginLeft="20dp"
             android:background="@drawable/serch_edit"
             android:hint="序列号"
+            android:imeOptions="actionSearch"
             android:maxLines="1"
+            android:nextFocusDown="@id/box_init_serch_edit"
+            android:singleLine="true"
             android:textCursorDrawable="@drawable/color_cursor" />
 
         <ImageView

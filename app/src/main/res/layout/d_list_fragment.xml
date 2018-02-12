@@ -24,6 +24,9 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:background="@drawable/serch_edit"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:nextFocusDown="@id/list_serch_edit"
             android:hint="递送箱序列号"
             android:maxLines="1"
             android:textCursorDrawable="@drawable/color_cursor" />

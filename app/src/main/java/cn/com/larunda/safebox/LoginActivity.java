@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,7 +35,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
-    public static final String LOGIN_URI = Util.URL+"app_login";
+    public static final String LOGIN_URI = Util.URL + "app_login";
     EditText loginName;
     EditText loginPassword;
     CheckBox checkBox;
@@ -179,10 +180,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
         backButton = findViewById(R.id.back_button);
-        loginPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        loginPassword.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                login();
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER&&event.getAction() == KeyEvent.ACTION_UP){
+                    login();
+                    return true;
+                }
                 return false;
             }
         });

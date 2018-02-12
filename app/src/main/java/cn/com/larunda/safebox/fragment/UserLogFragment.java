@@ -92,6 +92,7 @@ public class UserLogFragment extends Fragment {
      */
     private void sendRequest() {
         swipeRefreshLayout.setRefreshing(true);
+        recyclerView.scrollToPosition(0);
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

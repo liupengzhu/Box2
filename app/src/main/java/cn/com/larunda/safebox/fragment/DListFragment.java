@@ -402,6 +402,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         } else {
             searchText = "";
         }
+        recyclerView.scrollToPosition(0);
         HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

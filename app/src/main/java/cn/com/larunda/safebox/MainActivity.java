@@ -51,7 +51,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static ViewPager viewPager;
     public static TabLayout tabLayout;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private Button systemSettingButton;
 
 
-    public static final String MENU_URI = Util.URL+"app/user_info"+Util.TOKEN;
+    public static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
     public static final String IMG_URI = "http://safebox.dsmcase.com:90";
 
     private String[] titles = {"总览", "箱体列表", "日志"};
@@ -182,21 +182,11 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
-        menu_user_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PersonalInfoActivity.class);
-                intent.putExtra("id", id);
-                startActivity(intent);
-            }
-        });
-        setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent settingIntent = new Intent(MainActivity.this, PersonalSettingActivity.class);
-                startActivity(settingIntent);
-            }
-        });
+        menu_user_img.setOnClickListener(this);
+        setting.setOnClickListener(this);
+        menu_user_id.setOnClickListener(this);
+        menu_user_name.setOnClickListener(this);
+        menu_user_tell.setOnClickListener(this);
 
     }
 
@@ -564,5 +554,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         queryMenuInfo();
+    }
+
+    /**
+     * 点击事件监听
+     *
+     * @param v
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.menu_user_img:
+            case R.id.menu_user_id:
+            case R.id.menu_user_name:
+            case R.id.menu_user_tell:
+                Intent intent = new Intent(MainActivity.this, PersonalInfoActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+                break;
+            case R.id.setting_layout:
+                Intent settingIntent = new Intent(MainActivity.this, PersonalSettingActivity.class);
+                startActivity(settingIntent);
+                break;
+            default:
+                break;
+        }
     }
 }

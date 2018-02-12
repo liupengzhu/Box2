@@ -363,7 +363,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 search = searchText.getText().toString().trim();
                 sendRequest();
-                return true;
+                return false;
             }
         });
         searchText.addTextChangedListener(new TextWatcher() {

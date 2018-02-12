@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -222,7 +223,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 search = searchText.getText().toString().trim();
                 sendRequest();
-                return true;
+                return false;
             }
         });
         searchText.addTextChangedListener(new TextWatcher() {

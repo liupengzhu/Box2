@@ -217,7 +217,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 serch = searchText.getText().toString().trim();
                 sendRequest();
-                return true;
+                return false;
             }
         });
         searchText.addTextChangedListener(new TextWatcher() {

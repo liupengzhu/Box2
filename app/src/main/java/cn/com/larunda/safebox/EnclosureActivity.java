@@ -165,7 +165,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 search = searchText.getText().toString().trim();
                 sendRequest();
-                return true;
+                return false;
             }
         });
         searchText.addTextChangedListener(new TextWatcher() {

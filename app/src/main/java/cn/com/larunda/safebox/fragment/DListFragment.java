@@ -294,7 +294,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                     box.setBox_qx(0);
                 }
                 if (boxData.is_defence != null) {
-                    if (boxData.is_defence == "1") {
+                    if (boxData.is_defence.equals("1")) {
                         box.setIs_bf(true);
                     } else {
                         box.setIs_bf(false);
@@ -303,7 +303,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                     box.setIs_bf(false);
                 }
                 if (boxData.is_locked != null) {
-                    if (boxData.is_locked == "1") {
+                    if (boxData.is_locked.equals("1")) {
                         box.setIs_sd(true);
                     } else {
                         box.setIs_sd(false);
@@ -492,7 +492,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                     box.setBox_qx(0);
                 }
                 if (boxData.is_defence != null) {
-                    if (boxData.is_defence == "1") {
+                    if (boxData.is_defence.equals("1")) {
                         box.setIs_bf(true);
                     } else {
                         box.setIs_bf(false);
@@ -501,7 +501,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                     box.setIs_bf(false);
                 }
                 if (boxData.is_locked != null) {
-                    if (boxData.is_locked == "1") {
+                    if (boxData.is_locked.equals("1")) {
                         box.setIs_sd(true);
                     } else {
                         box.setIs_sd(false);

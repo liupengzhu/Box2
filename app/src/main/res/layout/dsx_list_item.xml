@@ -146,7 +146,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="5dp"
                     android:text="100%"
-                    android:textColor="@color/list_text_l"
+                    android:textColor="@color/list_text_h"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>

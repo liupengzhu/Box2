@@ -63,8 +63,11 @@
                             android:background="@drawable/text_edit"
                             android:gravity="right|center_vertical"
                             android:hint="请输入"
+                            android:imeOptions="actionNext"
                             android:maxLength="10"
                             android:maxLines="1"
+                            android:nextFocusDown="@id/box_message_info_material_text"
+                            android:singleLine="true"
                             android:textColor="@color/list_text_l"
                             android:textCursorDrawable="@drawable/color_cursor"
                             android:textSize="15sp" />
@@ -103,11 +106,16 @@
                             android:background="@drawable/text_edit"
                             android:gravity="right|center_vertical"
                             android:hint="请输入"
+                            android:imeOptions="actionNext"
                             android:maxLength="10"
                             android:maxLines="1"
+                            android:nextFocusDown="@id/box_message_info_size_text"
+                            android:singleLine="true"
                             android:textColor="@color/list_text_l"
                             android:textCursorDrawable="@drawable/color_cursor"
-                            android:textSize="15sp" />
+                            android:textSize="15sp"
+
+                            />
 
                     </RelativeLayout>
 
@@ -143,8 +151,11 @@
                             android:background="@drawable/text_edit"
                             android:gravity="right|center_vertical"
                             android:hint="请输入"
+                            android:imeOptions="actionNext"
                             android:maxLength="10"
                             android:maxLines="1"
+                            android:nextFocusDown="@id/box_message_info_protect_text"
+                            android:singleLine="true"
                             android:textColor="@color/list_text_l"
                             android:textCursorDrawable="@drawable/color_cursor"
                             android:textSize="15sp" />
@@ -183,8 +194,10 @@
                             android:background="@drawable/text_edit"
                             android:gravity="right|center_vertical"
                             android:hint="请输入"
+                            android:imeOptions="actionNone"
                             android:maxLength="10"
                             android:maxLines="1"
+                            android:singleLine="true"
                             android:textColor="@color/list_text_l"
                             android:textCursorDrawable="@drawable/color_cursor"
                             android:textSize="15sp" />

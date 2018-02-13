@@ -1,8 +1,10 @@
 package cn.com.larunda.safebox.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -41,7 +43,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class HomeFragment extends BaseFragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
     public static final String BOX_URI = Util.URL + "app/home" + Util.TOKEN;
     TextView totalView;
@@ -71,6 +73,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private NestedScrollView layout;
 
     private Button logButton;
+    private SharedPreferences preferences;
+    private String token;
 
 
     @Nullable
@@ -87,6 +91,9 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
      * @param view
      */
     private void initView(View view) {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        token = preferences.getString("token", null);
 
         totalView = view.findViewById(R.id.total_text);
         defendView = view.findViewById(R.id.defend_text);
@@ -117,10 +124,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         swipeRefreshLayout = view.findViewById(R.id.swiper);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
 
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
-        layout.setVisibility(View.GONE);
     }
 
     @Override
@@ -145,7 +148,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //
                         swipeRefreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
@@ -157,7 +159,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final Home home = Util.handleHomeInfo(content);
                     if (home != null && home.error == null) {
@@ -165,6 +167,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 showInfo(home);
+                                preferences.edit().putString("homeInfo", content).commit();
                                 swipeRefreshLayout.setRefreshing(false);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
@@ -267,7 +270,24 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     @Override
-    protected void loadData() {
-        queryInfo();
+    public void onResume() {
+        super.onResume();
+        String content = preferences.getString("homeInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                Home home = Util.handleHomeInfo(content);
+                showInfo(home);
+            } else {
+                queryInfo();
+            }
+        } else {
+            //每次fragment创建时还没有网络数据 设置载入背景为可见
+            loodingLayout.setVisibility(View.VISIBLE);
+            loodingErrorLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            queryInfo();
+        }
+
     }
+
 }

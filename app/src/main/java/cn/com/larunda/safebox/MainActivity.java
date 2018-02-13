@@ -580,4 +580,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences.edit().putString("homeInfo",null).commit();
+        preferences.edit().putString("boxInfo",null).commit();
+        preferences.edit().putString("userLogInfo",null).commit();
+        preferences.edit().putString("boxLogInfo",null).commit();
+        preferences.edit().putString("appLogInfo",null).commit();
+    }
 }

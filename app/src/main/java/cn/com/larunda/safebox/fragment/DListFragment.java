@@ -99,8 +99,6 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
         initView(view);
-
-
         initEvent();
 
         if (isLongClick) {
@@ -117,7 +115,6 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     /**
@@ -650,7 +647,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
+   /* @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
@@ -672,7 +669,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public void onResume() {

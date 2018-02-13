@@ -1,7 +1,9 @@
 package cn.com.larunda.safebox.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -60,16 +62,14 @@ public class UserLogFragment extends Fragment {
     private FootAdapter footAdapter;
     private int total;
     private boolean isInit = false;
+    private SharedPreferences preferences;
+    private String token;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_log_fragment, container, false);
         initView(view);
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
         isInit = true;
         return view;
     }
@@ -83,7 +83,6 @@ public class UserLogFragment extends Fragment {
                 sendRequest();
             }
         });
-        sendRequest();
 
     }
 
@@ -110,7 +109,7 @@ public class UserLogFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
                     if (totalLogInfo != null && totalLogInfo.error == null) {
@@ -118,6 +117,7 @@ public class UserLogFragment extends Fragment {
                             @Override
                             public void run() {
                                 showInfo(totalLogInfo);
+                                preferences.edit().putString("userLogInfo", content).commit();
                                 swipeRefreshLayout.setRefreshing(false);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
@@ -139,7 +139,7 @@ public class UserLogFragment extends Fragment {
                     }
 
 
-                }else {
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -183,6 +183,10 @@ public class UserLogFragment extends Fragment {
      * @param view
      */
     private void initView(View view) {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        token = preferences.getString("token", null);
+
         swipeRefreshLayout = view.findViewById(R.id.user_log_swipe);
         recyclerView = view.findViewById(R.id.user_log_recycler_view);
         loodingErrorLayout = view.findViewById(R.id.user_log_loading_error_layout);
@@ -294,5 +298,24 @@ public class UserLogFragment extends Fragment {
         footAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        String content = preferences.getString("userLogInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
+                showInfo(totalLogInfo);
+            } else {
+                sendRequest();
+            }
+        } else {
+            //每次fragment创建时还没有网络数据 设置载入背景为可见
+            loodingLayout.setVisibility(View.VISIBLE);
+            loodingErrorLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            sendRequest();
+        }
 
+    }
 }

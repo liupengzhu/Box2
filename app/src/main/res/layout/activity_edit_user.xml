@@ -130,7 +130,11 @@
                                 android:text="zq053694"
                                 android:textColor="@color/list_text_l"
                                 android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:imeOptions="actionNext"
+                                android:nextFocusDown="@id/edit_user_name_text"
+                                android:singleLine="true"
+                                />
 
 
                         </RelativeLayout>
@@ -171,7 +175,11 @@
                                 android:text="张三"
                                 android:textColor="@color/list_text_l"
                                 android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:imeOptions="actionNext"
+                                android:nextFocusDown="@id/edit_user_password_text"
+                                android:singleLine="true"
+                                />
 
 
                         </RelativeLayout>
@@ -336,7 +344,10 @@
                                 android:text="1234567@qq.com"
                                 android:textColor="@color/list_text_l"
                                 android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
+                                android:textSize="15sp"
+                                android:imeOptions="actionNone"
+                                android:singleLine="true"
+                                />
 
 
                         </RelativeLayout>

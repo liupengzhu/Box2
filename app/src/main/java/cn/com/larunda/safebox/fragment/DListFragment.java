@@ -1,7 +1,10 @@
 package cn.com.larunda.safebox.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,6 +36,7 @@ import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.SettingQxActivity;
 import cn.com.larunda.safebox.SettingStatesActivity;
+import cn.com.larunda.safebox.UserInfoActivity;
 import cn.com.larunda.safebox.adapter.BoxAdapter;
 import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.BoxData;
@@ -88,17 +92,14 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     private int total;
 
     private boolean isInit = false;
+    private SharedPreferences preferences;
+    private String token;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
         initView(view);
 
-
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
 
         initEvent();
 
@@ -116,7 +117,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        sendRequest();
+
     }
 
     /**
@@ -125,6 +126,10 @@ public class DListFragment extends Fragment implements View.OnClickListener {
      * @param view
      */
     private void initView(View view) {
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        token = preferences.getString("token", null);
+
         recyclerView = view.findViewById(R.id.dsx_list);
         refreshLayout = view.findViewById(R.id.box_list_swiper);
 
@@ -203,7 +208,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         } else {
             searchText = "";
         }
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=" + page + Util.TYPE, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -241,7 +246,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                             public void run() {
                                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
+                                preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
                                 getActivity().finish();
                             }
@@ -404,7 +409,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             searchText = "";
         }
         recyclerView.scrollToPosition(0);
-        HttpUtil.sendGetRequestWithHttp(BOX_URL + MainActivity.token + searchText + "&page=1" + Util.TYPE, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -420,7 +425,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final BoxInfo boxInfo = Util.handleBoxInfo(content);
                     if (boxInfo != null && boxInfo.error == null) {
@@ -428,6 +433,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 initBoxList(boxInfo);
+                                preferences.edit().putString("boxInfo", content).apply();
                                 refreshLayout.setRefreshing(false);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
@@ -441,7 +447,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                             public void run() {
                                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
+                                preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
                                 getActivity().finish();
                             }
@@ -647,7 +653,43 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isInit) {
+        if (isVisibleToUser) {
+            if (isInit) {
+                String content = preferences.getString("boxInfo", null);
+                if (content != null) {
+                    if (Util.isGoodJson(content)) {
+                        BoxInfo boxInfo = Util.handleBoxInfo(content);
+                        initBoxList(boxInfo);
+                    } else {
+                        sendRequest();
+                    }
+                } else {
+                    //每次fragment创建时还没有网络数据 设置载入背景为可见
+                    loodingLayout.setVisibility(View.VISIBLE);
+                    loodingErrorLayout.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                    sendRequest();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String content = preferences.getString("boxInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                BoxInfo boxInfo = Util.handleBoxInfo(content);
+                initBoxList(boxInfo);
+            } else {
+                sendRequest();
+            }
+        } else {
+            //每次fragment创建时还没有网络数据 设置载入背景为可见
+            loodingLayout.setVisibility(View.VISIBLE);
+            loodingErrorLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             sendRequest();
         }
     }

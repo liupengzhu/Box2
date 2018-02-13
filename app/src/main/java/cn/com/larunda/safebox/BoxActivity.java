@@ -261,6 +261,7 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
 
     private void parseResult(Result result) {
         if (result.data != null && result.data.equals("true")) {
+            preferences.edit().putString("boxInfo", null).commit();
             finish();
         } else {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();

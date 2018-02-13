@@ -91,7 +91,6 @@ public class UserLogFragment extends Fragment {
      */
     private void sendRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        recyclerView.scrollToPosition(0);
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -301,6 +300,7 @@ public class UserLogFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        recyclerView.scrollToPosition(0);
         String content = preferences.getString("userLogInfo", null);
         if (content != null) {
             if (Util.isGoodJson(content)) {

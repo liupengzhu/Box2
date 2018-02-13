@@ -405,7 +405,6 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         } else {
             searchText = "";
         }
-        recyclerView.scrollToPosition(0);
         HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -674,6 +673,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        recyclerView.scrollToPosition(0);
         String content = preferences.getString("boxInfo", null);
         if (content != null) {
             if (Util.isGoodJson(content)) {

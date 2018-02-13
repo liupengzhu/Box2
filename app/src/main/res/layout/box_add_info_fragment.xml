@@ -52,8 +52,11 @@
                     android:background="@drawable/text_edit"
                     android:gravity="right|center_vertical"
                     android:hint="请输入"
+                    android:imeOptions="actionNext"
                     android:maxLength="10"
                     android:maxLines="1"
+                    android:nextFocusDown="@id/box_add_info_material_text"
+                    android:singleLine="true"
                     android:textColor="@color/list_text_l"
                     android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
@@ -92,8 +95,11 @@
                     android:background="@drawable/text_edit"
                     android:gravity="right|center_vertical"
                     android:hint="请输入"
+                    android:imeOptions="actionNext"
                     android:maxLength="10"
                     android:maxLines="1"
+                    android:nextFocusDown="@id/box_add_info_size_text"
+                    android:singleLine="true"
                     android:textColor="@color/list_text_l"
                     android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="15sp" />
@@ -137,7 +143,11 @@
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
                     android:textCursorDrawable="@drawable/color_cursor"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@id/box_add_info_protect_text"
+                    android:singleLine="true"
+                    />
 
 
             </RelativeLayout>
@@ -178,7 +188,10 @@
                     android:maxLines="1"
                     android:textColor="@color/list_text_l"
                     android:textCursorDrawable="@drawable/color_cursor"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:imeOptions="actionNone"
+                    android:singleLine="true"
+                    />
 
             </RelativeLayout>
 

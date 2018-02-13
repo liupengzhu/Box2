@@ -36,12 +36,11 @@
             android:name="cn.com.larunda.safebox.MainActivity"
             android:launchMode="singleTop" />
         <activity android:name="cn.com.larunda.safebox.LoginActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTask" />
         <activity
             android:name="cn.com.larunda.safebox.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
@@ -959,7 +960,10 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
 
             if (content != null) {
                 url = content;
-                Glide.with(this).load(path).error(R.mipmap.user_img).into(photo);
+                Glide.with(this).load(path)
+                        .skipMemoryCache(true) // 不使用内存缓存
+                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                        .error(R.mipmap.user_img).into(photo);
                 Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
 
             }

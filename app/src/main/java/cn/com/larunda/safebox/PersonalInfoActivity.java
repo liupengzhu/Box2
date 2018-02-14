@@ -993,6 +993,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
             refreshLayout.setRefreshing(false);
+            preferences.edit().putString("menuInfo", null).commit();
             finish();
         } else if (content != null && content.equals("false")) {
             refreshLayout.setRefreshing(false);

@@ -7,6 +7,7 @@ import com.baidu.mapapi.SDKInitializer;
 
 import org.litepal.LitePal;
 
+
 public class MyApplication extends Application {
 
     private static Context context;

@@ -32,6 +32,7 @@ import cn.com.larunda.safebox.fragment.HomeFragment;
 import cn.com.larunda.safebox.fragment.DListFragment;
 import cn.com.larunda.safebox.fragment.SListFragment;
 import cn.com.larunda.safebox.fragment.TotalLogFragment;
+import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -117,13 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
-
-        //请求服务器菜单数据
-        queryMenuInfo();
-
         setMenuClick();
-
-
     }
 
     /**
@@ -204,18 +199,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
                     if (menuUserInfo != null && menuUserInfo.error == null) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //显示用户信息
                                 showMenuInfo(menuUserInfo);
+                                preferences.edit().putString("menuInfo", content).apply();
                             }
                         });
 
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                finish();
+
+                            }
+                        });
                     }
                 }
 
@@ -550,12 +557,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        queryMenuInfo();
-    }
-
     /**
      * 点击事件监听
      *
@@ -582,12 +583,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        String content = preferences.getString("menuInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
+                showMenuInfo(menuUserInfo);
+            } else {
+                //请求服务器菜单数据
+                queryMenuInfo();
+            }
+        } else {
+            //请求服务器菜单数据
+            queryMenuInfo();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        preferences.edit().putString("homeInfo",null).commit();
-        preferences.edit().putString("boxInfo",null).commit();
-        preferences.edit().putString("userLogInfo",null).commit();
-        preferences.edit().putString("boxLogInfo",null).commit();
-        preferences.edit().putString("appLogInfo",null).commit();
+        preferences.edit().putString("homeInfo", null).commit();
+        preferences.edit().putString("boxInfo", null).commit();
+        preferences.edit().putString("userLogInfo", null).commit();
+        preferences.edit().putString("boxLogInfo", null).commit();
+        preferences.edit().putString("appLogInfo", null).commit();
+        preferences.edit().putString("menuInfo",null).commit();
     }
 }

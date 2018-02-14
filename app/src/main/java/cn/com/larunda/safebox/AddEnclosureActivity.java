@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.gson.AreaInfo;
+
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -139,6 +140,7 @@ public class AddEnclosureActivity extends AppCompatActivity implements View.OnCl
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
                                 finish();
+
                             }
                         });
                     }

@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout sound;
     private LinearLayout setting;
 
-    private Button systemSettingButton;
+    private RelativeLayout systemSettingButton;
 
 
     public static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static SharedPreferences preferences;
     private SharedPreferences.Editor editor;
-    private Button systemBackButton;
+    private RelativeLayout systemBackButton;
 
 
     private String id;

@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.larunda.safebox.R;
 
+import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -26,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,6 +39,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
     public static final String LOGIN_URI = Util.URL + "app_login";
+    private boolean isClick = false;
     EditText loginName;
     EditText loginPassword;
     CheckBox checkBox;
@@ -43,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     SharedPreferences.Editor editor;
     SharedPreferences preferences;
     Button backButton;
+    private Timer timer;
 
 
     @Override
@@ -136,8 +141,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             HttpUtil.sendPostRequestWithHttp(LOGIN_URI, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
@@ -183,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginPassword.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_ENTER&&event.getAction() == KeyEvent.ACTION_UP){
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
                     login();
                     return true;
                 }
@@ -202,7 +211,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
 
             case R.id.login_button:
-                login();
+                if (isClick) {
+                    Toast.makeText(this, "操作过于频繁", Toast.LENGTH_SHORT).show();
+                } else {
+                    isClick = true;
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            isClick = false;
+                        }
+                    }, 500);
+                    login();
+                }
                 break;
 
             case R.id.back_button:

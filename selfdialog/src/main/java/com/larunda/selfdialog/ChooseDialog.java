@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ChooseDialog extends Dialog {
         /**
          * 动态改变listview的高
          */
-        LinearLayout.LayoutParams list = (LinearLayout.LayoutParams) listView.getLayoutParams();
+        RelativeLayout.LayoutParams list = (RelativeLayout.LayoutParams) listView.getLayoutParams();
         if (datas.size() > 6) {
             list.height = dp2px(340);
         } else {

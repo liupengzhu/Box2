@@ -445,7 +445,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
             public void onLongClick(View v) {
                 isLongClick = true;
                 adapter.setCheckedLayout(true);
-                adapter.notifyDataSetChanged();
+                footAdapter.notifyDataSetChanged();
                 top_layout.setVisibility(View.GONE);
                 bottom_layout.setVisibility(View.VISIBLE);
             }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Box</string>
+    <string name="app_name">安全递送箱</string>
     <item name="tag_first" type="id"></item>
     <item name="tag_second" type="id"></item>
 </resources>

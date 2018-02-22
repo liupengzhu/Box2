@@ -61,7 +61,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
-            android:text="确定"
+            android:text="搜索"
             android:textColor="@color/menu_sz_color"
             android:textSize="18sp" />
 

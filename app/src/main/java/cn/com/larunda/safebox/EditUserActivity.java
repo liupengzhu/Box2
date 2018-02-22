@@ -111,7 +111,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
     public static final String EDIT_USER_URL = Util.URL + "user/";
     public static final String COMPANY_URL = Util.URL + "company/";
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
-    public static final String DEPARTMENT_URL = Util.URL + "depar ment/";
+    public static final String DEPARTMENT_URL = Util.URL + "department/";
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
 
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;

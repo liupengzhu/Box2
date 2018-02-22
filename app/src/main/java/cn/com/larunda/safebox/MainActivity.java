@@ -34,6 +34,7 @@ import cn.com.larunda.safebox.fragment.SListFragment;
 import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
+import cn.com.larunda.safebox.service.AutoUpdateService;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 
@@ -119,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabLayout.setupWithViewPager(viewPager);
         initTabs();
         setMenuClick();
+        Intent serviceIntent = new Intent(this, AutoUpdateService.class);
+        startService(serviceIntent);
     }
 
     /**
@@ -608,6 +611,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         preferences.edit().putString("userLogInfo", null).commit();
         preferences.edit().putString("boxLogInfo", null).commit();
         preferences.edit().putString("appLogInfo", null).commit();
-        preferences.edit().putString("menuInfo",null).commit();
+        preferences.edit().putString("menuInfo", null).commit();
     }
 }

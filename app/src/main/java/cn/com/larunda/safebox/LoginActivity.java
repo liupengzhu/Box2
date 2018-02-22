@@ -20,6 +20,7 @@ import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserToken;
+import cn.com.larunda.safebox.service.AutoUpdateService;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 
@@ -131,8 +132,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     //向服务器提交用户名 密码 尝试登录
     private void loginServer(String name, String password) {
-
-
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user", name);
@@ -215,6 +214,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(this, "操作过于频繁", Toast.LENGTH_SHORT).show();
                 } else {
                     isClick = true;
+                    //0.5秒后取消已经点击标记位
                     timer = new Timer();
                     timer.schedule(new TimerTask() {
                         @Override

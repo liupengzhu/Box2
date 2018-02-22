@@ -35,12 +35,13 @@
         <activity
             android:name="cn.com.larunda.safebox.MainActivity"
             android:launchMode="singleTop" />
-        <activity android:name="cn.com.larunda.safebox.LoginActivity"
-            android:launchMode="singleTask" />
         <activity
-            android:name="cn.com.larunda.safebox.LaunchActivity">
+            android:name="cn.com.larunda.safebox.LoginActivity"
+            android:launchMode="singleTask" />
+        <activity android:name="cn.com.larunda.safebox.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -91,7 +92,12 @@
         <activity android:name="cn.com.larunda.safebox.EnclosureInfoActivity" />
         <activity android:name="cn.com.larunda.safebox.AreaInfoActivity" />
         <activity android:name="cn.com.larunda.safebox.BoxInitActivity" />
-        <activity android:name="cn.com.larunda.safebox.ValidateActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.ValidateActivity" />
+
+        <service
+            android:name="cn.com.larunda.safebox.service.AutoUpdateService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

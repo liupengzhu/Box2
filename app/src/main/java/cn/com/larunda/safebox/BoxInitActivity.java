@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -67,7 +68,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     public static final String INIT_URL = Util.URL + "box/add_box_lists" + Util.TOKEN;
     private String search;
 
-    private LinearLayout layout;
+    private NestedScrollView layout;
 
 
     @Override

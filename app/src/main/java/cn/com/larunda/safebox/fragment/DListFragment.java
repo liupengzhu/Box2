@@ -673,7 +673,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        recyclerView.scrollToPosition(0);
+        /*recyclerView.scrollToPosition(0);*/
         String content = preferences.getString("boxInfo", null);
         if (content != null) {
             if (Util.isGoodJson(content)) {

@@ -21,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +67,8 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
     public static final String INIT_URL = Util.URL + "box/add_box_lists" + Util.TOKEN;
     private String search;
 
+    private LinearLayout layout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +86,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         //每次创建时还没有网络数据 设置载入背景为可见
         loodingLayout.setVisibility(View.VISIBLE);
         loodingErrorLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         search = null;
         sendRequest();
     }
@@ -108,7 +111,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                         refreshLayout.setRefreshing(false);
                         loodingErrorLayout.setVisibility(View.VISIBLE);
                         loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
+                        layout.setVisibility(View.GONE);
                     }
                 });
             }
@@ -125,7 +128,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                                 initData(boxInitInfo);
                                 loodingErrorLayout.setVisibility(View.GONE);
                                 loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
+                                layout.setVisibility(View.VISIBLE);
                                 refreshLayout.setRefreshing(false);
                             } else {
                                 Intent intent = new Intent(BoxInitActivity.this, LoginActivity.class);
@@ -261,6 +264,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
         refreshLayout = findViewById(R.id.box_init_swiper);
         loodingErrorLayout = findViewById(R.id.box_init_loading_error_layout);
         loodingLayout = findViewById(R.id.box_init_loading_layout);
+        layout = findViewById(R.id.box_init_layout);
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

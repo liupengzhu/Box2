@@ -37,11 +37,10 @@
 
             <TextView
                 android:id="@+id/user_info_name"
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:text="zzz"
                 android:maxLines="1"
-                android:text="张三"
                 android:textColor="@color/list_text_h"
                 android:textSize="15sp" />
 

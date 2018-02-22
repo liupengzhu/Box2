@@ -204,7 +204,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_weight="1"
-                android:text="权限设置"
+                android:text="用户权限管理"
                 android:textColor="@color/menu_t_color"
                 android:textSize="20dp" />
 
@@ -235,7 +235,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@color/menu_sz_color"
-            android:text="设置"
+            android:text="软件设置"
             android:textColor="@color/white"
             android:textSize="20dp" />
 
@@ -246,7 +246,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/menu_back_color"
-            android:text="退出"
+            android:text="注销"
             android:textColor="@color/menu_sz_color"
             android:textSize="20dp" />
     </LinearLayout>

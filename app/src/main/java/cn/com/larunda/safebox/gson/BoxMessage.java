@@ -31,6 +31,7 @@ public class BoxMessage {
 
     public int bind_area_num;
     public int bind_user_num;
+    public int record_num;
 
     public String error;
 

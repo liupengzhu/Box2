@@ -68,6 +68,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     private LinearLayout layout;
     private Button putButton;
 
+    private TextView soundText;
+
     private boolean isInit = false;
 
     @Nullable
@@ -175,6 +177,12 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             electricity_text.setText("");
         }
         bind_user_text.setText("已绑定" + boxMessage.bind_user_num + "个用户");
+        if (boxMessage.record_num != 0) {
+            soundText.setVisibility(View.VISIBLE);
+            soundText.setText(boxMessage.record_num + "");
+        } else {
+            soundText.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -200,6 +208,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);
         sound_Button = view.findViewById(R.id.box_message_sound);
+
+        soundText = view.findViewById(R.id.box_message_info_sound_count_text);
 
         name_text = view.findViewById(R.id.box_message_info_name_text);
         material_text = view.findViewById(R.id.box_message_info_material_text);

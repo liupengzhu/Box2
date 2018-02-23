@@ -548,7 +548,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 break;
             case BIND_USER_REQUEST:
                 if (data != null) {
-                    bind_user_text.setText("已绑定" + data.getExtras().getInt("count", 0) + "个用户");
+                    bind_user_text.setText("已绑定" + data.getExtras().getInt("count",0) + "个用户");
                 }
                 break;
 

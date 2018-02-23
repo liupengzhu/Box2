@@ -129,7 +129,8 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         MyBox box = myBoxList.get(position);
         if (box.getBox_img() != null) {
-            Glide.with(MyApplication.getContext()).load(box.getBox_img()).placeholder(R.drawable.box_null).error(R.drawable.box_null).into(holder.boxImg);
+            Glide.with(MyApplication.getContext()).load(box.getBox_img()).placeholder(R.drawable.box_null)
+                    .error(R.drawable.box_null).into(holder.boxImg);
         }
         if (box.getBox_name() != null) {
             holder.boxName.setText(box.getBox_name());

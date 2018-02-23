@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * Created by sddt on 18-1-18.
@@ -18,6 +19,7 @@ public class PhotoDialog extends Dialog {
     private RelativeLayout choose_camera_button;
     private PhotoOnClickListener photoOnClickListener;
     private CameraOnClickListener cameraOnClickListener;
+    private TextView titleText;
 
 
     public PhotoDialog(@NonNull Context context) {
@@ -74,6 +76,7 @@ public class PhotoDialog extends Dialog {
     private void initView() {
         choose_photo_button = findViewById(R.id.choose_photo);
         choose_camera_button = findViewById(R.id.choose_camera);
+        titleText = findViewById(R.id.content_text);
     }
 
     public void setPhotoButtonOnClick(PhotoOnClickListener photoOnClickListener) {
@@ -82,6 +85,12 @@ public class PhotoDialog extends Dialog {
 
     public void setCameraButtonOnClick(CameraOnClickListener cameraOnClickListener) {
         this.cameraOnClickListener = cameraOnClickListener;
+    }
+
+    public void setText(String text) {
+        if (text != null) {
+            titleText.setText(text);
+        }
     }
 
 

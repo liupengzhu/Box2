@@ -44,6 +44,7 @@ import static cn.com.larunda.safebox.fragment.BoxMessageInfoFragment.material_te
 import static cn.com.larunda.safebox.fragment.BoxMessageInfoFragment.name_text;
 import static cn.com.larunda.safebox.fragment.BoxMessageInfoFragment.protect_text;
 import static cn.com.larunda.safebox.fragment.BoxMessageInfoFragment.size_text;
+import static cn.com.larunda.safebox.fragment.BoxMessageInfoFragment.url;
 import static cn.com.larunda.safebox.fragment.BoxMessageSafeFragment.endDateText;
 import static cn.com.larunda.safebox.fragment.BoxMessageSafeFragment.endTimeText;
 import static cn.com.larunda.safebox.fragment.BoxMessageSafeFragment.levelText;
@@ -162,8 +163,8 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
                     String endData = endDateText.getText().toString().trim();
                     String endTime = endTimeText.getText().toString().trim();
                     String lock = lockText.getText().toString().trim();
-                    if (!isEmpty(name, material, size, protect, level, startData, startTime, endData, endTime, lock)) {
-                        sendPutRequest(name, material, size, protect, level, startData, startTime, endData, endTime, lock);
+                    if (!isEmpty(url,name, material, size, protect, level, startData, startTime, endData, endTime, lock)) {
+                        sendPutRequest(url,name, material, size, protect, level, startData, startTime, endData, endTime, lock);
                     }
                 }
                 break;
@@ -184,7 +185,7 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
      * @param endTime
      * @param lock
      */
-    private void sendPutRequest(String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
+    private void sendPutRequest(String url,String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
         final JSONObject jsonObject = new JSONObject();
         final JSONObject js = new JSONObject();
         try {
@@ -192,6 +193,7 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
             jsonObject.put("f_material", material);
             jsonObject.put("f_size", size);
             jsonObject.put("f_protect_grade", protect);
+            jsonObject.put("f_pic",url);
 
             if (level.equals("三级加密")) {
                 jsonObject.put("f_encrypt_level", 3);
@@ -283,8 +285,11 @@ public class BoxActivity extends AppCompatActivity implements View.OnClickListen
      * @param lock
      * @return
      */
-    private boolean isEmpty(String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
-        if (TextUtils.isEmpty(name)) {
+    private boolean isEmpty(String url,String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
+        if (url==null) {
+            Toast.makeText(this, "图片不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "别名不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (TextUtils.isEmpty(material)) {

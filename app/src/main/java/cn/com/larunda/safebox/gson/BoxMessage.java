@@ -29,6 +29,7 @@ public class BoxMessage {
     @SerializedName("f_is_leaving")
     public String is_leaving;
 
+    public String f_pic;
     public int bind_area_num;
     public int bind_user_num;
     public int record_num;

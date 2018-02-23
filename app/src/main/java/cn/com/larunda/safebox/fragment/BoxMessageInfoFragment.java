@@ -1,11 +1,21 @@
 package cn.com.larunda.safebox.fragment;
 
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,9 +36,11 @@ import cn.com.larunda.safebox.BoxAddUserActivity;
 import cn.com.larunda.safebox.BoxInfoLogActivity;
 import cn.com.larunda.safebox.BoxInfoSoundActivity;
 import cn.com.larunda.safebox.DynamicPasswordActivity;
+import cn.com.larunda.safebox.EditUserActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -36,12 +48,19 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.PhotoDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by sddt on 18-1-18.
@@ -54,6 +73,9 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     RelativeLayout log_Button;
     RelativeLayout sound_Button;
     public static final String MESSAGE_URI = Util.URL + "box/";
+    public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
+    public static final int TAKE_PHOTO = 1;
+    public static final int CHOOSE_ALBUM = 0;
 
     public static EditText name_text;
     public static EditText material_text;
@@ -71,6 +93,13 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     private TextView soundText;
 
     private boolean isInit = false;
+
+    private ImageView photo;
+    private PhotoDialog photoDialog;
+    private Uri imageUri;
+
+    private String path;
+    public static String url = null;
 
     @Nullable
     @Override
@@ -183,6 +212,12 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         } else {
             soundText.setVisibility(View.GONE);
         }
+        if (boxMessage.f_pic != null) {
+            url = boxMessage.f_pic;
+            Glide.with(this).load(Util.PATH + url).placeholder(R.drawable.box_null).error(R.drawable.box_null).into(photo);
+        } else {
+            url = null;
+        }
     }
 
     /**
@@ -195,6 +230,20 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         sound_Button.setOnClickListener(this);
         putButton.setOnClickListener(this);
         loodingErrorLayout.setOnClickListener(this);
+
+        photo.setOnClickListener(this);
+        photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraPhoto();
+            }
+        });
+        photoDialog.setPhotoButtonOnClick(new PhotoDialog.PhotoOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseFromAlbum();
+            }
+        });
     }
 
     /**
@@ -208,6 +257,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         password_Button = view.findViewById(R.id.box_message_password);
         log_Button = view.findViewById(R.id.box_message_log);
         sound_Button = view.findViewById(R.id.box_message_sound);
+
+        photo = view.findViewById(R.id.box_message_info_img);
+        photoDialog = new PhotoDialog(getContext());
+
 
         soundText = view.findViewById(R.id.box_message_info_sound_count_text);
 
@@ -277,6 +330,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.box_message_info_loading_error_layout:
                 sendHttpRequest();
+                break;
+            case R.id.box_message_info_img:
+                photoDialog.show();
+                photoDialog.setText("编辑图片");
                 break;
             default:
                 break;
@@ -389,5 +446,232 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     public void onResume() {
         super.onResume();
         sendHttpRequest();
+    }
+
+
+    /**
+     * 相册选择照片方法
+     */
+    private void chooseFromAlbum() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_ALBUM);
+    }
+
+    /**
+     * 拍照方法
+     */
+    private void cameraPhoto() {
+        File outputImage = new File(getContext().getExternalCacheDir(), "output_image.jpg");
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            imageUri = FileProvider.getUriForFile(getContext(),
+                    "cn.com.larunda.cameraalbumtest.fileprovider", outputImage);
+        } else {
+            imageUri = Uri.fromFile(outputImage);
+        }
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, TAKE_PHOTO);
+    }
+
+    /**
+     * activity回调方法
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(imageUri));
+                        path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        swipeRefreshLayout.setRefreshing(true);
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + BoxActivity.token + "&folder_type=" + "box", path, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            swipeRefreshLayout.setRefreshing(false);
+                                            Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                final String content = response.body().string();
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            parseContent(content);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        photoDialog.cancel();
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                break;
+            case CHOOSE_ALBUM:
+                if (resultCode == RESULT_OK) {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        handleImageOnKitKat(data);
+                    } else {
+                        handleImageBeforeKitKat(data);
+                    }
+                }
+                break;
+
+        }
+    }
+
+    private void handleImageBeforeKitKat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri, null);
+        displayImage(imagePath);
+
+    }
+
+
+    @TargetApi(19)
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(getContext(), uri)) {
+            //如果是document类型的uri，则通过documentId处理
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+
+            }
+
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            //如果是content了类型的Uri，则使用普通方法处理
+            imagePath = getImagePath(uri, null);
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            //如果是file 类型的uri 直接获取图片路径即可
+            imagePath = uri.getPath();
+        }
+        displayImage(imagePath);
+
+
+    }
+
+
+    private void displayImage(String imagePath) {
+        if (imagePath != null) {
+            path = imagePath;
+            swipeRefreshLayout.setRefreshing(true);
+            HttpUtil.sendPostImageWithHttp(UPLOAD + BoxActivity.token + "&folder_type=" + "box", imagePath, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                                Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseContent(content);
+                            }
+                        });
+                    }
+                }
+            });
+            photoDialog.cancel();
+        }
+
+    }
+
+    /**
+     * 解析服务器返回数据
+     *
+     * @param content
+     */
+    private void parseContent(String content) {
+        if (Util.isGoodJson(content)) {
+            PhotoUrl photoUrl = Util.handlePhotoUrl(content);
+            if (photoUrl != null && photoUrl.getError() == null) {
+                if (photoUrl.getMessage() != null) {
+                    Toast.makeText(getContext(), photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            } else {
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                BoxActivity.preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+
+        } else {
+            if (content != null) {
+                url = content;
+                Glide.with(this).load(Util.PATH + url)
+                        .skipMemoryCache(true) // 不使用内存缓存
+                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                        .placeholder(R.drawable.box_null)
+                        .error(R.drawable.box_null).into(photo);
+                Toast.makeText(getContext(), "图片上传成功", Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+        }
+    }
+
+
+    private String getImagePath(Uri externalContentUri, String selection) {
+        String path = null;
+        Cursor cursor = getContext().getContentResolver().query(externalContentUri, null, selection, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+
     }
 }

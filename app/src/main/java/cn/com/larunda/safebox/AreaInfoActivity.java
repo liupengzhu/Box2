@@ -219,6 +219,9 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onLeftBackButtonClickListener(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("count", adapter.getItemCount());
+                setResult(RESULT_OK, intent);
                 finish();
             }
 
@@ -401,6 +404,9 @@ public class AreaInfoActivity extends AppCompatActivity implements View.OnClickL
             cancleLongClick();
 
         } else {
+            Intent intent = new Intent();
+            intent.putExtra("count", adapter.getItemCount());
+            setResult(RESULT_OK, intent);
             finish();
 
         }

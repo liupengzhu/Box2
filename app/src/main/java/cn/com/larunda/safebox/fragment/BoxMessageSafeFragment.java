@@ -90,6 +90,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     private Button putButton;
 
     private boolean isInit = false;
+    private static final int BIND_ENCLOSURE = 3;
 
     @Nullable
     @Override
@@ -103,13 +104,13 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
         loodingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
         isInit = true;
+        sendHttpRequest();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        sendHttpRequest();
     }
 
     /**
@@ -375,7 +376,6 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
             long start = sdf.parse(startDate).getTime();
             long end = sdf.parse(endDate).getTime();
             if (end > start) {
-
                 return true;
             }
             Toast.makeText(getContext(), "开始时间必须小于结束时间", Toast.LENGTH_SHORT).show();
@@ -443,7 +443,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                 if (BoxActivity.ID != null) {
                     Intent intent = new Intent(getContext(), AreaInfoActivity.class);
                     intent.putExtra("id", BoxActivity.ID);
-                    startActivity(intent);
+                    startActivityForResult(intent, BIND_ENCLOSURE);
                 }
                 break;
             case R.id.box_message_track:
@@ -634,6 +634,18 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        sendHttpRequest();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case BIND_ENCLOSURE:
+                if (data != null) {
+                    bind_area_text.setText("已设置" + data.getIntExtra("count", 0) + "个区域");
+                }
+                break;
+
+        }
     }
 }

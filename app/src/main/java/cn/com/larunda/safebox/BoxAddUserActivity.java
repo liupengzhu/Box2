@@ -235,6 +235,9 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onLeftBackButtonClickListener(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("count", adapter.getItemCount());
+                setResult(RESULT_OK,intent);
                 finish();
             }
 
@@ -416,6 +419,9 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
             cancleLongClick();
 
         } else {
+            Intent intent = new Intent();
+            intent.putExtra("count", adapter.getItemCount());
+            setResult(RESULT_OK,intent);
             finish();
 
         }
@@ -456,6 +462,12 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
             adapter.notifyDataSetChanged();
 
         }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
     }
 }

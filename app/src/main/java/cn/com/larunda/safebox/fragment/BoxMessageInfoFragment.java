@@ -101,6 +101,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
 
     private String path;
     public static String url = null;
+    private static final int BIND_USER_REQUEST = 2;
 
     @Nullable
     @Override
@@ -113,6 +114,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         loodingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
         isInit = true;
+        sendHttpRequest();
         return view;
     }
 
@@ -120,7 +122,6 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     @Override
     public void onStart() {
         super.onStart();
-        sendHttpRequest();
     }
 
     /**
@@ -294,7 +295,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 if (BoxActivity.ID != null) {
                     Intent bindingUserIntent = new Intent(getContext(), BoxAddUserActivity.class);
                     bindingUserIntent.putExtra("id", BoxActivity.ID);
-                    startActivity(bindingUserIntent);
+                    startActivityForResult(bindingUserIntent, BIND_USER_REQUEST);
                 }
                 break;
             case R.id.box_message_password:
@@ -446,7 +447,6 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        sendHttpRequest();
     }
 
 
@@ -544,6 +544,11 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                     } else {
                         handleImageBeforeKitKat(data);
                     }
+                }
+                break;
+            case BIND_USER_REQUEST:
+                if (data != null) {
+                    bind_user_text.setText("已绑定" + data.getExtras().getInt("count", 0) + "个用户");
                 }
                 break;
 

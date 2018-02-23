@@ -73,6 +73,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
     RelativeLayout log_Button;
     RelativeLayout sound_Button;
     public static final String MESSAGE_URI = Util.URL + "box/";
+
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_ALBUM = 0;

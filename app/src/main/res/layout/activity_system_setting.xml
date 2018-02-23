@@ -27,8 +27,7 @@
             android:layout_marginTop="8dp"
             android:text="系统设置"
             android:textColor="@color/list_text_h"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -56,10 +55,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
-                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -93,10 +92,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
-                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -130,12 +129,12 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
-                android:checked="true"
 
                 />
 
@@ -167,10 +166,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
+                android:checked="true"
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
-                android:checked="true"
                 android:thumb="@drawable/thumb"
                 android:track="@drawable/track"
 
@@ -204,43 +203,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
-                android:switchMinWidth="0dp"
-                android:textOff=""
-                android:textOn=""
                 android:checked="true"
-                android:thumb="@drawable/thumb"
-                android:track="@drawable/track"
-
-                />
-
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:orientation="vertical" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:text="清空缓存"
-                android:textColor="@color/list_text_h"
-                android:textSize="18sp" />
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
                 android:switchMinWidth="0dp"
                 android:textOff=""
                 android:textOn=""
@@ -250,6 +213,8 @@
                 />
 
         </RelativeLayout>
+
+
         <ImageView
             android:id="@+id/system_setting_fingerprint_img"
             android:layout_width="match_parent"
@@ -287,6 +252,35 @@
 
                 />
 
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line"
+            android:orientation="vertical" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:text="清空缓存"
+                android:textColor="@color/list_text_h"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/right_icon" />
         </RelativeLayout>
 
 

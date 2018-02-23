@@ -55,7 +55,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_jian" />
+                        android:src="@drawable/right_icon" />
                 </RelativeLayout>
 
                 <ImageView
@@ -158,7 +158,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_jian" />
+                        android:src="@drawable/right_icon" />
 
 
                 </RelativeLayout>
@@ -204,7 +204,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_jian" />
+                        android:src="@drawable/right_icon" />
 
 
                 </RelativeLayout>
@@ -323,7 +323,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_jian" />
+                        android:src="@drawable/right_icon" />
 
 
                 </RelativeLayout>
@@ -359,7 +359,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_jian" />
+                        android:src="@drawable/right_icon" />
 
 
                 </RelativeLayout>

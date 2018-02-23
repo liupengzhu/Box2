@@ -90,7 +90,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/right_jian" />
+                android:src="@drawable/right_icon" />
 
 
         </LinearLayout>
@@ -121,7 +121,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/right_jian" />
+                android:src="@drawable/right_icon" />
 
         </LinearLayout>
 
@@ -153,7 +153,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/right_jian" />
+                android:src="@drawable/right_icon" />
         </LinearLayout>
 
         <ImageView
@@ -183,7 +183,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/right_jian" />
+                android:src="@drawable/right_icon" />
         </LinearLayout>
 
         <ImageView
@@ -213,7 +213,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/right_jian" />
+                android:src="@drawable/right_icon" />
         </LinearLayout>
 
         <ImageView

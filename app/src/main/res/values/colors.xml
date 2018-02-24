@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="line">#DCDee3</color>
     <color name="normal">#2181f3</color>
-    <color name="warning">#FF6026</color>
+    <color name="warning">#FF9c00</color>
     <color name="green">#8fd170</color>
     <color name="green2">#6bc241</color>
     <color name="background">#F4f4f6</color>
@@ -25,4 +25,5 @@
     <color name="list_text_n">#696e83</color>
     <color name="list_text_l">#b1b1bb</color>
     <color name="log_wdu">#ff5b1f</color>
+
 </resources>

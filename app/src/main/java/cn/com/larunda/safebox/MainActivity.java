@@ -31,6 +31,7 @@ import com.larunda.safebox.R;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.HomeFragment;
 import cn.com.larunda.safebox.fragment.DListFragment;
+import cn.com.larunda.safebox.fragment.NewHomeFragment;
 import cn.com.larunda.safebox.fragment.SListFragment;
 import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.BoxInfo;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
-    public static final String IMG_URI = "http://safebox.dsmcase.com:90";
+    public static final String IMG_URI = Util.PATH;
 
     private String[] titles = {"总览", "箱体列表", "日志"};
     private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.rz1};
@@ -257,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (menuUserInfo.userImg != null) {
             img_uri = menuUserInfo.userImg.replace('\\', ' ');
-            Glide.with(this).load(IMG_URI + img_uri).placeholder(R.drawable.user).dontAnimate()
+            Glide.with(this).load(IMG_URI + img_uri).placeholder(R.drawable.user)
+                    .dontAnimate()
                     .error(R.mipmap.user_img)
                     .into(menu_user_img);
 
@@ -519,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout = findViewById(R.id.drawer_layout);
 
 
-        fragments.add(new HomeFragment());
+        fragments.add(new NewHomeFragment());
         fragments.add(new DListFragment());
         fragments.add(new TotalLogFragment());
     }

@@ -64,8 +64,8 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="13dp"
-                        android:layout_height="13dp"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
                         android:src="@drawable/green_warning" />
 
                     <TextView
@@ -73,8 +73,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="区域警报"
-                        android:textColor="@color/list_text_h"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_h" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -107,8 +106,8 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="13dp"
-                        android:layout_height="13dp"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
                         android:src="@drawable/leaving_warning" />
 
                     <TextView
@@ -116,8 +115,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="离位警报"
-                        android:textColor="@color/list_text_h"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_h" />
                 </LinearLayout>
 
             </LinearLayout>

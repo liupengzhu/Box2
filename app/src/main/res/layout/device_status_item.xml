@@ -65,7 +65,7 @@
                 app:circleAngle="90"
                 app:circleColor="@color/menu_sz_color"
                 app:circleRadius="40dp"
-                app:circleStroke="5dp"
+                app:circleStroke="8dp"
                 app:number="20"
                 app:numberColor="@color/menu_sz_color"
                 app:numberSize="25sp"
@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="60dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -88,7 +88,7 @@
 
                     <View
                         android:layout_width="15dp"
-                        android:layout_height="8dp"
+                        android:layout_height="10dp"
                         android:background="@color/menu_sz_color" />
 
                     <TextView
@@ -96,29 +96,27 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="正常使用"
-                        android:textColor="@color/list_text_h"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_h" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="13"
-                        android:textColor="@color/menu_sz_color"
-                        android:textSize="12sp" />
+                        android:textColor="@color/menu_sz_color" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <View
                         android:layout_width="15dp"
-                        android:layout_height="8dp"
+                        android:layout_height="10dp"
                         android:background="@color/warning" />
 
                     <TextView
@@ -126,29 +124,27 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="离位报警"
-                        android:textColor="@color/list_text_h"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_h" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="5"
-                        android:textColor="@color/warning"
-                        android:textSize="12sp" />
+                        android:textColor="@color/warning" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <View
                         android:layout_width="15dp"
-                        android:layout_height="8dp"
+                        android:layout_height="10dp"
                         android:background="@color/list_text_l" />
 
                     <TextView
@@ -156,16 +152,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="通信异常"
-                        android:textColor="@color/list_text_h"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_h" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="2"
-                        android:textColor="@color/list_text_l"
-                        android:textSize="12sp" />
+                        android:textColor="@color/list_text_l" />
 
                 </LinearLayout>
 
@@ -184,8 +178,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="10dp"
+                android:layout_width="15dp"
+                android:layout_height="12dp"
                 android:src="@drawable/device_icon" />
 
             <TextView
@@ -193,16 +187,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="设备总数"
-                android:textColor="@color/list_text_h"
-                android:textSize="12sp" />
+                android:textColor="@color/list_text_h" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="30"
-                android:textColor="@color/menu_sz_color"
-                android:textSize="12sp" />
+                android:textColor="@color/menu_sz_color" />
 
             <ImageView
                 android:layout_width="0.5dp"
@@ -211,8 +203,8 @@
                 android:background="@color/line" />
 
             <ImageView
-                android:layout_width="13dp"
-                android:layout_height="13dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:layout_marginLeft="30dp"
                 android:src="@drawable/unuser_icon" />
 
@@ -221,16 +213,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="未使用"
-                android:textColor="@color/list_text_h"
-                android:textSize="12sp" />
+                android:textColor="@color/list_text_h" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="2"
-                android:textColor="@color/list_text_l"
-                android:textSize="12sp" />
+                android:textColor="@color/list_text_l" />
 
         </LinearLayout>
 

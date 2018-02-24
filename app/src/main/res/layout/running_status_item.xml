@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_toRightOf="@id/running_status_img"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
@@ -70,8 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="服务器运行状态"
-                    android:textColor="@color/list_text_h"
-                    android:textSize="12sp" />
+                    android:textColor="@color/list_text_h" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -79,8 +78,7 @@
                     android:layout_marginLeft="5dp"
                     android:background="@drawable/circle_green"
                     android:text="正常"
-                    android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 

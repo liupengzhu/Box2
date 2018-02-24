@@ -69,7 +69,7 @@
                 app:number="20"
                 app:numberColor="@color/menu_sz_color"
                 app:numberSize="25sp"
-                app:text="正在使用"
+                app:text="在线数量"
                 app:textColor="@color/list_text_h"
                 app:textSize="12sp" />
 
@@ -95,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="正常使用"
+                        android:text="正在运送"
                         android:textColor="@color/list_text_h" />
 
                     <TextView
@@ -123,7 +123,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="离位报警"
+                        android:text="正在报警"
                         android:textColor="@color/list_text_h" />
 
                     <TextView
@@ -212,7 +212,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="未使用"
+                android:text="待使用"
                 android:textColor="@color/list_text_h" />
 
             <TextView

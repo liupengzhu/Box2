@@ -78,16 +78,10 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="50dp"
-                android:background="@color/line" />
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="25dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -115,6 +109,42 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="离位警报"
+                        android:textColor="@color/list_text_h" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="5"
+                    android:textColor="@color/menu_sz_color"
+                    android:textSize="35sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/defance_warning" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="布防警报"
                         android:textColor="@color/list_text_h" />
                 </LinearLayout>
 

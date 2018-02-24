@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleTextView">
+        <attr name="backgroundCircleColor" format="color" />
+        <attr name="circleColor" format="color" />
+        <attr name="numberColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="numberSize" format="dimension" />
+        <attr name="textSize" format="dimension" />
+        <attr name="circleRadius" format="dimension" />
+        <attr name="circleStroke" format="dimension" />
+        <attr name="numberPadding" format="dimension" />
+        <attr name="textPadding" format="dimension" />
+        <attr name="circleAngle" format="float" />
+        <attr name="number" format="string" />
+        <attr name="text" format="string" />
+    </declare-styleable>
+
+</resources>

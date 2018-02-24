@@ -1,1 +1,1 @@
-include ':app', ':titlebar', ':battery', ':selfdialog', ':horizontalprogressbar'
+include ':app', ':titlebar', ':battery', ':selfdialog', ':horizontalprogressbar', ':circletextview'

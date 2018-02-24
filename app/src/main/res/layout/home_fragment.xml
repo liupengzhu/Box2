@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swiper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -42,6 +44,17 @@
                     android:padding="5dp"
                     android:text="更多日志"
                     android:textColor="@color/list_text_n" />
+                <com.example.circletextview.CircleTextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:background="@color/black"
+                    android:layout_marginTop="10dp"
+                    app:circleAngle="120"
+                    app:backgroundCircleColor="@color/line"
+                    app:circleRadius="60dp"
+                    app:circleStroke="15dp"
+                    />
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

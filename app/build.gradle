@@ -47,4 +47,5 @@ dependencies {
     implementation project(':battery')
     implementation project(':selfdialog')
     implementation project(':horizontalprogressbar')
+    implementation project(':circletextview')
 }

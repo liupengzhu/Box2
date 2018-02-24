@@ -37,6 +37,7 @@ import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.service.AutoUpdateService;
+import cn.com.larunda.safebox.util.CustomViewPager;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 
@@ -57,7 +58,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static ViewPager viewPager;
+    public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
 
     private CircleImageView menu_user_img;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView menu_user_tell;
     private TitleBar titleBar;
 
-    private DrawerLayout drawerLayout;
+    public static DrawerLayout drawerLayout;
 
     private LinearLayout user_info;
     private LinearLayout enclosure;
@@ -390,6 +391,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (i) {
             case 0:
                 tabLayout.setVisibility(View.VISIBLE);
+                titleBar.setVisibility(View.GONE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(0);
@@ -418,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     tabLayout.setVisibility(View.VISIBLE);
                 }
+                titleBar.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("箱体列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
@@ -443,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 2:
 
                 tabLayout.setVisibility(View.VISIBLE);
+                titleBar.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("授权处理");
                 titleBar.setRightButtonSrc(0);
@@ -467,6 +471,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case 3:
                 tabLayout.setVisibility(View.VISIBLE);
+                titleBar.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("日志列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
@@ -537,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             imageView.setBackgroundResource(R.drawable.sy2);
             textView.setTextColor(getResources().getColor(R.color.normal));
             //初始化tab时同时初始化title
+            titleBar.setVisibility(View.GONE);
             titleBar.setRightButtonSrc(R.drawable.menu);
             titleBar.setTextViewText("");
             titleBar.setRightButtonSrc(0);

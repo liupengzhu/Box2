@@ -34,6 +34,8 @@ import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.EnclosureData;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.recycler.Enclosure;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -50,7 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnclosureActivity extends AppCompatActivity implements View.OnClickListener {
+public class EnclosureActivity extends BaseActivity implements View.OnClickListener {
 
     TitleBar titleBar;
     EnclosureAdapter adapter;
@@ -275,7 +277,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -357,7 +359,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                             intent.putExtra("token_timeout", "登录超时");
                             preferences.edit().putString("token", null).commit();
                             startActivity(intent);
-                            finish();
+                            ActivityCollector.finishAllActivity();
                         }
                     });
                 }
@@ -612,7 +614,7 @@ public class EnclosureActivity extends AppCompatActivity implements View.OnClick
                     intent.putExtra("token_timeout", "登录超时");
                     preferences.edit().putString("token", null).commit();
                     startActivity(intent);
-                    finish();
+                    ActivityCollector.finishAllActivity();
                 }
             });
         }

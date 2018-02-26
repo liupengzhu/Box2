@@ -56,6 +56,8 @@ import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.PhotoUrl;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -63,7 +65,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class EditUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditUserActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -199,7 +201,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -321,7 +323,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -393,7 +395,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -446,7 +448,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -739,7 +741,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                     intent.putExtra("token_timeout", "登录超时");
                     preferences.edit().putString("token", null).commit();
                     startActivity(intent);
-                    finish();
+                    ActivityCollector.finishAllActivity();
                 }
             });
         }
@@ -953,7 +955,7 @@ public class EditUserActivity extends AppCompatActivity implements View.OnClickL
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
-                finish();
+                ActivityCollector.finishAllActivity();
             }
 
 

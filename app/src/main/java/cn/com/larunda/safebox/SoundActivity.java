@@ -31,6 +31,8 @@ import cn.com.larunda.safebox.adapter.SoundInfoAdapter;
 import cn.com.larunda.safebox.gson.BoxData;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.recycler.SoundInfo;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -44,7 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SoundActivity extends AppCompatActivity implements View.OnClickListener {
+public class SoundActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -158,7 +160,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -404,7 +406,7 @@ public class SoundActivity extends AppCompatActivity implements View.OnClickList
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

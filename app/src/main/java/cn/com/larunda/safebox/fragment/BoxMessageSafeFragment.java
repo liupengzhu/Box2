@@ -27,6 +27,7 @@ import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.TrackActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Result;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -156,7 +157,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                                 intent.putExtra("token_timeout", "登录超时");
                                 BoxActivity.preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                getActivity().finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -572,7 +573,7 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                                 intent.putExtra("token_timeout", "登录超时");
                                 BoxActivity.preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                getActivity().finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

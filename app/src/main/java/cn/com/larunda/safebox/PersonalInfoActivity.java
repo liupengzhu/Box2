@@ -55,6 +55,8 @@ import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.PhotoUrl;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -62,7 +64,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class PersonalInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class PersonalInfoActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -192,7 +194,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -375,7 +377,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -429,7 +431,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -640,7 +642,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -897,7 +899,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
-                finish();
+                ActivityCollector.finishAllActivity();
             }
 
         } else {
@@ -1006,7 +1008,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                     intent.putExtra("token_timeout", "登录超时");
                     preferences.edit().putString("token", null).commit();
                     startActivity(intent);
-                    finish();
+                    ActivityCollector.finishAllActivity();
                 }
             });
         }

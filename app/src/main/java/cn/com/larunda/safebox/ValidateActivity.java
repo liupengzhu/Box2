@@ -33,13 +33,15 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import cn.com.larunda.safebox.gson.ValidateData;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ValidateActivity extends AppCompatActivity implements View.OnClickListener {
+public class ValidateActivity extends BaseActivity implements View.OnClickListener {
 
     private SharedPreferences preferences;
     private String token;
@@ -225,7 +227,7 @@ public class ValidateActivity extends AppCompatActivity implements View.OnClickL
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
-                finish();
+                ActivityCollector.finishAllActivity();
             }
 
 

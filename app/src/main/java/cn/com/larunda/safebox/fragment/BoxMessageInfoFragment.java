@@ -42,6 +42,7 @@ import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -167,7 +168,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                                 intent.putExtra("token_timeout", "登录超时");
                                 BoxActivity.preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                getActivity().finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -419,7 +420,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                                     intent.putExtra("token_timeout", "登录超时");
                                     BoxActivity.preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
-                                    getActivity().finish();
+                                    ActivityCollector.finishAllActivity();
                                 }
                             });
                         }
@@ -548,7 +549,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 break;
             case BIND_USER_REQUEST:
                 if (data != null) {
-                    bind_user_text.setText("已绑定" + data.getExtras().getInt("count",0) + "个用户");
+                    bind_user_text.setText("已绑定" + data.getExtras().getInt("count", 0) + "个用户");
                 }
                 break;
 
@@ -648,7 +649,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 intent.putExtra("token_timeout", "登录超时");
                 BoxActivity.preferences.edit().putString("token", null).commit();
                 startActivity(intent);
-                getActivity().finish();
+                ActivityCollector.finishAllActivity();
             }
 
 

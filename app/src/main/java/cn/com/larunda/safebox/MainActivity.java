@@ -37,6 +37,8 @@ import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.service.AutoUpdateService;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.CustomViewPager;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -56,7 +58,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
 
                             }
                         });

@@ -38,13 +38,15 @@ import cn.com.larunda.safebox.adapter.BoxAddUserAdapter;
 import cn.com.larunda.safebox.gson.BoxAddUserData;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.recycler.BoxAddUser;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class BoxAddUserActivity extends AppCompatActivity implements View.OnClickListener {
+public class BoxAddUserActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private Button addButton;
@@ -159,7 +161,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -393,7 +395,7 @@ public class BoxAddUserActivity extends AppCompatActivity implements View.OnClic
                     intent.putExtra("token_timeout", "登录超时");
                     preferences.edit().putString("token", null).commit();
                     startActivity(intent);
-                    finish();
+                    ActivityCollector.finishAllActivity();
                 }
             });
         }

@@ -23,6 +23,8 @@ import cn.com.larunda.safebox.adapter.BoxAddFragmentAdapter;
 import cn.com.larunda.safebox.fragment.BoxAddInfoFragment;
 import cn.com.larunda.safebox.fragment.BoxAddSafeFragment;
 import cn.com.larunda.safebox.gson.Result;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -51,7 +53,7 @@ import static cn.com.larunda.safebox.fragment.BoxAddSafeFragment.lockText;
 import static cn.com.larunda.safebox.fragment.BoxAddSafeFragment.startDateText;
 import static cn.com.larunda.safebox.fragment.BoxAddSafeFragment.startTimeText;
 
-public class BoxAddActivity extends AppCompatActivity implements View.OnClickListener {
+public class BoxAddActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private TabLayout tabLayout;
@@ -245,7 +247,7 @@ public class BoxAddActivity extends AppCompatActivity implements View.OnClickLis
                                     intent.putExtra("token_timeout", "登录超时");
                                     preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
-                                    finish();
+                                    ActivityCollector.finishAllActivity();
                                 }
                             });
                         }

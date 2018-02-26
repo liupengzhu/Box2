@@ -14,7 +14,9 @@ import com.larunda.safebox.R;
 
 import java.io.InputStream;
 
-public class LaunchActivity extends AppCompatActivity {
+import cn.com.larunda.safebox.util.BaseActivity;
+
+public class LaunchActivity extends BaseActivity {
 
     private ConstraintLayout layout;
 

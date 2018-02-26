@@ -44,13 +44,15 @@ import java.util.List;
 
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.PathData;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class TrackActivity extends AppCompatActivity {
+public class TrackActivity extends BaseActivity {
 
     private TitleBar titleBar;
     private LocationClient mLocationClient;
@@ -143,7 +145,7 @@ public class TrackActivity extends AppCompatActivity {
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

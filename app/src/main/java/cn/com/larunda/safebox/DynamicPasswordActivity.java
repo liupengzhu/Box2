@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import cn.com.larunda.safebox.gson.DynamicPassword;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -36,7 +38,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class DynamicPasswordActivity extends AppCompatActivity implements View.OnClickListener {
+public class DynamicPasswordActivity extends BaseActivity implements View.OnClickListener {
 
     public final String PASSWORD_URL = Util.URL + "box/show_dynamic_password" + Util.TOKEN;
     static HorizontalProgressBarWithNunber progressBar;
@@ -151,7 +153,7 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

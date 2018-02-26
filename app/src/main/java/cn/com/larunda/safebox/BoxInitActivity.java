@@ -40,6 +40,8 @@ import cn.com.larunda.safebox.adapter.BoxInitAdapter;
 import cn.com.larunda.safebox.gson.BoxInitData;
 import cn.com.larunda.safebox.gson.BoxInitInfo;
 import cn.com.larunda.safebox.recycler.BoxInit;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -47,7 +49,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class BoxInitActivity extends AppCompatActivity implements View.OnClickListener {
+public class BoxInitActivity extends BaseActivity implements View.OnClickListener {
 
     private SharedPreferences preferences;
     private String token;
@@ -136,7 +138,7 @@ public class BoxInitActivity extends AppCompatActivity implements View.OnClickLi
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
 
 

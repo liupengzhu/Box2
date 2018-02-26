@@ -29,13 +29,15 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import cn.com.larunda.safebox.gson.Config;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class PersonalSettingActivity extends AppCompatActivity implements View.OnClickListener {
+public class PersonalSettingActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private Switch changeName;
@@ -129,7 +131,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -393,7 +395,7 @@ public class PersonalSettingActivity extends AppCompatActivity implements View.O
                 intent.putExtra("token_timeout", "登录超时");
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
-                finish();
+                ActivityCollector.finishAllActivity();
             }
 
         }

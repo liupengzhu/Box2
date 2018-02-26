@@ -44,13 +44,15 @@ import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.gson.DetailedSoundData;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.recycler.BoxInfoSound;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnClickListener {
+public class BoxInfoSoundActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
 
@@ -208,7 +210,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -488,7 +490,7 @@ public class BoxInfoSoundActivity extends AppCompatActivity implements View.OnCl
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

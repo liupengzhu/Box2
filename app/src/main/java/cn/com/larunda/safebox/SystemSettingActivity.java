@@ -19,7 +19,9 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
-public class SystemSettingActivity extends AppCompatActivity implements View.OnClickListener {
+import cn.com.larunda.safebox.util.BaseActivity;
+
+public class SystemSettingActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private Switch fingerprint;

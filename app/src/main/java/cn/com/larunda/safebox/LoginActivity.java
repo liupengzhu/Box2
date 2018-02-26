@@ -26,6 +26,7 @@ import com.larunda.safebox.R;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 import cn.com.larunda.safebox.service.AutoUpdateService;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 

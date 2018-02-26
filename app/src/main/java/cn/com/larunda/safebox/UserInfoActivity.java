@@ -34,6 +34,8 @@ import cn.com.larunda.safebox.adapter.UserInfoAdapter;
 import cn.com.larunda.safebox.gson.UserData;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.recycler.MyUserInfo;
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 
 import com.larunda.titlebar.TitleBar;
@@ -51,7 +53,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class UserInfoActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String USER_INFO_URL = Util.URL + "user" + Util.TOKEN;
     public static final String IMG_URL = "http://safebox.dsmcase.com:90";
@@ -295,7 +297,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                             intent.putExtra("token_timeout", "登录超时");
                             preferences.edit().putString("token", null).commit();
                             startActivity(intent);
-                            finish();
+                            ActivityCollector.finishAllActivity();
                         }
                     });
                 }
@@ -400,7 +402,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }
@@ -596,7 +598,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                     intent.putExtra("token_timeout", "登录超时");
                     preferences.edit().putString("token", null).commit();
                     startActivity(intent);
-                    finish();
+                    ActivityCollector.finishAllActivity();
                 }
             });
         }

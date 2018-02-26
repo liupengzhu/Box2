@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -58,6 +59,8 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
     private TextView leavingText;
     private TextView defenceText;
 
+    private SwipeRefreshLayout refreshLayout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,6 +111,16 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
         areaText = view.findViewById(R.id.warning_count_area);
         leavingText = view.findViewById(R.id.warning_count_leaving);
         defenceText = view.findViewById(R.id.warning_count_defence);
+
+        refreshLayout = view.findViewById(R.id.new_home_refresh);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setProgressViewOffset(false, 100, 300);//设置刷新进度条偏移量
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                queryInfo();
+            }
+        });
     }
 
     /**
@@ -129,7 +142,11 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 查询首页数据
+     */
     public void queryInfo() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(BOX_URI + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -137,7 +154,7 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
+                        refreshLayout.setRefreshing(false);
                     }
                 });
 
@@ -153,6 +170,7 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 showInfo(home);
+                                refreshLayout.setRefreshing(false);
                             }
                         });
 

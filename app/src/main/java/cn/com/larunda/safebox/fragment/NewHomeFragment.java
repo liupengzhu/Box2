@@ -14,8 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.circletextview.CircleTextView;
 import com.larunda.safebox.R;
 
@@ -61,6 +65,10 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
 
     private SwipeRefreshLayout refreshLayout;
 
+    private LinearLayout loadingErrorLayout;
+    private ImageView loadingLayout;
+    private LinearLayout layout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -81,6 +89,10 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        //每次fragment创建时还没有网络数据 设置载入背景为可见
+        loadingLayout.setVisibility(View.VISIBLE);
+        loadingErrorLayout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
         queryInfo();
     }
 
@@ -121,6 +133,10 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                 queryInfo();
             }
         });
+
+        loadingErrorLayout = view.findViewById(R.id.new_home_loading_error_layout);
+        loadingLayout = view.findViewById(R.id.new_home_loading_layout);
+        layout = view.findViewById(R.id.new_home_layout);
     }
 
     /**
@@ -154,6 +170,9 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        loadingLayout.setVisibility(View.GONE);
+                        loadingErrorLayout.setVisibility(View.VISIBLE);
+                        layout.setVisibility(View.GONE);
                         refreshLayout.setRefreshing(false);
                     }
                 });
@@ -170,6 +189,9 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 showInfo(home);
+                                loadingLayout.setVisibility(View.GONE);
+                                loadingErrorLayout.setVisibility(View.GONE);
+                                layout.setVisibility(View.VISIBLE);
                                 refreshLayout.setRefreshing(false);
                             }
                         });
@@ -210,6 +232,12 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                 companyTel.setText(home.info.company_tel);
             } else {
                 companyTel.setText("");
+            }
+            if (home.info.company_pic != null) {
+                Glide.with(this).load(Util.PATH + home.info.company_pic).placeholder(R.drawable.company)
+                        .dontAnimate()
+                        .error(R.drawable.company)
+                        .into(companyImg);
             }
             circleTextView.setNumber(home.info.on_line + "");
             shippingText.setText(home.info.shipping + "");

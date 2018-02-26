@@ -25,17 +25,18 @@
 
         <EditText
             android:id="@+id/enclosure_serch_edit"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
-            android:imeOptions="actionSearch"
-            android:singleLine="true"
-            android:nextFocusDown="@id/enclosure_serch_edit"
+            android:layout_marginRight="70dp"
             android:background="@drawable/serch_edit"
             android:hint="地理围栏名称"
+            android:imeOptions="actionSearch"
             android:maxLines="1"
+            android:nextFocusDown="@id/enclosure_serch_edit"
+            android:singleLine="true"
             android:textCursorDrawable="@drawable/color_cursor" />
 
         <ImageView

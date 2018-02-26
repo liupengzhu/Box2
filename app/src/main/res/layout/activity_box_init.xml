@@ -24,11 +24,12 @@
 
         <EditText
             android:id="@+id/box_init_serch_edit"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="70dp"
             android:background="@drawable/serch_edit"
             android:hint="序列号"
             android:imeOptions="actionSearch"

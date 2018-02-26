@@ -18,17 +18,18 @@
 
         <EditText
             android:id="@+id/list_serch_edit"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="70dp"
             android:background="@drawable/serch_edit"
-            android:imeOptions="actionSearch"
-            android:singleLine="true"
-            android:nextFocusDown="@id/list_serch_edit"
             android:hint="递送箱序列号"
+            android:imeOptions="actionSearch"
             android:maxLines="1"
+            android:nextFocusDown="@id/list_serch_edit"
+            android:singleLine="true"
             android:textCursorDrawable="@drawable/color_cursor" />
 
         <ImageView
@@ -40,13 +41,13 @@
 
         <ImageView
             android:id="@+id/list_cancel_button"
-            android:visibility="gone"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignRight="@+id/list_serch_edit"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@mipmap/list_unsherch" />
+            android:src="@mipmap/list_unsherch"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/list_ensure_button"
@@ -74,10 +75,10 @@
             android:layout_height="match_parent">
 
             <android.support.v7.widget.RecyclerView
-                android:background="@color/white"
                 android:id="@+id/dsx_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/white">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -125,8 +126,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/all_checked_image"
@@ -140,8 +140,8 @@
             android:id="@+id/all_checked_text"
             android:layout_width="120dp"
             android:layout_height="match_parent"
-            android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:gravity="center_vertical"
             android:text="全选" />
 

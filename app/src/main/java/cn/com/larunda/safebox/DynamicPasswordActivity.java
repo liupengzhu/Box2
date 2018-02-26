@@ -1,9 +1,13 @@
 package cn.com.larunda.safebox;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -21,6 +26,7 @@ import com.larunda.horizontalprogressbar.HorizontalProgressBarWithNunber;
 import com.larunda.safebox.R;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.util.HttpUtil;
@@ -34,6 +40,7 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
 
     public final String PASSWORD_URL = Util.URL + "box/show_dynamic_password" + Util.TOKEN;
     static HorizontalProgressBarWithNunber progressBar;
+    private RelativeLayout layout;
     Button backButton;
     private String id;
     private SharedPreferences.Editor editor;
@@ -183,6 +190,8 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
      * 初始化view
      */
     private void initView() {
+        layout = findViewById(R.id.dt_bc_layout);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(DynamicPasswordActivity.this);
         token = preferences.getString("token", null);
 
@@ -211,6 +220,22 @@ public class DynamicPasswordActivity extends AppCompatActivity implements View.O
                 finish();
                 break;
         }
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        InputStream is ;
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        opt.inSampleSize = 2;
+        is= getResources().openRawResource(R.drawable.dtbackground);
+        Bitmap bm = BitmapFactory.decodeStream(is, null, opt);
+        BitmapDrawable bd = new BitmapDrawable(getResources(), bm);
+        layout.setBackground(bd);
     }
 
     @Override

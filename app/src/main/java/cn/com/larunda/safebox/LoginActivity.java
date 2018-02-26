@@ -1,7 +1,11 @@
 package cn.com.larunda.safebox;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,6 +56,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button backButton;
     private Timer timer;
 
+    private LinearLayout layout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +66,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         //初始化界面控件
         initView();
-
         //若果token不为空 则直接进入主界面
         if (preferences.getString("token", null) != null) {
             Intent intent = new Intent(this, MainActivity.class);
@@ -96,6 +103,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         backButton.setOnClickListener(this);
 
 
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        InputStream is ;
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        opt.inPurgeable = true;
+        opt.inInputShareable = true;
+        opt.inSampleSize = 2;
+        is= getResources().openRawResource(R.drawable.login_background);
+        Bitmap bm = BitmapFactory.decodeStream(is, null, opt);
+        BitmapDrawable bd = new BitmapDrawable(getResources(), bm);
+        layout.setBackground(bd);
     }
 
     /**
@@ -181,6 +204,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initView() {
+        layout = findViewById(R.id.login_layout);
+
         loginName = findViewById(R.id.login_name);
         loginPassword = findViewById(R.id.login_password);
         checkBox = findViewById(R.id.check_button);

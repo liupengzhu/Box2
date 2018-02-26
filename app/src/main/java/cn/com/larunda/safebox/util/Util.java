@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.fragment.NewHomeFragment;
 import cn.com.larunda.safebox.gson.AddPerson;
 import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
@@ -29,6 +30,7 @@ import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.gson.Message;
+import cn.com.larunda.safebox.gson.NewHomeInfo;
 import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
@@ -63,6 +65,13 @@ public class Util {
 
         Gson gson = new Gson();
         Home home = gson.fromJson(response, Home.class);
+        return home;
+    }
+
+    public static NewHomeInfo handleNewHomeInfo(String response) {
+
+        Gson gson = new Gson();
+        NewHomeInfo home = gson.fromJson(response, NewHomeInfo.class);
         return home;
     }
 

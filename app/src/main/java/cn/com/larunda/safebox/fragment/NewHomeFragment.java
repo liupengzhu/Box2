@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
+import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.NewHomeInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -89,11 +90,21 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loadingLayout.setVisibility(View.VISIBLE);
-        loadingErrorLayout.setVisibility(View.GONE);
-        layout.setVisibility(View.GONE);
-        queryInfo();
+        String content = preferences.getString("homeInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                NewHomeInfo home = Util.handleNewHomeInfo(content);
+                showInfo(home);
+            } else {
+                queryInfo();
+            }
+        } else {
+            //每次fragment创建时还没有网络数据 设置载入背景为可见
+            loadingLayout.setVisibility(View.VISIBLE);
+            loadingErrorLayout.setVisibility(View.GONE);
+            layout.setVisibility(View.GONE);
+            queryInfo();
+        }
     }
 
     /**
@@ -189,6 +200,7 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 showInfo(home);
+                                preferences.edit().putString("homeInfo", content).commit();
                                 loadingLayout.setVisibility(View.GONE);
                                 loadingErrorLayout.setVisibility(View.GONE);
                                 layout.setVisibility(View.VISIBLE);
@@ -202,7 +214,7 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                             public void run() {
                                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
+                                preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
                                 getActivity().finish();
                             }

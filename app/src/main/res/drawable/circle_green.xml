@@ -5,8 +5,8 @@
 
     <!-- 高度40 -->
     <size
-        android:width="15dp"
-        android:height="15dp" />
+        android:width="5dp"
+        android:height="5dp" />
     <!-- 圆角弧度 20 -->
     <corners android:radius="60dp" />
     <padding

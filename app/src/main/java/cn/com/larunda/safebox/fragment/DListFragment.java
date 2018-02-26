@@ -95,6 +95,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     private SharedPreferences preferences;
     private String token;
 
+    private TextView tabNumber;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.d_list_fragment, container, false);
@@ -191,6 +193,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 lastVisibleItem = manager.findLastVisibleItemPosition();
             }
         });
+
+        tabNumber = MainActivity.tabLayout.getTabAt(1).getCustomView().findViewById(R.id.tab_number_view);
 
     }
 
@@ -471,6 +475,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         page = boxInfo.current_page + 1;
         count = boxInfo.per_page;
         total = boxInfo.last_page;
+        tabNumber.setVisibility(View.VISIBLE);
+        tabNumber.setText("1");
         myBoxList.clear();
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);

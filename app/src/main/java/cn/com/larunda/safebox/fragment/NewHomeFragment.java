@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.circletextview.CircleTextView;
 import com.larunda.safebox.R;
 
 import java.io.IOException;
@@ -45,6 +46,17 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
     private CircleImageView companyImg;
     private TextView companyName;
     private TextView companyTel;
+
+    private CircleTextView circleTextView;
+    private TextView shippingText;
+    private TextView alarmText;
+    private TextView exceptionText;
+    private TextView totalText;
+    private TextView toUsedText;
+
+    private TextView areaText;
+    private TextView leavingText;
+    private TextView defenceText;
 
     @Nullable
     @Override
@@ -85,6 +97,17 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
         companyImg = view.findViewById(R.id.company_info_img);
         companyName = view.findViewById(R.id.company_info_name);
         companyTel = view.findViewById(R.id.company_info_tel);
+
+        circleTextView = view.findViewById(R.id.device_status_circleTextView);
+        shippingText = view.findViewById(R.id.device_status_shipping_text);
+        alarmText = view.findViewById(R.id.device_status_alarm_text);
+        exceptionText = view.findViewById(R.id.device_status_exception_text);
+        totalText = view.findViewById(R.id.device_status_total_text);
+        toUsedText = view.findViewById(R.id.device_status_to_used_text);
+
+        areaText = view.findViewById(R.id.warning_count_area);
+        leavingText = view.findViewById(R.id.warning_count_leaving);
+        defenceText = view.findViewById(R.id.warning_count_defence);
     }
 
     /**
@@ -123,7 +146,6 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String content = response.body().string();
-                Log.d("main", content);
                 if (Util.isGoodJson(content)) {
                     final NewHomeInfo home = Util.handleNewHomeInfo(content);
                     if (home != null && home.error == null) {
@@ -160,7 +182,32 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
      * @param home
      */
     private void showInfo(NewHomeInfo home) {
-        /*if(home.Info.)*/
+        if (home.info != null) {
+            if (home.info.company_name != null) {
+                companyName.setText(home.info.company_name);
+            } else {
+                companyName.setText("");
+            }
+            if (home.info.company_tel != null) {
+                companyTel.setText(home.info.company_tel);
+            } else {
+                companyTel.setText("");
+            }
+            circleTextView.setNumber(home.info.on_line + "");
+            shippingText.setText(home.info.shipping + "");
+            alarmText.setText(home.info.alarm + "");
+            exceptionText.setText(home.info.exception + "");
+            totalText.setText(home.info.total + "");
+            toUsedText.setText(home.info.to_used + "");
+            if (home.info.on_line == 0) {
+                circleTextView.setCircleAngle(0);
+            } else {
+                circleTextView.setCircleAngle((float) home.info.shipping / (float) home.info.on_line * 360);
+            }
+            areaText.setText(home.alarm_num.area_alarm + "");
+            leavingText.setText(home.alarm_num.leaving_alarm + "");
+            defenceText.setText(home.alarm_num.defence_alarm + "");
+        }
 
     }
 }

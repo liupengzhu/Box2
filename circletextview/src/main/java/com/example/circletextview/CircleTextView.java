@@ -264,6 +264,7 @@ public class CircleTextView extends View {
 
     public void setCircleAngle(float circleAngle) {
         this.circleAngle = circleAngle;
+        initAnim();
     }
 
     public Paint getBackgroundPaint() {
@@ -304,6 +305,7 @@ public class CircleTextView extends View {
 
     public void setNumber(String number) {
         this.number = number;
+        invalidate();
     }
 
     public String getText() {

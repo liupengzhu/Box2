@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.com.larunda.safebox.BLEActivity">
+    android:background="@color/tab_background"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <com.larunda.titlebar.TitleBar
+        android:id="@+id/ble_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
+
+    </com.larunda.titlebar.TitleBar>
+    <include layout="@layout/ble_item"/>
+    <include layout="@layout/ble_item"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/menu_sz_color"
+        android:text="搜索"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+
+</LinearLayout>
+

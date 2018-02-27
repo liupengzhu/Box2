@@ -100,7 +100,7 @@ public class CircleTextView extends View {
     }
 
     private void initAnim() {
-        mAnimExpand = ValueAnimator.ofFloat(0, 1);
+        mAnimExpand = ValueAnimator.ofFloat(1, 0);
         mAnimExpand.setDuration(1000);
         mAnimExpand.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -167,7 +167,7 @@ public class CircleTextView extends View {
                 0, 360, false, backgroundPaint);
         canvas.drawArc(new RectF(circleStroke / 2, circleStroke / 2,
                         circleRadius * 2 + circleStroke, circleRadius * 2 + circleStroke),
-                -90, circleAngle * mAnimExpandHintFraction, false, circlePaint);
+                -90, circleAngle + (360 - circleAngle) * mAnimExpandHintFraction, false, circlePaint);
         Rect numberRect = new Rect();
         numberPaint.getTextBounds(number, 0, number.length(), numberRect);
         canvas.drawText(number, circleStroke / 2 + circleStroke / 4 + circleRadius - numberRect.width() / 2,

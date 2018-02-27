@@ -73,9 +73,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private LinearLayout user_info;
     private LinearLayout enclosure;
-    private LinearLayout leaving_alram;
+    private LinearLayout leaving_alarm;
     private LinearLayout sound;
     private LinearLayout setting;
+    private LinearLayout ble;
 
     private RelativeLayout systemSettingButton;
 
@@ -151,7 +152,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
-        leaving_alram.setOnClickListener(new View.OnClickListener() {
+        leaving_alarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LeavingAlarmActivity.class);
@@ -190,6 +191,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         menu_user_id.setOnClickListener(this);
         menu_user_name.setOnClickListener(this);
         menu_user_tell.setOnClickListener(this);
+        ble.setOnClickListener(this);
 
     }
 
@@ -510,9 +512,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         user_info = findViewById(R.id.user_info_layout);
         enclosure = findViewById(R.id.enclosure_layout);
-        leaving_alram = findViewById(R.id.leaving_alarm_layout);
+        leaving_alarm = findViewById(R.id.leaving_alarm_layout);
         sound = findViewById(R.id.sound_layout);
         setting = findViewById(R.id.setting_layout);
+        ble = findViewById(R.id.ble_layout);
 
         systemSettingButton = findViewById(R.id.menu_set_button);
         systemBackButton = findViewById(R.id.menu_back_button);
@@ -590,6 +593,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.setting_layout:
                 Intent settingIntent = new Intent(MainActivity.this, PersonalSettingActivity.class);
                 startActivity(settingIntent);
+                break;
+            case R.id.ble_layout:
+                Intent bleIntent = new Intent(MainActivity.this, BLEActivity.class);
+                startActivity(bleIntent);
                 break;
             default:
                 break;

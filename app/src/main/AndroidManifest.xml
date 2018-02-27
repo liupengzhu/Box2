@@ -97,7 +97,9 @@
         <service
             android:name="cn.com.larunda.safebox.service.AutoUpdateService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name="cn.com.larunda.safebox.BLEActivity"></activity>
     </application>
 
 </manifest>

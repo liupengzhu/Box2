@@ -60,11 +60,11 @@
 
     <TextView
         android:id="@+id/ble_status"
-        android:layout_width="wrap_content"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="80dp"
+        android:layout_marginRight="40dp"
         android:text="正在连接..."
         android:textColor="@color/list_text_l"
         android:textSize="10sp" />

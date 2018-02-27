@@ -1,11 +1,13 @@
 package cn.com.larunda.safebox.util;
 
 
+import android.bluetooth.BluetoothGatt;
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import cn.com.larunda.safebox.fragment.NewHomeFragment;
 import cn.com.larunda.safebox.gson.AddPerson;
@@ -60,6 +62,8 @@ public class Util {
     public static final String TOKEN = "?_token=";
     public static final String PATH = "http://safebox.dsmcase.com:90";
     public static String TYPE = "&request_type=app";
+    public static BluetoothGatt bluetoothGatt;
+    public static TextView lastTextView;
 
     public static Home handleHomeInfo(String response) {
 

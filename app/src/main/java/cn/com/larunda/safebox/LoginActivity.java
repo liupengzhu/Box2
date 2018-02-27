@@ -1,12 +1,17 @@
 package cn.com.larunda.safebox;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -58,6 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Timer timer;
 
     private LinearLayout layout;
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
 
     @Override
@@ -103,20 +109,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         backButton.setOnClickListener(this);
 
-
+        //Android6.0需要动态申请权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //请求权限
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
+        }
     }
 
     @SuppressLint("ResourceType")
     @Override
     protected void onResume() {
         super.onResume();
-        InputStream is ;
+        InputStream is;
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
         opt.inPurgeable = true;
         opt.inInputShareable = true;
         opt.inSampleSize = 2;
-        is= getResources().openRawResource(R.drawable.login_background);
+        is = getResources().openRawResource(R.drawable.login_background);
         Bitmap bm = BitmapFactory.decodeStream(is, null, opt);
         BitmapDrawable bd = new BitmapDrawable(getResources(), bm);
         layout.setBackground(bd);
@@ -262,5 +276,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
 
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+
+                for (int result : grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        finish();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

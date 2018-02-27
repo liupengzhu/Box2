@@ -59,6 +59,7 @@
         android:visibility="gone" />
 
     <TextView
+        android:id="@+id/ble_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

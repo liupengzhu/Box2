@@ -6,6 +6,9 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,11 +17,22 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.com.larunda.safebox.adapter.BLEAdapter;
+import cn.com.larunda.safebox.recycler.MyBLE;
+
 public class BLEActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private String token;
     private TitleBar titleBar;
+
+    private RecyclerView recyclerView;
+    private BLEAdapter adapter;
+    private LinearLayoutManager manager;
+    private List<MyBLE> bleList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +48,19 @@ public class BLEActivity extends AppCompatActivity {
 
         initView();
         initEvent();
+
+        initData();
+    }
+
+    /**
+     * 测试数据
+     */
+    private void initData() {
+        MyBLE ble = new MyBLE("sadfsf", 2);
+        MyBLE ble1 = new MyBLE("sadf", 0);
+        bleList.add(ble);
+        bleList.add(ble1);
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -64,6 +91,12 @@ public class BLEActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
+        recyclerView = findViewById(R.id.ble_recycler);
+        adapter = new BLEAdapter(this, bleList);
+        manager = new LinearLayoutManager(this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         titleBar = findViewById(R.id.ble_title_bar);
         titleBar.setTextViewText("蓝牙列表");

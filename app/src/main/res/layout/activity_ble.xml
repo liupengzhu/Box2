@@ -11,12 +11,13 @@
         android:layout_height="75dp">
 
     </com.larunda.titlebar.TitleBar>
-    <include layout="@layout/ble_item"/>
-    <include layout="@layout/ble_item"/>
+
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/ble_recycler"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_height="0dp">
+        android:background="@color/white">
 
     </android.support.v7.widget.RecyclerView>
 

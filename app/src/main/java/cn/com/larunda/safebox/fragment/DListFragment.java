@@ -33,6 +33,7 @@ import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.MainActivity;
 
 import com.larunda.safebox.R;
+import com.larunda.titlebar.TitleBar;
 
 import cn.com.larunda.safebox.SettingQxActivity;
 import cn.com.larunda.safebox.SettingStatesActivity;
@@ -346,6 +347,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 footAdapter.notifyDataSetChanged();
                 top_layout.setVisibility(View.GONE);
                 bottom_layout.setVisibility(View.VISIBLE);
+                MainActivity.titleBar.setRightButtonVisible(View.GONE);
+                MainActivity.titleBar.setRightTextVisible(View.VISIBLE);
                 MainActivity.tabLayout.setVisibility(View.GONE);
             }
         });
@@ -358,6 +361,12 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        MainActivity.titleBar.setTitleBarOnClickListener(new TitleBar.TitleBarOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allCheckedClick();
+            }
+        });
 
         allCheckedImage.setOnClickListener(this);
         allCheckedText.setOnClickListener(this);
@@ -552,6 +561,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         adapter.setCheckedLayout(false);
         footAdapter.notifyDataSetChanged();
         top_layout.setVisibility(View.VISIBLE);
+        MainActivity.titleBar.setRightButtonVisible(View.VISIBLE);
+        MainActivity.titleBar.setRightTextVisible(View.GONE);
         bottom_layout.setVisibility(View.GONE);
         MainActivity.tabLayout.setVisibility(View.VISIBLE);
     }

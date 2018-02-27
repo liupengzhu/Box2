@@ -176,6 +176,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                      */
 
                     if (TextUtils.equals(bluetoothDevice.getAddress(), bluetoothGatt.getDevice().getAddress())) {
+
                         return;
                     } else {
                         if (bluetoothGatt != null) {

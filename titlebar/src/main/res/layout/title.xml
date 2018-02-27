@@ -9,11 +9,10 @@
     android:paddingTop="32dp">
 
     <FrameLayout
-        android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        >
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true">
 
         <Button
             android:id="@+id/left_button"
@@ -40,13 +39,23 @@
         android:textSize="20dp" />
 
     <Button
-        android:layout_alignParentRight="true"
         android:id="@+id/right_button"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        android:background="@drawable/add"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        />
+        android:background="@drawable/add" />
+
+    <TextView
+        android:id="@+id/right_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="全选"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

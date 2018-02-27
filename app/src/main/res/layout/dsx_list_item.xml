@@ -5,28 +5,20 @@
     android:background="@color/white"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/dsx_check_button"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="15dp"
-        android:src="@mipmap/unchecked"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:id="@+id/dsx_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="15dp"
-        android:paddingLeft="20dp"
+        android:paddingLeft="15dp"
         android:paddingTop="15dp">
 
         <ImageView
             android:id="@+id/dsx_img"
             android:layout_width="90dp"
             android:layout_height="60dp"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -153,10 +145,19 @@
         <ImageView
             android:layout_width="10dp"
             android:layout_height="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/circle_green" />
+
+        <ImageView
+            android:id="@+id/dsx_check_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
-            android:src="@drawable/circle_green" />
-
+            android:src="@mipmap/unchecked"
+            android:visibility="gone" />
     </RelativeLayout>
+
 </LinearLayout>

@@ -134,7 +134,8 @@
             android:layout_height="25dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
-            android:src="@mipmap/unchecked" />
+            android:src="@mipmap/unchecked"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/all_checked_text"
@@ -143,7 +144,8 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center_vertical"
-            android:text="全选" />
+            android:text="全选"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/dsx_list_setting_qx"

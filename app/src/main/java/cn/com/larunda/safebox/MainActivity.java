@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView menu_user_id;
     private TextView menu_user_name;
     private TextView menu_user_tell;
-    private TitleBar titleBar;
+    public static TitleBar titleBar;
 
     public static DrawerLayout drawerLayout;
 

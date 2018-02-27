@@ -22,8 +22,10 @@ public class TitleBar extends LinearLayout {
     private Button rightButton;
     private Button leftBackButton;
     private TextView textView;
+    private TextView rightText;
     private TitleListener mTitleListener;
     private Context mcontext;
+    private TitleBarOnClickListener titleBarOnClickListener;
 
     public TitleBar(@NonNull Context context) {
         this(context, null, 0);
@@ -41,6 +43,15 @@ public class TitleBar extends LinearLayout {
         rightButton = findViewById(R.id.right_button);
         textView = findViewById(R.id.title_text);
         leftBackButton = findViewById(R.id.left_back_button);
+        rightText = findViewById(R.id.right_text);
+        rightText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (titleBarOnClickListener != null) {
+                    titleBarOnClickListener.onClick(v);
+                }
+            }
+        });
         leftButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,12 +95,20 @@ public class TitleBar extends LinearLayout {
         leftBackButton.setVisibility(visible);
     }
 
+    public void setRightButtonVisible(int visible) {
+        rightButton.setVisibility(visible);
+    }
+
+    public void setRightTextVisible(int visible) {
+        rightText.setVisibility(visible);
+    }
+
     public void setLeftButtonSrc(int src) {
         if (src != 0) {
             leftButton.setVisibility(VISIBLE);
             leftButton.setBackground(mcontext.getResources().getDrawable(src));
         } else {
-            leftButton.setVisibility(INVISIBLE);
+            leftButton.setVisibility(GONE);
         }
 
     }
@@ -99,7 +118,17 @@ public class TitleBar extends LinearLayout {
             textView.setVisibility(VISIBLE);
             textView.setText(title);
         } else {
-            textView.setVisibility(INVISIBLE);
+            textView.setVisibility(GONE);
+        }
+
+    }
+
+    public void setRightTextViewText(String text) {
+        if (text != null && text != "") {
+            textView.setVisibility(VISIBLE);
+            textView.setText(text);
+        } else {
+            textView.setVisibility(GONE);
         }
 
     }
@@ -109,13 +138,20 @@ public class TitleBar extends LinearLayout {
             rightButton.setVisibility(VISIBLE);
             rightButton.setBackground(mcontext.getResources().getDrawable(src));
         } else {
-            rightButton.setVisibility(INVISIBLE);
+            rightButton.setVisibility(GONE);
         }
     }
+
 
     public void setOnClickListener(TitleListener titleListener) {
         mTitleListener = titleListener;
     }
 
+    public interface TitleBarOnClickListener {
+        void onClick(View v);
+    }
 
+    public void setTitleBarOnClickListener(TitleBarOnClickListener titleBarOnClickListener) {
+        this.titleBarOnClickListener = titleBarOnClickListener;
+    }
 }

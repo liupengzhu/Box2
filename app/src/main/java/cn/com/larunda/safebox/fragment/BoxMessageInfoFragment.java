@@ -217,7 +217,10 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         }
         if (boxMessage.f_pic != null) {
             url = boxMessage.f_pic;
-            Glide.with(this).load(Util.PATH + url).placeholder(R.drawable.box_null).error(R.drawable.box_null).into(photo);
+            Glide.with(this).load(Util.PATH + url)
+                    .placeholder(R.drawable.box_null)
+                    .dontAnimate()
+                    .error(R.drawable.box_null).into(photo);
         } else {
             url = null;
         }

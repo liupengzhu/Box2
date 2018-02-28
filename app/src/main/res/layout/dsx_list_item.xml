@@ -17,6 +17,7 @@
             android:id="@+id/dsx_img"
             android:layout_width="90dp"
             android:layout_height="60dp"
+            android:src="@drawable/box_null"
             android:layout_centerVertical="true"
             android:layout_marginLeft="25dp" />
 

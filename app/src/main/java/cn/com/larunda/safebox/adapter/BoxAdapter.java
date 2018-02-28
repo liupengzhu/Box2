@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.larunda.battery.BatteryView;
 
 import cn.com.larunda.safebox.BoxActivity;
@@ -129,8 +132,11 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         MyBox box = myBoxList.get(position);
         if (box.getBox_img() != null) {
-            Glide.with(MyApplication.getContext()).load(box.getBox_img()).placeholder(R.drawable.box_null)
+            Glide.with(context).load(box.getBox_img())
+                    .placeholder(R.drawable.box_null)
                     .error(R.drawable.box_null).into(holder.boxImg);
+        } else {
+            holder.boxImg.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
         }
         if (box.getBox_name() != null) {
             holder.boxName.setText(box.getBox_name());
@@ -189,8 +195,6 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             holder.box_dl_img.setPaintColor(-1);
             holder.box_dl_text.setText("");
         }
-
-
     }
 
     @Override

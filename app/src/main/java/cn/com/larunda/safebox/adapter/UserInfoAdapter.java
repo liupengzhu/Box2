@@ -16,6 +16,7 @@ import cn.com.larunda.safebox.MyApplication;
 
 import com.larunda.safebox.R;
 
+import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.recycler.MyUserInfo;
 
@@ -70,7 +71,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             public void onClick(View v) {
                 MyUserInfo myUserInfo = myUserInfoList.get(viewHolder.getAdapterPosition());
                 if (userInfoOnClickListener != null) {
-                    userInfoOnClickListener.onClick(v, myUserInfo.getUserId());
+                    userInfoOnClickListener.onClick(v, myUserInfo.getUserId(), viewHolder.getAdapterPosition());
                 }
             }
         });
@@ -161,7 +162,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
 
     public interface UserInfoOnClickListener {
-        void onClick(View v, String id);
+        void onClick(View v, String id, int position);
     }
 
     public interface UserInfoOnLongClickListener {
@@ -182,5 +183,13 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
     public List<MyUserInfo> getMyUserInfoList() {
         return myUserInfoList;
+    }
+
+    public void addData(int position, MyUserInfo myUserInfo) {
+        myUserInfoList.add(position, myUserInfo);
+    }
+
+    public void removeData(int position) {
+        myUserInfoList.remove(position);
     }
 }

@@ -727,8 +727,22 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
 
     }
 
+    /**
+     * 解析更新信息
+     *
+     * @param content
+     */
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
+            String name = nameText.getText().toString().trim();
+            String user = userText.getText().toString().trim();
+            String level = levelText.getText().toString().trim();
+            Intent intent = new Intent();
+            intent.putExtra("name", name);
+            intent.putExtra("user", user);
+            intent.putExtra("level", level);
+            intent.putExtra("url", url);
+            setResult(RESULT_OK, intent);
             finish();
         } else if (content != null && content.equals("false")) {
             swipeRefreshLayout.setRefreshing(false);

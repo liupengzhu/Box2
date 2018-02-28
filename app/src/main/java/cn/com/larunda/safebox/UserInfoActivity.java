@@ -56,7 +56,7 @@ import okhttp3.Response;
 public class UserInfoActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String USER_INFO_URL = Util.URL + "user" + Util.TOKEN;
-    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+    public static final String IMG_URL = Util.PATH;
     private TitleBar titleBar;
 
     private List<MyUserInfo> myUserInfoList = new ArrayList<>();
@@ -96,6 +96,9 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private int count;
     private static FootAdapter footAdapter;
     private int total;
+    private int lastPosition;
+    private MyUserInfo lastUser;
+    private static final int REQUEST_USERINFO = 1;
 
 
     @Override
@@ -139,10 +142,12 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private void initEvent() {
         adapter.setUserInfoOnClickListener(new UserInfoAdapter.UserInfoOnClickListener() {
             @Override
-            public void onClick(View v, String id) {
+            public void onClick(View v, String id, int position) {
                 Intent intent = new Intent(UserInfoActivity.this, EditUserActivity.class);
                 intent.putExtra("id", id);
-                startActivity(intent);
+                lastPosition = position;
+                lastUser = adapter.getMyUserInfoList().get(lastPosition);
+                startActivityForResult(intent, REQUEST_USERINFO);
             }
         });
 
@@ -571,12 +576,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        serch = null;
-        sendRequest();
-    }
 
     /**
      * 解析删除请求返回信息
@@ -665,5 +664,29 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_USERINFO:
+                if (resultCode == RESULT_OK) {
+                    String name = data.getStringExtra("name");
+                    String user = data.getStringExtra("user");
+                    String level = data.getStringExtra("level");
+                    String url = IMG_URL + data.getStringExtra("url");
+                    adapter.removeData(lastPosition);
+                    lastUser.setUser(user);
+                    lastUser.setUserName(name);
+                    lastUser.setUserQx(level);
+                    lastUser.setUserImg(url);
+                    adapter.addData(lastPosition, lastUser);
+                    footAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

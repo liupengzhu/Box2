@@ -103,6 +103,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private String id;
     private String img_uri;
     private UpdateDialog updateDialog;
+    private boolean isUpdate;
 
 
     @Override
@@ -123,7 +124,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         //获取当前的token
         getToken();
         initView();
-
+        isUpdate = preferences.getBoolean("isUpdate", true);
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -138,17 +139,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * 显示更新弹窗
      */
     private void showUpdateDialog() {
-        if (updateDialog != null) {
-            updateDialog.setTitleText("发现新版本V5.1.1");
-            updateDialog.setContentText("发现新版本" + "\n" + "1 春节年货专场,iPhone X低至7688元；"
-                    + "\n" + "2 适配了iPhone X/修复Android 7.0适配问题；"
-                    + "\n" + "3 增加了部分新功能；"
-                    + "\n" + "为了不影响您的正常使用,请尽快更新最新版本；"
-            );
+        if (isUpdate) {
+            if (updateDialog != null) {
+                updateDialog.setTitleText("发现新版本V5.1.1");
+                updateDialog.setContentText("发现新版本" + "\n" + "1 春节年货专场,iPhone X低至7688元；"
+                        + "\n" + "2 适配了iPhone X/修复Android 7.0适配问题；"
+                        + "\n" + "3 增加了部分新功能；"
+                        + "\n" + "为了不影响您的正常使用,请尽快更新最新版本；"
+                );
+                updateDialog.show();
+            }
             updateDialog.show();
         }
-        updateDialog.show();
-
     }
 
     /**
@@ -332,6 +334,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         } else {
             //退出程序
+            editor.putBoolean("isUpdate", true).commit();
             preferences.edit().putString("homeInfo", null).commit();
             preferences.edit().putString("boxInfo", null).commit();
             preferences.edit().putString("userLogInfo", null).commit();
@@ -547,6 +550,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         updateDialog.setNoOnclickListener(new UpdateDialog.onNoOnclickListener() {
             @Override
             public void onNoClick(View v) {
+                editor.putBoolean("isUpdate", false).commit();
                 updateDialog.cancel();
             }
         });
@@ -664,6 +668,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
+        editor.putBoolean("isUpdate", true).commit();
         preferences.edit().putString("homeInfo", null).commit();
         preferences.edit().putString("boxInfo", null).commit();
         preferences.edit().putString("userLogInfo", null).commit();

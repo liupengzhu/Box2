@@ -28,7 +28,7 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
     private SharedPreferences preferences;
     private String token;
     private ImageView fingerprint_img;
-    private RelativeLayout fingerprint_latout;
+    private RelativeLayout fingerprint_layout;
     private FingerprintManager manager;
     private String userId;
 
@@ -51,13 +51,13 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
             manager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
             if (!manager.isHardwareDetected()) {
                 fingerprint_img.setVisibility(View.GONE);
-                fingerprint_latout.setVisibility(View.GONE);
+                fingerprint_layout.setVisibility(View.GONE);
             }
         } else {
             fingerprint_img.setVisibility(View.GONE);
-            fingerprint_latout.setVisibility(View.GONE);
+            fingerprint_layout.setVisibility(View.GONE);
         }
-        boolean fingerprintIs = preferences.getBoolean(userId+"fingerprint", false);
+        boolean fingerprintIs = preferences.getBoolean(userId + "fingerprint", false);
         if (fingerprintIs) {
             fingerprint.setChecked(true);
         } else {
@@ -103,7 +103,7 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
         fingerprint = findViewById(R.id.system_setting_fingerprint);
         fingerprint_img = findViewById(R.id.system_setting_fingerprint_img);
-        fingerprint_latout = findViewById(R.id.system_setting_fingerprint_layout);
+        fingerprint_layout = findViewById(R.id.system_setting_fingerprint_layout);
     }
 
     /**
@@ -119,8 +119,8 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
                     Intent intent = new Intent(SystemSettingActivity.this, ValidateActivity.class);
                     startActivityForResult(intent, 1);
                 } else {
-                    preferences.edit().putString(userId+"user_password", null).apply();
-                    preferences.edit().putBoolean(userId+"fingerprint", false).apply();
+                    preferences.edit().putString(userId + "user_password", null).apply();
+                    preferences.edit().putBoolean(userId + "fingerprint", false).apply();
                 }
                 break;
 
@@ -137,10 +137,10 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
             case 1:
                 if (resultCode == 0) {
                     fingerprint.setChecked(false);
-                    preferences.edit().putBoolean(userId+"fingerprint", false).apply();
+                    preferences.edit().putBoolean(userId + "fingerprint", false).apply();
                 } else if (resultCode == 1) {
                     fingerprint.setChecked(true);
-                    preferences.edit().putBoolean(userId+"fingerprint", true).apply();
+                    preferences.edit().putBoolean(userId + "fingerprint", true).apply();
                 }
                 break;
         }

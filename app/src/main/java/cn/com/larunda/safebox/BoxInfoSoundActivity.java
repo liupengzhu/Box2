@@ -307,10 +307,9 @@ public class BoxInfoSoundActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onClick(View view, String path, String id, boolean isExist, int position) {
                 final CheckBox checkBox = (CheckBox) view;
-                textView = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_current_time);
-                progressBar = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_progress);
-
                 if (path != null && isExist) {
+                    textView = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_current_time);
+                    progressBar = manager.findViewByPosition(position).findViewById(R.id.box_info_sound_progress);
                     try {
                         if (mediaPlayer == null) {
                             mediaPlayer = new MediaPlayer();

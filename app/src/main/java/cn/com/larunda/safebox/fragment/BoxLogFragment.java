@@ -288,7 +288,7 @@ public class BoxLogFragment extends Fragment {
      */
     private void addInfo(TotalLogInfo totalLogInfo) {
         page = totalLogInfo.current_page + 1;
-        if (totalLogInfo.totalLogData.size() == 0 || totalLogInfo.totalLogData.size() < count) {
+        if (totalLogInfo.totalLogData.size() == 0||totalLogInfo.totalLogData.size()<count) {
             footAdapter.setHasMore(false);
         }
         for (TotalLogData totalLogData : totalLogInfo.totalLogData) {
@@ -296,6 +296,7 @@ public class BoxLogFragment extends Fragment {
             boxLogList.add(boxLog);
         }
         footAdapter.notifyDataSetChanged();
+
     }
 
     @Override

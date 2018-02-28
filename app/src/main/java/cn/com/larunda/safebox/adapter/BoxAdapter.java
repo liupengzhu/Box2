@@ -93,7 +93,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
                 int position = viewHolder.getAdapterPosition();
                 MyBox box = myBoxList.get(position);
                 if (dsxOnClickListener != null) {
-                    dsxOnClickListener.onClick(v, box.getId());
+                    dsxOnClickListener.onClick(v, box.getId(), position);
                 }
 
             }
@@ -212,7 +212,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     }
 
     public interface DsxOnClickListener {
-        void onClick(View v, String id);
+        void onClick(View v, String id, int position);
     }
 
     public boolean isCheckedLayout() {
@@ -229,5 +229,13 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     public void setDsxOnClickListener(DsxOnClickListener dsxOnClickListener) {
         this.dsxOnClickListener = dsxOnClickListener;
+    }
+
+    public void addData(int position, MyBox myBox) {
+        myBoxList.add(position, myBox);
+    }
+
+    public void removeData(int position) {
+        myBoxList.remove(position);
     }
 }

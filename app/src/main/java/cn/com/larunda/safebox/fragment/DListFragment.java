@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.LocaleDisplayNames;
@@ -59,7 +60,10 @@ public class DListFragment extends Fragment implements View.OnClickListener {
 
 
     public static final String BOX_URL = Util.URL + "box" + Util.TOKEN;
-    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+    public static final String IMG_URL = Util.PATH;
+    public static final int REQUEST_INFO = 5;
+    private int lastPosition;
+
     private List<MyBox> myBoxList = new ArrayList<>();
     private RecyclerView recyclerView;
     private static BoxAdapter adapter;
@@ -97,6 +101,8 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     private String token;
 
     private TextView tabNumber;
+    private MyBox lastBox;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,12 +118,29 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             MainActivity.tabLayout.setVisibility(View.GONE);
         }
         isInit = true;
+        /*recyclerView.scrollToPosition(0);*/
+        String content = preferences.getString("boxInfo", null);
+        if (content != null) {
+            if (Util.isGoodJson(content)) {
+                BoxInfo boxInfo = Util.handleBoxInfo(content);
+                initBoxList(boxInfo);
+            } else {
+                sendRequest();
+            }
+        } else {
+            //每次fragment创建时还没有网络数据 设置载入背景为可见
+            loodingLayout.setVisibility(View.VISIBLE);
+            loodingErrorLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            sendRequest();
+        }
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
     }
 
     /**
@@ -353,11 +376,14 @@ public class DListFragment extends Fragment implements View.OnClickListener {
             }
         });
         adapter.setDsxOnClickListener(new BoxAdapter.DsxOnClickListener() {
+
             @Override
-            public void onClick(View v, String id) {
+            public void onClick(View v, String id, int position) {
                 Intent intent = new Intent(getContext(), BoxActivity.class);
                 intent.putExtra("id", id);
-                startActivity(intent);
+                lastPosition = position;
+                lastBox = adapter.getMyBoxList().get(lastPosition);
+                startActivityForResult(intent, REQUEST_INFO);
             }
         });
 
@@ -661,6 +687,37 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_INFO:
+                if (resultCode == Activity.RESULT_OK) {
+                    String imgUrl = IMG_URL + data.getStringExtra("url");
+                    String name = data.getStringExtra("name");
+                    int level;
+                    boolean is_locked;
+                    if (data.getStringExtra("level").equals("三级加密")) {
+                        level = 3;
+                    } else if (data.getStringExtra("level").equals("二级加密")) {
+                        level = 2;
+                    } else {
+                        level = 1;
+                    }
+                    if (data.getStringExtra("lock").equals("已锁定")) {
+                        is_locked = true;
+                    } else {
+                        is_locked = false;
+                    }
+                    adapter.removeData(lastPosition);
+                    lastBox.setBox_name(name);
+                    lastBox.setBox_qx(level);
+                    lastBox.setBox_img(imgUrl);
+                    lastBox.setIs_sd(is_locked);
+                    adapter.addData(lastPosition, lastBox);
+                    footAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
    /* @Override
@@ -690,21 +747,6 @@ public class DListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        /*recyclerView.scrollToPosition(0);*/
-        String content = preferences.getString("boxInfo", null);
-        if (content != null) {
-            if (Util.isGoodJson(content)) {
-                BoxInfo boxInfo = Util.handleBoxInfo(content);
-                initBoxList(boxInfo);
-            } else {
-                sendRequest();
-            }
-        } else {
-            //每次fragment创建时还没有网络数据 设置载入背景为可见
-            loodingLayout.setVisibility(View.VISIBLE);
-            loodingErrorLayout.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
-            sendRequest();
-        }
+
     }
 }

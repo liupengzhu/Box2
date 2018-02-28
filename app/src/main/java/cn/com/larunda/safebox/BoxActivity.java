@@ -165,8 +165,8 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
                     String endData = endDateText.getText().toString().trim();
                     String endTime = endTimeText.getText().toString().trim();
                     String lock = lockText.getText().toString().trim();
-                    if (!isEmpty(url,name, material, size, protect, level, startData, startTime, endData, endTime, lock)) {
-                        sendPutRequest(url,name, material, size, protect, level, startData, startTime, endData, endTime, lock);
+                    if (!isEmpty(url, name, material, size, protect, level, startData, startTime, endData, endTime, lock)) {
+                        sendPutRequest(url, name, material, size, protect, level, startData, startTime, endData, endTime, lock);
                     }
                 }
                 break;
@@ -187,7 +187,7 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
      * @param endTime
      * @param lock
      */
-    private void sendPutRequest(String url,String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
+    private void sendPutRequest(String url, String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
         final JSONObject jsonObject = new JSONObject();
         final JSONObject js = new JSONObject();
         try {
@@ -195,7 +195,7 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
             jsonObject.put("f_material", material);
             jsonObject.put("f_size", size);
             jsonObject.put("f_protect_grade", protect);
-            jsonObject.put("f_pic",url);
+            jsonObject.put("f_pic", url);
 
             if (level.equals("三级加密")) {
                 jsonObject.put("f_encrypt_level", 3);
@@ -266,6 +266,12 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
     private void parseResult(Result result) {
         if (result.data != null && result.data.equals("true")) {
             preferences.edit().putString("boxInfo", null).commit();
+            Intent intent = new Intent();
+            intent.putExtra("url", url);
+            intent.putExtra("name",name_text.getText().toString().trim());
+            intent.putExtra("level",levelText.getText().toString().trim());
+            intent.putExtra("lock",lockText.getText().toString().trim());
+            setResult(RESULT_OK, intent);
             finish();
         } else {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
@@ -287,8 +293,8 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
      * @param lock
      * @return
      */
-    private boolean isEmpty(String url,String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
-        if (url==null) {
+    private boolean isEmpty(String url, String name, String material, String size, String protect, String level, String startData, String startTime, String endData, String endTime, String lock) {
+        if (url == null) {
             Toast.makeText(this, "图片不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (TextUtils.isEmpty(name)) {

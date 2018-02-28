@@ -134,6 +134,8 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg())
                     .placeholder(R.drawable.user).dontAnimate()
                     .error(R.mipmap.user_img).into(holder.userImg);
+        } else {
+            holder.userImg.setImageDrawable(context.getResources().getDrawable(R.drawable.user));
         }
         if (myUserInfo.getUserName() != null) {
             holder.userName.setText(myUserInfo.getUserName());

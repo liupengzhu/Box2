@@ -45,6 +45,7 @@ import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 
 import com.larunda.selfdialog.SelfDialog;
+import com.larunda.selfdialog.UpdateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
@@ -101,6 +102,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private String id;
     private String img_uri;
+    private UpdateDialog updateDialog;
 
 
     @Override
@@ -129,6 +131,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setMenuClick();
         Intent serviceIntent = new Intent(this, AutoUpdateService.class);
         startService(serviceIntent);
+        showUpdateDialog();
+    }
+
+    /**
+     * 显示更新弹窗
+     */
+    private void showUpdateDialog() {
+        if (updateDialog != null) {
+            updateDialog.setTitleText("发现新版本V5.1.1");
+            updateDialog.setContentText("发现新版本" + "\n" + "1 春节年货专场,iPhone X低至7688元；"
+                    + "\n" + "2 适配了iPhone X/修复Android 7.0适配问题；"
+                    + "\n" + "3 增加了部分新功能；"
+                    + "\n" + "为了不影响您的正常使用,请尽快更新最新版本；"
+            );
+            updateDialog.show();
+        }
+        updateDialog.show();
+
     }
 
     /**
@@ -516,6 +536,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     //初始化控件
     private void initView() {
+
+        updateDialog = new UpdateDialog(this);
+        updateDialog.setYesOnclickListener(new UpdateDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                updateDialog.cancel();
+            }
+        });
+        updateDialog.setNoOnclickListener(new UpdateDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                updateDialog.cancel();
+            }
+        });
 
         user_info = findViewById(R.id.user_info_layout);
         enclosure = findViewById(R.id.enclosure_layout);

@@ -3,6 +3,7 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -311,6 +312,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         } else {
             //退出程序
+            preferences.edit().putString("homeInfo", null).commit();
+            preferences.edit().putString("boxInfo", null).commit();
+            preferences.edit().putString("userLogInfo", null).commit();
+            preferences.edit().putString("boxLogInfo", null).commit();
+            preferences.edit().putString("appLogInfo", null).commit();
+            preferences.edit().putString("menuInfo", null).commit();
             finish();
             System.exit(0);
         }
@@ -623,12 +630,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         preferences.edit().putString("homeInfo", null).commit();
         preferences.edit().putString("boxInfo", null).commit();
         preferences.edit().putString("userLogInfo", null).commit();
         preferences.edit().putString("boxLogInfo", null).commit();
         preferences.edit().putString("appLogInfo", null).commit();
         preferences.edit().putString("menuInfo", null).commit();
+        super.onDestroy();
     }
 }

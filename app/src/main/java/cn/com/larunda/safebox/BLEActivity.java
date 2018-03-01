@@ -87,6 +87,8 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     private BluetoothDevice bluetoothDevice;
     private int lastPosition;
 
+    private boolean isLinked = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +132,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             bleList.add(new MyBLE(device.getName(), 2));
             adapter.notifyDataSetChanged();
             lastPosition = 0;
+            isLinked = true;
         }
     }
 
@@ -199,20 +202,13 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                     public void onConnectionStateChange(BluetoothGatt gatt, final int status, int newState) {
                         //super.onConnectionStateChange(gatt, status, newState);
                         if (newState == BluetoothGatt.STATE_CONNECTED) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    textView.setText("已连接");
-                                    bleList.get(position).setStatus(2);
-                                }
-                            });
+
                             gatt.discoverServices();
 
                         } else if (newState == BluetoothGatt.STATE_CONNECTING) {
                         } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                             textView.setText("正在连接...");
                             bleList.get(position).setStatus(1);
-
                         }
                     }
 
@@ -245,14 +241,31 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                         super.onCharacteristicChanged(gatt, characteristic);
-                        Log.d("main", new String(characteristic.getValue()));
-                        Log.d("main", characteristic.getUuid() + "");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                            }
-                        });
+                        String content = new String(characteristic.getValue()).trim();
+                        if (content.equals("ok")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    isLinked = true;
+                                    textView.setText("已连接");
+                                    bleList.get(position).setStatus(2);
+                                }
+                            });
+                        } else if (content.equals("no")) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    isLinked = false;
+                                    bluetoothGatt.disconnect();
+                                    bluetoothGatt = null;
+                                    textView.setText("");
+                                    textView.setVisibility(View.GONE);
+                                    bleList.get(position).setStatus(0);
+                                }
+                            });
+                        } else if (content.length() > 1) {
+                            writeCharacteristic(String.valueOf(characteristic.getUuid()), content.substring(0, content.length() - 1).getBytes());
+                        }
 
                     }
                 });
@@ -368,7 +381,6 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
      */
     public boolean writeCharacteristic(String uuid, byte[] bytes) {
         if (null == characteristics) {
-            Log.d("main", "characteristics为空");
             return false;
         }
         if (bluetoothGatt != null) {
@@ -377,13 +389,21 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                 //判断是否为协议约定的特征Characteristic
                 if (TextUtils.equals(uuid, characteristic.getUuid().toString())) {
                     characteristic.setValue(bytes);
-                    Log.d("main", new String(bytes));
                     return bluetoothGatt.writeCharacteristic(characteristic);
                 }
             }
 
         }
-        Log.d("main", "gatt为空");
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        //判断蓝牙是否已经链接成功
+        if (!isLinked && bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt = null;
+        }
+        super.onDestroy();
     }
 }

@@ -1,25 +1,23 @@
 package cn.com.larunda.safebox;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.icu.text.LocaleDisplayNames;
 import android.os.Build;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,21 +28,18 @@ import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.HomeAdapter;
-import cn.com.larunda.safebox.fragment.HomeFragment;
 import cn.com.larunda.safebox.fragment.DListFragment;
 import cn.com.larunda.safebox.fragment.NewHomeFragment;
-import cn.com.larunda.safebox.fragment.SListFragment;
 import cn.com.larunda.safebox.fragment.TotalLogFragment;
-import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
 import cn.com.larunda.safebox.service.AutoUpdateService;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.CustomViewPager;
+import cn.com.larunda.safebox.service.DownloadService;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 
-import com.larunda.selfdialog.SelfDialog;
 import com.larunda.selfdialog.UpdateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -105,6 +100,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private UpdateDialog updateDialog;
     private boolean isUpdate;
 
+    private DownloadService service;
+    private DownloadService.DownloadBinder binder;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            isBind = true;
+            binder = (DownloadService.DownloadBinder) service;
+            binder.startDownload(updateUrl);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBind = false;
+        }
+    };
+
+    private String updateUrl = "http://dlied5.myapp.com/myapp/1104466820/sgame/2017_com.tencent.tmgp.sgame_h163_1.33.1.11_89906f.apk";
+    private boolean isBind = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -341,6 +354,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             preferences.edit().putString("boxLogInfo", null).commit();
             preferences.edit().putString("appLogInfo", null).commit();
             preferences.edit().putString("menuInfo", null).commit();
+            if (isBind) {
+                unbindService(connection);
+            }
             finish();
             System.exit(0);
         }
@@ -544,6 +560,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         updateDialog.setYesOnclickListener(new UpdateDialog.onYesOnclickListener() {
             @Override
             public void onYesClick(View v) {
+                editor.putBoolean("isUpdate", false).commit();
+                Intent intent = new Intent(MainActivity.this, DownloadService.class);
+                bindService(intent, connection, BIND_AUTO_CREATE);
                 updateDialog.cancel();
             }
         });
@@ -675,6 +694,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         preferences.edit().putString("boxLogInfo", null).commit();
         preferences.edit().putString("appLogInfo", null).commit();
         preferences.edit().putString("menuInfo", null).commit();
+        if(isBind){
+            unbindService(connection);
+        }
         super.onDestroy();
     }
 }

@@ -105,6 +105,10 @@
             android:exported="true" />
 
         <activity android:name="cn.com.larunda.safebox.BLEActivity"></activity>
+        <service
+            android:name="cn.com.larunda.safebox.service.DownloadService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

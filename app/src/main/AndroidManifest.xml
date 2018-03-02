@@ -111,6 +111,8 @@
             android:name="cn.com.larunda.safebox.service.DownloadService"
             android:enabled="true"
             android:exported="true" />
+
+        <activity android:name="cn.com.larunda.safebox.FingerprintActivity"></activity>
     </application>
 
 </manifest>

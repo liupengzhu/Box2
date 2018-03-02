@@ -239,7 +239,7 @@ public class BoxAddUserActivity extends BaseActivity implements View.OnClickList
             public void onLeftBackButtonClickListener(View v) {
                 Intent intent = new Intent();
                 intent.putExtra("count", adapter.getItemCount());
-                setResult(RESULT_OK,intent);
+                setResult(RESULT_OK, intent);
                 finish();
             }
 
@@ -257,6 +257,16 @@ public class BoxAddUserActivity extends BaseActivity implements View.OnClickList
                 adapter.setCheckedLayout(true);
                 adapter.notifyDataSetChanged();
                 bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        adapter.setBoxAddUserOnClickListener(new BoxAddUserAdapter.BoxAddUserOnClickListener() {
+            @Override
+            public void onClick(View v, String userId) {
+                Intent intent = new Intent(BoxAddUserActivity.this, FingerprintActivity.class);
+                intent.putExtra("boxId", id);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
             }
         });
 
@@ -423,7 +433,7 @@ public class BoxAddUserActivity extends BaseActivity implements View.OnClickList
         } else {
             Intent intent = new Intent();
             intent.putExtra("count", adapter.getItemCount());
-            setResult(RESULT_OK,intent);
+            setResult(RESULT_OK, intent);
             finish();
 
         }

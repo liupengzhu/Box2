@@ -170,7 +170,7 @@ public class CircleTextView extends View {
                 -90, circleAngle + (360 - circleAngle) * mAnimExpandHintFraction, false, circlePaint);
         Rect numberRect = new Rect();
         numberPaint.getTextBounds(number, 0, number.length(), numberRect);
-        canvas.drawText(number, circleStroke / 2 + circleStroke / 4 + circleRadius - numberRect.width() / 2,
+        canvas.drawText(number, circleStroke / 2 + circleStroke / 4 + circleRadius - numberPaint.measureText(number)/2,
                 circleStroke / 2 + circleStroke / 4 + circleRadius - numberPadding, numberPaint);
         Rect textRect = new Rect();
         textPaint.getTextBounds(text, 0, text.length(), textRect);

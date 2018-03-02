@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="340dp"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/box_fingerprint_img"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/success_icon"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/box_fingerprint_load_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="指纹添加成功！"
+            android:textColor="@color/text_h"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/box_fingerprint_load_img"
+            android:layout_width="15dp"
+            android:layout_height="3dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/load"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/box_fingerprint_button"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/close_button"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:src="@drawable/close_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="关闭当前窗口"
+            android:textColor="@color/text_n"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="10dp"
+        android:text="关闭窗口不会中断指纹录入"
+        android:textColor="@color/text_l"
+        android:textSize="10sp" />
+</LinearLayout>

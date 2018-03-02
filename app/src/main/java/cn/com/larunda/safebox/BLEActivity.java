@@ -187,8 +187,13 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                 }
                 isLinked = false;
                 lastPosition = position;
-                bleList.get(position).setStatus(1);
-                adapter.notifyDataSetChanged();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bleList.get(lastPosition).setStatus(1);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
                 bluetoothGatt = bluetoothDevice.connectGatt(getApplicationContext(), true, new BluetoothGattCallback() {
                     @Override
                     public void onConnectionStateChange(BluetoothGatt gatt, final int status, int newState) {
@@ -203,7 +208,6 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                             gatt.discoverServices();
                         } else if (newState == BluetoothGatt.STATE_CONNECTING) {
                         } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                            Log.d("main","断开");
                             isLinked = false;
                             runOnUiThread(new Runnable() {
                                 @Override

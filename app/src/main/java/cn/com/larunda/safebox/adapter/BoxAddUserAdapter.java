@@ -28,6 +28,7 @@ public class BoxAddUserAdapter extends RecyclerView.Adapter<BoxAddUserAdapter.Vi
     private Context context;
     private List<BoxAddUser> boxAddUserList = new ArrayList<>();
     private BoxAddUserOnLongClickListener boxAddUserOnLongClickListener;
+    private BoxAddUserOnClickListener boxAddUserOnClickListener;
 
     private boolean isCheckedLayout = false;
 
@@ -74,6 +75,17 @@ public class BoxAddUserAdapter extends RecyclerView.Adapter<BoxAddUserAdapter.Vi
                     return true;
                 }
                 return false;
+            }
+        });
+        /**
+         * 子条目的单击事件
+         */
+        viewHolder.userLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (boxAddUserOnClickListener != null) {
+                    boxAddUserOnClickListener.onClick(v,boxAddUserList.get(viewHolder.getAdapterPosition()).getId());
+                }
             }
         });
         /**
@@ -136,6 +148,10 @@ public class BoxAddUserAdapter extends RecyclerView.Adapter<BoxAddUserAdapter.Vi
         void onClick(View v);
     }
 
+    public interface BoxAddUserOnClickListener {
+        void onClick(View v, String userId);
+    }
+
     public void setCheckedLayout(boolean checkedLayout) {
         isCheckedLayout = checkedLayout;
     }
@@ -146,5 +162,9 @@ public class BoxAddUserAdapter extends RecyclerView.Adapter<BoxAddUserAdapter.Vi
 
     public List<BoxAddUser> getBoxAddUserList() {
         return boxAddUserList;
+    }
+
+    public void setBoxAddUserOnClickListener(BoxAddUserOnClickListener boxAddUserOnClickListener) {
+        this.boxAddUserOnClickListener = boxAddUserOnClickListener;
     }
 }

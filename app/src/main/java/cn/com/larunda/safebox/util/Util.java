@@ -28,6 +28,7 @@ import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.gson.EditUserInfo;
 import cn.com.larunda.safebox.gson.EnclosureInfo;
+import cn.com.larunda.safebox.gson.FingerprintInfo;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
@@ -279,6 +280,12 @@ public class Util {
         Gson gson = new Gson();
         VersionInfo versionInfo = gson.fromJson(response, VersionInfo.class);
         return versionInfo;
+    }
+
+    public static FingerprintInfo handleFingerprintInfo(String response) {
+        Gson gson = new Gson();
+        FingerprintInfo fingerprintInfo = gson.fromJson(response, FingerprintInfo.class);
+        return fingerprintInfo;
     }
 
 

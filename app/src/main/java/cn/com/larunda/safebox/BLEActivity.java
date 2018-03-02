@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
@@ -46,7 +45,7 @@ import cn.com.larunda.safebox.recycler.MyBLE;
 import cn.com.larunda.safebox.util.BaseActivity;
 
 import static cn.com.larunda.safebox.util.Util.bluetoothGatt;
-import static cn.com.larunda.safebox.util.Util.lastTextView;
+import static cn.com.larunda.safebox.util.Util.isLinked;
 
 public class BLEActivity extends BaseActivity implements View.OnClickListener {
 
@@ -87,7 +86,6 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     private BluetoothDevice bluetoothDevice;
     private int lastPosition;
 
-    private boolean isLinked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +123,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         //判断是否已经连接蓝牙
-        if (bluetoothGatt != null && bluetoothGatt.connect()) {
+        if (bluetoothGatt != null && bluetoothGatt.connect() && isLinked) {
             BluetoothDevice device = bluetoothGatt.getDevice();
             bluetoothDeviceArrayList.put(device.getAddress(), device);
             bluetoothDeviceList.add(device);
@@ -182,33 +180,39 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
 
                         return;
                     } else {
-                        if (bluetoothGatt != null) {
-                            bluetoothGatt.disconnect();
-                            lastTextView = manager.findViewByPosition(lastPosition).findViewById(R.id.ble_status);
-                        }
+                        bluetoothGatt.disconnect();
+                        bluetoothGatt = null;
+                        bleList.get(lastPosition).setStatus(0);
                     }
                 }
-                if (lastTextView != null) {
-                    lastTextView.setVisibility(View.GONE);
-                }
-                final TextView textView = manager.findViewByPosition(position).findViewById(R.id.ble_status);
-                lastTextView = textView;
+                isLinked = false;
                 lastPosition = position;
-                textView.setVisibility(View.VISIBLE);
-                textView.setText("正在连接...");
                 bleList.get(position).setStatus(1);
+                adapter.notifyDataSetChanged();
                 bluetoothGatt = bluetoothDevice.connectGatt(getApplicationContext(), true, new BluetoothGattCallback() {
                     @Override
                     public void onConnectionStateChange(BluetoothGatt gatt, final int status, int newState) {
-                        //super.onConnectionStateChange(gatt, status, newState);
                         if (newState == BluetoothGatt.STATE_CONNECTED) {
-
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    bleList.get(lastPosition).setStatus(1);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
                             gatt.discoverServices();
-
                         } else if (newState == BluetoothGatt.STATE_CONNECTING) {
                         } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-                            textView.setText("正在连接...");
-                            bleList.get(position).setStatus(1);
+                            Log.d("main","断开");
+                            isLinked = false;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    bleList.get(lastPosition).setStatus(0);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+
                         }
                     }
 
@@ -221,12 +225,12 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                             for (BluetoothGattCharacteristic characteristic : characteristics) {
                                 characteristicList.add(characteristic);
                                 gatt.setCharacteristicNotification(characteristic, true);
-                                //解决收不到数据Bug
+                                //解决收不到数据
                                 for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
                                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                                     gatt.writeDescriptor(descriptor);
                                 }
-                                //gatt.readCharacteristic(characteristic);
+
                             }
 
                         }
@@ -242,30 +246,16 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
                         super.onCharacteristicChanged(gatt, characteristic);
                         String content = new String(characteristic.getValue()).trim();
-                        if (content.equals("ok")) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    isLinked = true;
-                                    textView.setText("已连接");
-                                    bleList.get(position).setStatus(2);
-                                }
-                            });
-                        } else if (content.equals("no")) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    isLinked = false;
-                                    bluetoothGatt.disconnect();
-                                    bluetoothGatt = null;
-                                    textView.setText("");
-                                    textView.setVisibility(View.GONE);
-                                    bleList.get(position).setStatus(0);
-                                }
-                            });
-                        } else if (content.length() > 1) {
-                            writeCharacteristic(String.valueOf(characteristic.getUuid()), content.substring(0, content.length() - 1).getBytes());
-                        }
+                        writeCharacteristic(String.valueOf(characteristic.getUuid()), content.replace("?", "").replace(":", "").getBytes());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                isLinked = true;
+                                bleList.get(lastPosition).setStatus(2);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+
 
                     }
                 });
@@ -330,9 +320,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                     finish();
                 }
                 break;
-
         }
-
     }
 
     /**

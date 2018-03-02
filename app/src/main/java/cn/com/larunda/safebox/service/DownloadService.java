@@ -13,8 +13,6 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.larunda.safebox.R;
 

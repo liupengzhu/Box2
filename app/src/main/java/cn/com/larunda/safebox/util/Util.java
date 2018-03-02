@@ -41,6 +41,7 @@ import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 import cn.com.larunda.safebox.gson.ValidateData;
+import cn.com.larunda.safebox.gson.VersionInfo;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -63,7 +64,7 @@ public class Util {
     public static final String PATH = "http://safebox.dsmcase.com:90";
     public static String TYPE = "&request_type=app";
     public static BluetoothGatt bluetoothGatt;
-    public static TextView lastTextView;
+    public static boolean isLinked = false;
 
     public static Home handleHomeInfo(String response) {
 
@@ -272,6 +273,12 @@ public class Util {
         Gson gson = new Gson();
         ValidateData validateData = gson.fromJson(response, ValidateData.class);
         return validateData;
+    }
+
+    public static VersionInfo handleVersionInfo(String response) {
+        Gson gson = new Gson();
+        VersionInfo versionInfo = gson.fromJson(response, VersionInfo.class);
+        return versionInfo;
     }
 
 

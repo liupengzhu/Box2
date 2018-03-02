@@ -10,6 +10,7 @@ import org.litepal.LitePal;
 
 public class MyApplication extends Application {
 
+    public static final String VERSION = "V1.0.1";
     private static Context context;
 
     @Override

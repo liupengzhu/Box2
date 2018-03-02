@@ -32,6 +32,7 @@ import cn.com.larunda.safebox.fragment.DListFragment;
 import cn.com.larunda.safebox.fragment.NewHomeFragment;
 import cn.com.larunda.safebox.fragment.TotalLogFragment;
 import cn.com.larunda.safebox.gson.MenuUserInfo;
+import cn.com.larunda.safebox.gson.VersionInfo;
 import cn.com.larunda.safebox.service.AutoUpdateService;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
@@ -44,6 +45,9 @@ import com.larunda.selfdialog.UpdateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +58,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static cn.com.larunda.safebox.MyApplication.VERSION;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -79,6 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     public static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
+    public static final String VERSION_CHECK = Util.URL + "app/version_check";
     public static final String IMG_URI = Util.PATH;
 
     private String[] titles = {"总览", "箱体列表", "日志"};
@@ -116,7 +123,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     };
 
-    private String updateUrl = "http://dlied5.myapp.com/myapp/1104466820/sgame/2017_com.tencent.tmgp.sgame_h163_1.33.1.11_89906f.apk";
+    private String updateUrl;
     private boolean isBind = false;
 
     @Override
@@ -145,21 +152,75 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setMenuClick();
         Intent serviceIntent = new Intent(this, AutoUpdateService.class);
         startService(serviceIntent);
-        showUpdateDialog();
+        sendVersionRequest();
+    }
+
+    /**
+     * 发送版本验证请求
+     */
+    private void sendVersionRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("version_number", VERSION);
+            HttpUtil.sendPostRequestWithHttp(VERSION_CHECK, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String content = response.body().string();
+                    if (Util.isGoodJson(content)) {
+                        parseVersion(content);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 解析版本信息
+     *
+     * @param content
+     */
+    private void parseVersion(final String content) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                VersionInfo versionInfo = Util.handleVersionInfo(content);
+                if (versionInfo.getUrl() != null) {
+                    updateUrl = versionInfo.getUrl();
+                    showUpdateDialog(versionInfo);
+                }
+            }
+        });
+
     }
 
     /**
      * 显示更新弹窗
      */
-    private void showUpdateDialog() {
+    private void showUpdateDialog(VersionInfo versionInfo) {
         if (isUpdate) {
             if (updateDialog != null) {
-                updateDialog.setTitleText("发现新版本V5.1.1");
-                updateDialog.setContentText("发现新版本" + "\n" + "1 春节年货专场,iPhone X低至7688元；"
-                        + "\n" + "2 适配了iPhone X/修复Android 7.0适配问题；"
-                        + "\n" + "3 增加了部分新功能；"
-                        + "\n" + "为了不影响您的正常使用,请尽快更新最新版本；"
-                );
+                updateDialog.setTitleText("发现新版本" + versionInfo.getVersion());
+                StringBuilder content = new StringBuilder();
+                if (versionInfo.getUpdated_list().getAdd().size() != 0) {
+                    for (int i = 0; i < versionInfo.getUpdated_list().getAdd().size(); i++) {
+                        content.append("【新增】" + versionInfo.getUpdated_list().getAdd().get(i) + "\n");
+                    }
+                }
+                if (versionInfo.getUpdated_list().getFix().size() != 0) {
+                    for (int i = 0; i < versionInfo.getUpdated_list().getFix().size(); i++) {
+                        content.append("【修复】" + versionInfo.getUpdated_list().getFix().get(i) + "\n");
+                    }
+                }
+                content.append("为了不影响您的正常使用,请尽快更新最新版本");
+                updateDialog.setContentText(content.toString());
                 updateDialog.show();
             }
             updateDialog.show();
@@ -694,7 +755,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         preferences.edit().putString("boxLogInfo", null).commit();
         preferences.edit().putString("appLogInfo", null).commit();
         preferences.edit().putString("menuInfo", null).commit();
-        if(isBind){
+        if (isBind) {
             unbindService(connection);
         }
         super.onDestroy();

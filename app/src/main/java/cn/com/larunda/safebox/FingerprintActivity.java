@@ -336,7 +336,7 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
     private void parseMessage(Message message) {
         if (dialog != null && dialog.isShowing()) {
             dialog.setContent(message.message);
-            
+
         }
         if (message.message.equals("正在录入指纹中，请稍后")) {
             isLinked = true;

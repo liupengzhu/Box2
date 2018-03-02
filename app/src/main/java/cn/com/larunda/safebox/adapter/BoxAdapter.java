@@ -59,6 +59,7 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         BatteryView box_dl_img;
         TextView box_dl_text;
         ImageView checked_button;
+        ImageView isImg;
 
 
         public ViewHolder(View itemView) {
@@ -77,6 +78,8 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             box_dl_text = itemView.findViewById(R.id.dsx_dl_text);
             box_layout = itemView.findViewById(R.id.dsx_layout);
             checked_button = itemView.findViewById(R.id.dsx_check_button);
+
+            isImg = itemView.findViewById(R.id.dsx_is_img);
 
         }
     }
@@ -194,6 +197,11 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         } else {
             holder.box_dl_img.setPaintColor(-1);
             holder.box_dl_text.setText("");
+        }
+        if (box.isIs_use()) {
+            holder.isImg.setVisibility(View.INVISIBLE);
+        } else {
+            holder.isImg.setVisibility(View.VISIBLE);
         }
     }
 

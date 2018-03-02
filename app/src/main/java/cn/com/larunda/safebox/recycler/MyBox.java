@@ -13,6 +13,7 @@ public class MyBox {
     private String box_dl;
     private String id;
     private String code;
+    private boolean is_use = true;
 
     private boolean imgIsChecked = false;
 
@@ -99,5 +100,13 @@ public class MyBox {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public boolean isIs_use() {
+        return is_use;
+    }
+
+    public void setIs_use(boolean is_use) {
+        this.is_use = is_use;
     }
 }

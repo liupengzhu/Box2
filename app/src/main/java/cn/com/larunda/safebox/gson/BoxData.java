@@ -27,4 +27,6 @@ public class BoxData {
     @SerializedName("record_num_read")
     public String readNum;
 
+    public String f_status;
+
 }

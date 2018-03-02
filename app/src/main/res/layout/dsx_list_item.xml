@@ -144,6 +144,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/dsx_is_img"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_alignParentLeft="true"

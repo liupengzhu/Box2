@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLength="20"
+            android:maxLength="26"
             android:maxLines="1"
             android:text="xxxx000001"
             android:textColor="@color/list_text_h"

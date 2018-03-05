@@ -334,6 +334,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
         try {
             jsonObject.put("code", code);
             jsonObject.put("finger_id", Util.listToString(idList));
+            jsonObject.put("user_id",userId);
             refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(DELETE_URL + token, jsonObject.toString(), new Callback() {
                 @Override
@@ -398,7 +399,8 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
      */
     private void sendGetStatusRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ADD_FINGERPRINT_URL + token + "&box_id=" + boxId + "&code=" + code, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ADD_FINGERPRINT_URL + token + "&box_id=" + boxId
+                + "&code=" + code + "&user_id=" + userId, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -476,14 +478,27 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
      * 发送指纹录入请求
      */
     private void sendPostRequest() {
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("box_id", boxId);
             jsonObject.put("code", code);
+            jsonObject.put("user_id",userId);
+            refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(POST_FINGERPRINT_URL + token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.GONE);
+                        }
+                    });
                 }
 
                 @Override

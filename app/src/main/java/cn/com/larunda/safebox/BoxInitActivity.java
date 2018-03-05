@@ -183,9 +183,6 @@ public class BoxInitActivity extends BaseActivity implements View.OnClickListene
 
         }
         adapter.notifyDataSetChanged();
-        if (boxInitList.size() == 0) {
-            Toast.makeText(BoxInitActivity.this, "暂无未初始化递送箱", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /**
@@ -214,10 +211,11 @@ public class BoxInitActivity extends BaseActivity implements View.OnClickListene
 
         adapter.setBoxInitAdapterOnClickListener(new BoxInitAdapter.BoxInitAdapterOnClickListener() {
             @Override
-            public void onClick(View v, String id) {
-                if (!TextUtils.isEmpty(id)) {
-                    Intent intent = new Intent(BoxInitActivity.this, BoxAddActivity.class);
+            public void onClick(View v, String id, String code) {
+                if (!TextUtils.isEmpty(id) && !TextUtils.isEmpty(code)) {
+                    Intent intent = new Intent(BoxInitActivity.this, InitActivity.class);
                     intent.putExtra("id", id);
+                    intent.putExtra("code", code);
                     startActivity(intent);
                 }
             }
@@ -279,7 +277,7 @@ public class BoxInitActivity extends BaseActivity implements View.OnClickListene
         });
 
         titleBar = findViewById(R.id.box_init_title_bar);
-        titleBar.setTextViewText("递送箱初始化");
+        titleBar.setTextViewText("递送箱列表");
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);

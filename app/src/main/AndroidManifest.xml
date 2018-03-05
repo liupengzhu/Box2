@@ -112,7 +112,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name="cn.com.larunda.safebox.FingerprintActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.FingerprintActivity" />
+        <activity android:name="cn.com.larunda.safebox.InitActivity"></activity>
     </application>
 
 </manifest>

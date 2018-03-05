@@ -215,21 +215,25 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
         if (boxMessage.boxLockTime != null) {
             if (boxMessage.boxLockTime.start_time != null) {
                 String[] dates = boxMessage.boxLockTime.start_time.split(" ");
-                if (dates[0] != null) {
-                    startDateText.setText(dates[0]);
-                }
-                if (dates[1] != null) {
-                    startTimeText.setText(dates[1]);
+                if (dates.length > 1) {
+                    if (dates[0] != null) {
+                        startDateText.setText(dates[0]);
+                    }
+                    if (dates[1] != null) {
+                        startTimeText.setText(dates[1]);
+                    }
                 }
             }
 
             if (boxMessage.boxLockTime.end_time != null) {
                 String[] dates = boxMessage.boxLockTime.end_time.split(" ");
-                if (dates[0] != null) {
-                    endDateText.setText(dates[0]);
-                }
-                if (dates[1] != null) {
-                    endTimeText.setText(dates[1]);
+                if (dates.length > 1) {
+                    if (dates[0] != null) {
+                        endDateText.setText(dates[0]);
+                    }
+                    if (dates[1] != null) {
+                        endTimeText.setText(dates[1]);
+                    }
                 }
             }
 

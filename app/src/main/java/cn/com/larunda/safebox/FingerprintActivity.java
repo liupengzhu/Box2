@@ -42,13 +42,14 @@ import cn.com.larunda.safebox.gson.FingerprintInfo;
 import cn.com.larunda.safebox.gson.Message;
 import cn.com.larunda.safebox.recycler.Fingerprint;
 import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class FingerprintActivity extends AppCompatActivity implements View.OnClickListener {
+public class FingerprintActivity extends BaseActivity implements View.OnClickListener {
 
     private SharedPreferences preferences;
     private String token;

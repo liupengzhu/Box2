@@ -51,7 +51,7 @@ public class BoxInitAdapter extends RecyclerView.Adapter<BoxInitAdapter.ViewHold
             public void onClick(View v) {
                 BoxInit boxInit = boxInitList.get(viewHolder.getAdapterPosition());
                 if (boxInitAdapterOnClickListener != null) {
-                    boxInitAdapterOnClickListener.onClick(v, boxInit.getId());
+                    boxInitAdapterOnClickListener.onClick(v, boxInit.getId(), boxInit.getCode());
                 }
             }
         });
@@ -71,7 +71,7 @@ public class BoxInitAdapter extends RecyclerView.Adapter<BoxInitAdapter.ViewHold
     }
 
     public interface BoxInitAdapterOnClickListener {
-        void onClick(View v, String id);
+        void onClick(View v, String id, String code);
     }
 
     public void setBoxInitAdapterOnClickListener(BoxInitAdapterOnClickListener boxInitAdapterOnClickListener) {

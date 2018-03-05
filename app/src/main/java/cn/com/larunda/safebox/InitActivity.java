@@ -138,7 +138,9 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
             case R.id.init_button:
                 if (!TextUtils.isEmpty(text.getText().toString().trim())
                         && !TextUtils.isEmpty(timeText.getText().toString().trim())) {
-                    if (Integer.parseInt(timeText.getText().toString().trim()) < 30
+                    if(text.getText().toString().trim().length()!=6){
+                        Toast.makeText(InitActivity.this, "密码必须为6位", Toast.LENGTH_SHORT).show();
+                    }else if (Integer.parseInt(timeText.getText().toString().trim()) < 30
                             || Integer.parseInt(timeText.getText().toString().trim()) > 1800) {
                         Toast.makeText(InitActivity.this, "上传周期必须在30到18000之间", Toast.LENGTH_SHORT).show();
                     } else {

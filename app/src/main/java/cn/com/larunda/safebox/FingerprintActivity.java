@@ -334,7 +334,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
         try {
             jsonObject.put("code", code);
             jsonObject.put("finger_id", Util.listToString(idList));
-            jsonObject.put("user_id",userId);
+            jsonObject.put("user_id", userId);
             refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(DELETE_URL + token, jsonObject.toString(), new Callback() {
                 @Override
@@ -482,7 +482,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
         try {
             jsonObject.put("box_id", boxId);
             jsonObject.put("code", code);
-            jsonObject.put("user_id",userId);
+            jsonObject.put("user_id", userId);
             refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(POST_FINGERPRINT_URL + token, jsonObject.toString(), new Callback() {
                 @Override
@@ -583,4 +583,9 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        dialog = null;
+        super.onDestroy();
+    }
 }

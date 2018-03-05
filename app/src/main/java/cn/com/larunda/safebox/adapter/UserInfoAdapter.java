@@ -2,6 +2,7 @@ package cn.com.larunda.safebox.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,6 +136,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg())
                     .placeholder(R.drawable.user).dontAnimate()
                     .error(R.mipmap.user_img).into(holder.userImg);
+            Log.d("main",myUserInfo.getUserImg()+"");
         } else {
             holder.userImg.setImageDrawable(context.getResources().getDrawable(R.drawable.user));
         }

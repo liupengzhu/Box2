@@ -741,7 +741,7 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
             intent.putExtra("name", name);
             intent.putExtra("user", user);
             intent.putExtra("level", level);
-            intent.putExtra("url", url);
+            intent.putExtra("url", "/api/file?" + url);
             setResult(RESULT_OK, intent);
             finish();
         } else if (content != null && content.equals("false")) {

@@ -461,13 +461,13 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
             case R.id.box_message_safe_loading_error_layout:
                 sendHttpRequest();
                 break;
-            case R.id.box_message_level:
+           /* case R.id.box_message_level:
                 chooseDialog.show();
                 break;
 
             case R.id.box_message_lock:
                 lockChooseDialog.show();
-                break;
+                break;*/
             case R.id.box_message_start:
                 startDialog.show();
                 break;

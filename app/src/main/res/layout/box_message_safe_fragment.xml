@@ -55,7 +55,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_icon" />
+                        android:src="@drawable/right_icon"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <ImageView
@@ -204,7 +205,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="15dp"
-                        android:src="@drawable/right_icon" />
+                        android:src="@drawable/right_icon"
+                        android:visibility="gone" />
 
 
                 </RelativeLayout>

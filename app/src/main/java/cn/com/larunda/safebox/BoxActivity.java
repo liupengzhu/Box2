@@ -197,21 +197,21 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
             jsonObject.put("f_protect_grade", protect);
             jsonObject.put("f_pic", url);
 
-            if (level.equals("三级加密")) {
+            /*if (level.equals("三级加密")) {
                 jsonObject.put("f_encrypt_level", 3);
             } else if (level.equals("二级加密")) {
                 jsonObject.put("f_encrypt_level", 2);
             } else {
                 jsonObject.put("f_encrypt_level", 1);
-            }
+            }*/
             js.put("start_time", startData + " " + startTime);
             js.put("end_time", endData + " " + endTime);
             jsonObject.put("f_lock_time", js);
-            if (lock.equals("已锁定")) {
+            /*if (lock.equals("已锁定")) {
                 jsonObject.put("f_is_locked", 1);
             } else {
                 jsonObject.put("f_is_locked", 0);
-            }
+            }*/
             jsonObject.put("type", "app");
             HttpUtil.sendPutRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, jsonObject.toString(), new Callback() {
                 @Override
@@ -269,8 +269,8 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
             Intent intent = new Intent();
             intent.putExtra("url", url);
             intent.putExtra("name",name_text.getText().toString().trim());
-            intent.putExtra("level",levelText.getText().toString().trim());
-            intent.putExtra("lock",lockText.getText().toString().trim());
+            /*intent.putExtra("level",levelText.getText().toString().trim());
+            intent.putExtra("lock",lockText.getText().toString().trim());*/
             setResult(RESULT_OK, intent);
             finish();
         } else {
@@ -309,10 +309,10 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
         } else if (TextUtils.isEmpty(protect)) {
             Toast.makeText(this, "防护等级不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(level)) {
+        }/* else if (TextUtils.isEmpty(level)) {
             Toast.makeText(this, "权限等级不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(startData) || startData.equals("开始日期")) {
+        }*/ else if (TextUtils.isEmpty(startData) || startData.equals("开始日期")) {
             Toast.makeText(this, "开始日期不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (TextUtils.isEmpty(startTime) || startTime.equals("开始时间")) {
@@ -324,10 +324,10 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
         } else if (TextUtils.isEmpty(endTime) || endTime.equals("结束时间")) {
             Toast.makeText(this, "结束时间不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(lock)) {
+        }/* else if (TextUtils.isEmpty(lock)) {
             Toast.makeText(this, "锁定状态不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        }
+        }*/
         return false;
 
 

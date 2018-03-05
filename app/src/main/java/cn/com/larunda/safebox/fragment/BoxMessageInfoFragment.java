@@ -659,7 +659,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         } else {
             if (content != null) {
                 url = content;
-                Glide.with(this).load(Util.PATH + url)
+                Glide.with(this).load(Util.PATH + "/api/file?" + url)
                         .skipMemoryCache(true) // 不使用内存缓存
                         .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
                         .placeholder(R.drawable.box_null)

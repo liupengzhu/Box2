@@ -699,7 +699,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 if (resultCode == Activity.RESULT_OK) {
                     String imgUrl = IMG_URL + data.getStringExtra("url");
                     String name = data.getStringExtra("name");
-                    int level;
+                    /*int level;
                     boolean is_locked;
                     if (data.getStringExtra("level").equals("三级加密")) {
                         level = 3;
@@ -712,12 +712,12 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                         is_locked = true;
                     } else {
                         is_locked = false;
-                    }
+                    }*/
                     adapter.removeData(lastPosition);
                     lastBox.setBox_name(name);
-                    lastBox.setBox_qx(level);
+                    /*lastBox.setBox_qx(level);*/
                     lastBox.setBox_img(imgUrl);
-                    lastBox.setIs_sd(is_locked);
+                    /*lastBox.setIs_sd(is_locked);*/
                     adapter.addData(lastPosition, lastBox);
                     footAdapter.notifyDataSetChanged();
                 }

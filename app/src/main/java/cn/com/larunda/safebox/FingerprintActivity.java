@@ -301,11 +301,11 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fingerprint_add_button:
-                dialog.show();
                 if (!isLinked) {
                     sendPostRequest();
+                } else {
+                    sendGetStatusRequest();
                 }
-                sendGetStatusRequest();
                 break;
             case R.id.fingerprint_all_checked_image:
             case R.id.fingerprint_all_checked_text:
@@ -454,6 +454,9 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
      * @param message
      */
     private void parseMessage(Message message) {
+        if (dialog != null && !dialog.isShowing()) {
+            dialog.show();
+        }
         if (dialog != null && dialog.isShowing()) {
             dialog.setContent(message.message);
 
@@ -484,6 +487,12 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendGetStatusRequest();
+                        }
+                    });
 
                 }
             });

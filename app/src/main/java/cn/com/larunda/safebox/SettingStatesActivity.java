@@ -221,7 +221,7 @@ public class SettingStatesActivity extends BaseActivity implements View.OnClickL
     private void parseMessage(String content) {
         if (content.equals("success")) {
             Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (Util.isGoodJson(content)) {
             cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
             if (message != null && message.error == null) {
                 if (message.message != null) {

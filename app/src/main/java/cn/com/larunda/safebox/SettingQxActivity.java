@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.titlebar.TitleBar;
@@ -222,7 +225,7 @@ public class SettingQxActivity extends BaseActivity implements View.OnClickListe
     private void parseMessage(String content) {
         if (content.equals("success")) {
             Toast.makeText(SettingQxActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (Util.isGoodJson(content)) {
             cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
             if (message != null && message.error == null) {
                 if (message.message != null) {

@@ -7,6 +7,7 @@ package cn.com.larunda.safebox.recycler;
 public class Fingerprint {
     private String time;
     private String id;
+    private boolean imgIsChecked = false;
 
     public Fingerprint() {
         super();
@@ -31,5 +32,13 @@ public class Fingerprint {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isImgIsChecked() {
+        return imgIsChecked;
+    }
+
+    public void setImgIsChecked(boolean imgIsChecked) {
+        this.imgIsChecked = imgIsChecked;
     }
 }

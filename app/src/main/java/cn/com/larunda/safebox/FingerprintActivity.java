@@ -17,9 +17,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.BoxFingerprintDialog;
@@ -55,6 +58,7 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
     public static final String FINGERPRINT_URL = Util.URL + "app/box_finger_lists" + Util.TOKEN;
     public static final String ADD_FINGERPRINT_URL = Util.URL + "box/get_add_finger_status" + Util.TOKEN;
     public static final String POST_FINGERPRINT_URL = Util.URL + "box/add_box_finger" + Util.TOKEN;
+    public static final String DELETE_URL = Util.URL + "box/del_box_finger" + Util.TOKEN;
 
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
@@ -78,6 +82,22 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
     private BoxFingerprintDialog dialog;
     private String code;
     private boolean isLinked = false;
+
+    /**
+     * 是否在长按状态
+     */
+    public boolean isLongClick = false;
+
+    /**
+     * 是否在全选状态
+     */
+    private boolean isAllChecked = false;
+    private ImageView allCheckedImage;
+    private TextView allCheckedText;
+    private LinearLayout bottom_layout;
+
+    private Button deleteButton;
+    private List<String> idList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,12 +238,33 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         });
+        /**
+         * 长按点击事件
+         */
+        adapter.setFingerprintOnLongClickListener(new FingerprintAdapter.FingerprintOnLongClickListener() {
+            @Override
+            public void onClick(View v) {
+                isLongClick = true;
+                adapter.setCheckedLayout(true);
+                adapter.notifyDataSetChanged();
+                bottom_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        allCheckedImage.setOnClickListener(this);
+        allCheckedText.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
     }
 
     /**
      * 初始化view
      */
     private void initView() {
+
+        allCheckedImage = findViewById(R.id.fingerprint_all_checked_image);
+        allCheckedText = findViewById(R.id.fingerprint_all_checked_text);
+        bottom_layout = findViewById(R.id.fingerprint_bottom_layout);
+        deleteButton = findViewById(R.id.fingerprint_delete_button);
 
         recyclerView = findViewById(R.id.fingerprint_recycler);
         manager = new LinearLayoutManager(this);
@@ -266,10 +307,89 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
                 }
                 sendGetStatusRequest();
                 break;
+            case R.id.fingerprint_all_checked_image:
+            case R.id.fingerprint_all_checked_text:
+                allCheckedClick();
+                break;
+            case R.id.fingerprint_delete_button:
+                checkIsChecked();
+                if (idList.size() == 0) {
+                    Toast.makeText(FingerprintActivity.this, "还没有选择指纹", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendDeleteRequest();
+                }
+                break;
             default:
                 break;
         }
 
+    }
+
+    /**
+     * 发送删除请求
+     */
+    private void sendDeleteRequest() {
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("code", code);
+            jsonObject.put("finger_id", Util.listToString(idList));
+            refreshLayout.setRefreshing(true);
+            HttpUtil.sendPostRequestWithHttp(DELETE_URL + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseResponse(content);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 解析删除返回状态
+     *
+     * @param content
+     */
+    private void parseResponse(String content) {
+        if (Util.isGoodJson(content)) {
+            Message message = Util.handleMessage(content);
+            if (message != null && message.error == null) {
+                if (message.message.equals("成功")) {
+                    sendRequest();
+                } else {
+                    Toast.makeText(FingerprintActivity.this, message.message, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(FingerprintActivity.this, LoginActivity.class);
+                intent.putExtra("token_timeout", "登录超时");
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                ActivityCollector.finishAllActivity();
+            }
+        }
     }
 
     /**
@@ -372,4 +492,70 @@ public class FingerprintActivity extends AppCompatActivity implements View.OnCli
         }
 
     }
+
+    @Override
+    public void onBackPressed() {
+        //判断递送箱列表是否是多选状态
+        if (isLongClick) {
+            cancleLongClick();
+
+        } else {
+            Intent intent = new Intent();
+            intent.putExtra("count", adapter.getItemCount());
+            setResult(RESULT_OK, intent);
+            finish();
+
+        }
+    }
+
+    /**
+     * 取消多选状态
+     */
+    public void cancleLongClick() {
+        isLongClick = false;
+        adapter.setCheckedLayout(false);
+        adapter.notifyDataSetChanged();
+        bottom_layout.setVisibility(View.GONE);
+    }
+
+    /**
+     * 处理全选按钮的点击事件
+     */
+    private void allCheckedClick() {
+        //判断当前全选是否是选中状态
+        if (isAllChecked) {
+            isAllChecked = false;
+            allCheckedImage.setImageResource(R.mipmap.unchecked);
+            List<Fingerprint> fingerprintList = adapter.getFingerprintList();
+            for (Fingerprint fingerprint : fingerprintList) {
+                fingerprint.setImgIsChecked(false);
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            isAllChecked = true;
+            allCheckedImage.setImageResource(R.mipmap.checked);
+            List<Fingerprint> fingerprintList = adapter.getFingerprintList();
+            for (Fingerprint fingerprint : fingerprintList) {
+                fingerprint.setImgIsChecked(true);
+            }
+            adapter.notifyDataSetChanged();
+
+        }
+
+    }
+
+    /**
+     * 检查选中的指纹
+     */
+    private void checkIsChecked() {
+        idList.clear();
+        for (Fingerprint fingerprint : fingerprintList) {
+            if (fingerprint.isImgIsChecked()) {
+                idList.add(fingerprint.getId());
+            }
+        }
+    }
+
 }

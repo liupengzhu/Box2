@@ -351,6 +351,7 @@ public class BoxAddUserActivity extends BaseActivity implements View.OnClickList
         try {
             jsonObject.put("box_id", id);
             jsonObject.put("user_id", Util.listToString(idList));
+            refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(CANCEL_URL + token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

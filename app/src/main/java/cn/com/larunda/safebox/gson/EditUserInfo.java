@@ -29,6 +29,7 @@ public class EditUserInfo {
     @SerializedName("company_array")
     public List<Company> companyList;
     public Config config;
+    public String f_pic_orig;
 
     public static class Company{
         public String id;

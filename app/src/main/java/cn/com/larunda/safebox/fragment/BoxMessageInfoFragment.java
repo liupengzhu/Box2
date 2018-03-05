@@ -216,14 +216,15 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             soundText.setVisibility(View.GONE);
         }
         if (boxMessage.f_pic != null) {
-            url = boxMessage.f_pic;
-            Glide.with(this).load(Util.PATH + url)
+            Glide.with(this).load(Util.PATH + boxMessage.f_pic)
                     .placeholder(R.drawable.box_null)
                     .dontAnimate()
                     .error(R.drawable.box_null).into(photo);
-        } else {
-            url = null;
         }
+        if (boxMessage.f_pic_orig != null) {
+            url = boxMessage.f_pic_orig;
+        }
+
     }
 
     /**

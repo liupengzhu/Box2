@@ -230,10 +230,13 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         String imgUrl = null;
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
-            url = imgUrl;
             Glide.with(this).load(IMG_URL + imgUrl).placeholder(R.drawable.user).dontAnimate()
                     .error(R.mipmap.user_img).into(photo);
         }
+        if (userInfo.f_pic_orig != null) {
+            url = userInfo.f_pic_orig;
+        }
+
         if (userInfo.user != null) {
             userText.setText(userInfo.user);
         } else {

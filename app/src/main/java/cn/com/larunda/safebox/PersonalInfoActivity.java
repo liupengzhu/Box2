@@ -115,7 +115,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     public static final String COMPANY_URL = Util.URL + "company/";
     public static final String DEPARTMENT_URL = Util.URL + "department/";
     public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
-    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+    public static final String IMG_URL = Util.PATH;
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
     public static final String EDIT_USER_URL = Util.URL + "user/";
     private String userId = "";
@@ -282,10 +282,12 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
         if (userInfo.pic != null) {
             imgUrl = userInfo.pic.replace('\\', ' ');
-            url = imgUrl;
             Glide.with(this).load(IMG_URL + imgUrl)
                     .placeholder(R.drawable.user).dontAnimate()
                     .error(R.mipmap.user_img).into(photo);
+        }
+        if (userInfo.f_pic_orig != null) {
+            url = userInfo.f_pic_orig;
         }
         if (userInfo.user != null) {
             userText.setText(userInfo.user);

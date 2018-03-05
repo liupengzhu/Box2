@@ -37,4 +37,5 @@ public class BoxMessage {
     public String error;
 
 
+    public String f_pic_orig;
 }

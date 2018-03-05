@@ -267,8 +267,8 @@ public class BoxActivity extends BaseActivity implements View.OnClickListener {
         if (result.data != null && result.data.equals("true")) {
             preferences.edit().putString("boxInfo", null).commit();
             Intent intent = new Intent();
-            intent.putExtra("url", url);
-            intent.putExtra("name",name_text.getText().toString().trim());
+            intent.putExtra("url", "/api/file?" + url);
+            intent.putExtra("name", name_text.getText().toString().trim());
             /*intent.putExtra("level",levelText.getText().toString().trim());
             intent.putExtra("lock",lockText.getText().toString().trim());*/
             setResult(RESULT_OK, intent);

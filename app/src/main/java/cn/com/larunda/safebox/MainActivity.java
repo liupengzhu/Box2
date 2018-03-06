@@ -378,12 +378,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        //判断递送箱列表是否是多选状态
+        /*//判断递送箱列表是否是多选状态
         if (DListFragment.isLongClick) {
             DListFragment.cancleLongClick();
         } else {
             exitByTwoClick();
-        }
+        }*/
+        Intent home = new Intent(Intent.ACTION_MAIN);
+        home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        home.addCategory(Intent.CATEGORY_HOME);
+        startActivity(home);
     }
 
     /**

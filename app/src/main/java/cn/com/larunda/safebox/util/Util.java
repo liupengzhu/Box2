@@ -64,8 +64,6 @@ public class Util {
     public static final String TOKEN = "?_token=";
     public static final String PATH = "http://safebox.dsmcase.com:90";
     public static String TYPE = "&request_type=app";
-    public static BluetoothGatt bluetoothGatt;
-    public static boolean isLinked = false;
 
     public static Home handleHomeInfo(String response) {
 

@@ -1,6 +1,7 @@
 package cn.com.larunda.safebox.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -8,13 +9,11 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.View;
+
+import com.larunda.safebox.R;
 
 import java.io.IOException;
 
-import cn.com.larunda.safebox.LoginActivity;
-import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -39,14 +38,22 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        /*updateHomeInfo();
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
+        builder.setSmallIcon(R.mipmap.app);
+        builder.setContentTitle("安全递送箱");
+        builder.setContentText("正在运行");
+        Notification notification = builder.build();
+        startForeground(111, notification);
+
+        updateHomeInfo();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 5 * 60 * 1000;//5分钟毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
         manager.cancel(pi);
-        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);*/
+        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
+
         return super.onStartCommand(intent, flags, startId);
     }
 

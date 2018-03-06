@@ -9,7 +9,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,8 +54,10 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static cn.com.larunda.safebox.util.Util.bluetoothGatt;
-import static cn.com.larunda.safebox.util.Util.isLinked;
+import static cn.com.larunda.safebox.MyApplication.bluetoothGatt;
+import static cn.com.larunda.safebox.MyApplication.bluetoothManager;
+import static cn.com.larunda.safebox.MyApplication.mBluetoothAdapter;
+import static cn.com.larunda.safebox.MyApplication.isLinked;
 
 public class BLEActivity extends BaseActivity implements View.OnClickListener {
 
@@ -71,7 +73,6 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     private BLEAdapter adapter;
     private LinearLayoutManager manager;
     private List<MyBLE> bleList = new ArrayList<>();
-    private BluetoothAdapter mBluetoothAdapter;
 
     private boolean isSearch = false;
 
@@ -117,8 +118,6 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         initEvent();
-        sendRequest();
-
         //开启位置服务，支持获取ble蓝牙扫描结果
         if (Build.VERSION.SDK_INT >= 23 && !isLocationOpen(getApplicationContext())) {
             Intent enableLocate = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -126,6 +125,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         } else {
             initBLE();
         }
+        sendRequest();
     }
 
     /**
@@ -193,7 +193,20 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             }
             boxBleList.add(boxBle);
         }
-        //判断是否已经连接蓝牙
+        List<BluetoothDevice> deviceList = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+        for (BluetoothDevice device : deviceList) {
+            for (BoxBle boxBle : boxBleList) {
+                if (boxBle.getCode().equals(device.getName())) {
+                    bluetoothDeviceArrayList.put(device.getAddress(), device);
+                    bluetoothDeviceList.add(device);
+                    bleList.add(new MyBLE(device.getName(), 2, boxBle.getUrl(), boxBle.getName()));
+                    adapter.notifyDataSetChanged();
+                    lastPosition = 0;
+                    isLinked = true;
+                }
+            }
+        }
+        /*//判断是否已经连接蓝牙
         if (bluetoothGatt != null && bluetoothGatt.connect() && isLinked) {
             BluetoothDevice device = bluetoothGatt.getDevice();
             Log.d("main", device.getName() + "");
@@ -207,22 +220,18 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                     isLinked = true;
                 }
             }
-        }
+        }*/
     }
 
     /**
      * 初始化蓝牙
      */
     private void initBLE() {
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-
-
     }
 
 

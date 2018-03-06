@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
@@ -48,6 +49,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
     private String id;
 
     private EditText text;
+    private EditText rePassword;
     private EditText timeText;
     private Button button;
     private SharedPreferences preferences;
@@ -112,6 +114,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
         token = preferences.getString("token", null);
 
         text = findViewById(R.id.init_edit);
+        rePassword = findViewById(R.id.init_re_password_edit);
         timeText = findViewById(R.id.init_time_edit);
         button = findViewById(R.id.init_button);
 
@@ -137,14 +140,17 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.init_button:
                 if (!TextUtils.isEmpty(text.getText().toString().trim())
-                        && !TextUtils.isEmpty(timeText.getText().toString().trim())) {
-                    if(text.getText().toString().trim().length()!=6){
+                        && !TextUtils.isEmpty(timeText.getText().toString().trim())
+                        && !TextUtils.isEmpty(rePassword.getText().toString().trim())) {
+                    if (text.getText().toString().trim().length() != 6) {
                         Toast.makeText(InitActivity.this, "密码必须为6位", Toast.LENGTH_SHORT).show();
-                    }else if (Integer.parseInt(timeText.getText().toString().trim()) < 30
+                    } else if (!text.getText().toString().trim().equals(rePassword.getText().toString().trim())) {
+                        Toast.makeText(InitActivity.this, "确认密码和密码不一致", Toast.LENGTH_SHORT).show();
+                    } else if (Integer.parseInt(timeText.getText().toString().trim()) < 30
                             || Integer.parseInt(timeText.getText().toString().trim()) > 1800) {
                         Toast.makeText(InitActivity.this, "上传周期必须在30到18000之间", Toast.LENGTH_SHORT).show();
                     } else {
-                        sendRequest(text.getText().toString().trim(), timeText.getText().toString().trim());
+                        sendRequest(text.getText().toString().trim(), rePassword.getText().toString().trim(), timeText.getText().toString().trim());
                     }
                 } else {
                     Toast.makeText(InitActivity.this, "密码或上传周期不能为空", Toast.LENGTH_SHORT).show();
@@ -161,7 +167,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
      * @param password
      * @param time
      */
-    private void sendRequest(final String password, final String time) {
+    private void sendRequest(final String password, final String rePassword, final String time) {
         swipeRefreshLayout.setRefreshing(true);
         try {
             JSONObject jsonObject = new JSONObject();
@@ -183,7 +189,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendInitRequest(password, time);
+                            sendInitRequest(password, rePassword, time);
                         }
                     });
                 }
@@ -200,12 +206,13 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
      * @param password
      * @param time
      */
-    private void sendInitRequest(String password, String time) {
+    private void sendInitRequest(String password, String rePassword, String time) {
 
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("password", password);
             jsonObject.put("cycle", time);
+            jsonObject.put("re_password", password);
             jsonObject.put("code", code);
             swipeRefreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(INIT_URL + token, jsonObject.toString(), new Callback() {
@@ -278,13 +285,13 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void parseMessage(Message message) {
-        Log.d("main",message.message);
+        Log.d("main", message.message);
         if (message.message.equals("正在初始化中，请稍后")) {
             handler.postDelayed(runnable, 5000);
         } else if (message.message.equals("成功")) {
             finish();
         } else {
-            Toast.makeText(InitActivity.this, message.message+"", Toast.LENGTH_SHORT).show();
+            Toast.makeText(InitActivity.this, message.message + "", Toast.LENGTH_SHORT).show();
             handler.removeCallbacks(runnable);
         }
     }

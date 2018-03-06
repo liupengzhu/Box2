@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         public void onServiceConnected(ComponentName name, IBinder service) {
             isBind = true;
             binder = (DownloadService.DownloadBinder) service;
-            binder.startDownload(updateUrl);
+            binder.startDownload(IMG_URI + updateUrl);
         }
 
         @Override

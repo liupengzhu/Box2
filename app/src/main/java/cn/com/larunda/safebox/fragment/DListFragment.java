@@ -362,7 +362,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
      */
     private void initEvent() {
 
-        adapter.setOnLongClickListener(new BoxAdapter.DsxLongClickListener() {
+        /*adapter.setOnLongClickListener(new BoxAdapter.DsxLongClickListener() {
             @Override
             public void onLongClick(View v) {
                 isLongClick = true;
@@ -374,7 +374,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 MainActivity.titleBar.setRightTextVisible(View.VISIBLE);
                 MainActivity.tabLayout.setVisibility(View.GONE);
             }
-        });
+        });*/
         adapter.setDsxOnClickListener(new BoxAdapter.DsxOnClickListener() {
 
             @Override

@@ -34,6 +34,7 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.com.larunda.safebox.adapter.BLEAdapter;
+import cn.com.larunda.safebox.gson.MenuUserInfo;
+import cn.com.larunda.safebox.gson.RelatedBox;
+import cn.com.larunda.safebox.recycler.BoxBle;
 import cn.com.larunda.safebox.recycler.MyBLE;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import static cn.com.larunda.safebox.util.Util.bluetoothGatt;
 import static cn.com.larunda.safebox.util.Util.isLinked;
@@ -75,16 +85,22 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (!bluetoothDeviceArrayList.containsKey(device.getAddress())) {
-                bluetoothDeviceArrayList.put(device.getAddress(), device);
-                bluetoothDeviceList.add(device);
-                bleList.add(new MyBLE(device.getName(), 0));
-                adapter.notifyDataSetChanged();
+                for (BoxBle boxBle : boxBleList) {
+                    if (boxBle.getCode().equals(device.getName())) {
+                        bluetoothDeviceArrayList.put(device.getAddress(), device);
+                        bluetoothDeviceList.add(device);
+                        bleList.add(new MyBLE(device.getName(), 0, boxBle.getUrl(), boxBle.getName()));
+                        adapter.notifyDataSetChanged();
+                    }
+                }
             }
 
         }
     };
     private BluetoothDevice bluetoothDevice;
     private int lastPosition;
+    private static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
+    private List<BoxBle> boxBleList = new ArrayList<>();
 
 
     @Override
@@ -101,6 +117,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
 
         initView();
         initEvent();
+        sendRequest();
 
         //开启位置服务，支持获取ble蓝牙扫描结果
         if (Build.VERSION.SDK_INT >= 23 && !isLocationOpen(getApplicationContext())) {
@@ -108,6 +125,88 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             startActivityForResult(enableLocate, REQUEST_LOCATION_PERMISSION);
         } else {
             initBLE();
+        }
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
+                    if (menuUserInfo != null && menuUserInfo.error == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseContent(menuUserInfo);
+                                preferences.edit().putString("menuInfo", content).apply();
+                            }
+                        });
+
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(BLEActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+
+                            }
+                        });
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    /**
+     * 解析服务器返回信息
+     *
+     * @param menuUserInfo
+     */
+    private void parseContent(MenuUserInfo menuUserInfo) {
+        boxBleList.clear();
+        for (RelatedBox relatedBox : menuUserInfo.boxList) {
+            BoxBle boxBle = new BoxBle();
+            if (relatedBox.code != null && relatedBox.code.length() == 24) {
+                boxBle.setCode(relatedBox.code.substring(12, 24));
+            }
+            if (relatedBox.aliases != null) {
+                boxBle.setName(relatedBox.aliases);
+            }
+            if (relatedBox.pic != null) {
+                boxBle.setUrl(Util.PATH + relatedBox.pic);
+            }
+            boxBleList.add(boxBle);
+        }
+        //判断是否已经连接蓝牙
+        if (bluetoothGatt != null && bluetoothGatt.connect() && isLinked) {
+            BluetoothDevice device = bluetoothGatt.getDevice();
+            Log.d("main", device.getName() + "");
+            for (BoxBle boxBle : boxBleList) {
+                if (boxBle.getCode().equals(device.getName())) {
+                    bluetoothDeviceArrayList.put(device.getAddress(), device);
+                    bluetoothDeviceList.add(device);
+                    bleList.add(new MyBLE(device.getName(), 2, boxBle.getUrl(), boxBle.getName()));
+                    adapter.notifyDataSetChanged();
+                    lastPosition = 0;
+                    isLinked = true;
+                }
+            }
         }
     }
 
@@ -122,16 +221,8 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        //判断是否已经连接蓝牙
-        if (bluetoothGatt != null && bluetoothGatt.connect() && isLinked) {
-            BluetoothDevice device = bluetoothGatt.getDevice();
-            bluetoothDeviceArrayList.put(device.getAddress(), device);
-            bluetoothDeviceList.add(device);
-            bleList.add(new MyBLE(device.getName(), 2));
-            adapter.notifyDataSetChanged();
-            lastPosition = 0;
-            isLinked = true;
-        }
+
+
     }
 
 
@@ -394,6 +485,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         //判断蓝牙是否已经链接成功
         if (!isLinked && bluetoothGatt != null) {
             bluetoothGatt.disconnect();
+            bluetoothGatt.close();
             bluetoothGatt = null;
         }
         super.onDestroy();

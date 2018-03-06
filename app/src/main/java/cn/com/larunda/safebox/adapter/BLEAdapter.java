@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.larunda.safebox.R;
 
 import java.util.ArrayList;
@@ -34,12 +36,16 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
         TextView bleName;
         TextView statusText;
         RelativeLayout layout;
+        ImageView imageView;
+        TextView boxName;
 
         public ViewHolder(View itemView) {
             super(itemView);
             bleName = itemView.findViewById(R.id.ble_name);
             statusText = itemView.findViewById(R.id.ble_status);
             layout = itemView.findViewById(R.id.ble_item_layout);
+            imageView = itemView.findViewById(R.id.ble_img);
+            boxName = itemView.findViewById(R.id.ble_box_name);
         }
     }
 
@@ -75,6 +81,14 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
                 break;
         }
         holder.bleName.setText(ble.getBleName());
+        holder.boxName.setText(ble.getName() + "");
+        if (ble.getUrl() != null) {
+            Glide.with(context).load(ble.getUrl())
+                    .placeholder(R.drawable.box_null)
+                    .error(R.drawable.box_null).into(holder.imageView);
+        } else {
+            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
+        }
     }
 
     @Override

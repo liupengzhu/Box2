@@ -16,9 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ConfirmDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 
 public class SystemSettingActivity extends BaseActivity implements View.OnClickListener {
@@ -31,6 +33,9 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
     private RelativeLayout fingerprint_layout;
     private FingerprintManager manager;
     private String userId;
+
+    private RelativeLayout quitButton;
+    private ConfirmDialog confirmDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,29 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
             }
         });
         fingerprint.setOnClickListener(this);
+        quitButton.setOnClickListener(this);
+        confirmDialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                confirmDialog.cancel();
+            }
+        });
+        confirmDialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                //退出程序
+                preferences.edit().putBoolean("isUpdate", true).commit();
+                preferences.edit().putString("homeInfo", null).commit();
+                preferences.edit().putString("boxInfo", null).commit();
+                preferences.edit().putString("userLogInfo", null).commit();
+                preferences.edit().putString("boxLogInfo", null).commit();
+                preferences.edit().putString("appLogInfo", null).commit();
+                preferences.edit().putString("menuInfo", null).commit();
+
+                ActivityCollector.finishAllActivity();
+                System.exit(0);
+            }
+        });
     }
 
     /**
@@ -95,6 +123,8 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
+        quitButton = findViewById(R.id.system_setting_quit);
+        confirmDialog = new ConfirmDialog(this);
 
         titleBar = findViewById(R.id.system_setting_title_bar);
         titleBar.setTextViewText("");
@@ -122,6 +152,9 @@ public class SystemSettingActivity extends BaseActivity implements View.OnClickL
                     preferences.edit().putString(userId + "user_password", null).apply();
                     preferences.edit().putBoolean(userId + "fingerprint", false).apply();
                 }
+                break;
+            case R.id.system_setting_quit:
+                confirmDialog.show();
                 break;
 
             default:

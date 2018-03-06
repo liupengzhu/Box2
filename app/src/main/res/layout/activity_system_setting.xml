@@ -30,16 +30,16 @@
             android:textSize="20sp" />
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -69,16 +69,16 @@
         </RelativeLayout>
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -108,16 +108,16 @@
         </RelativeLayout>
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -147,16 +147,16 @@
         </RelativeLayout>
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -186,16 +186,16 @@
         </RelativeLayout>
 
         <ImageView
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/line"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -283,6 +283,36 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:text="清空缓存"
+                android:textColor="@color/list_text_h"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/right_icon" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line"
+            android:orientation="vertical" />
+
+        <RelativeLayout
+            android:id="@+id/system_setting_quit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:text="退出程序"
                 android:textColor="@color/list_text_h"
                 android:textSize="18sp" />
 

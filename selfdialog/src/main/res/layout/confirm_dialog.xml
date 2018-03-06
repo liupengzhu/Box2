@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="300dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/background"
+    android:background="#ffffff"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/content_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
         android:lineSpacingExtra="15dp"
-        android:text="张三于2017/11/07 12:00:00 对递送箱序列号为xxx001 发起远程授权开箱，是否授权"
-        android:textColor="@color/text_black"
-        android:textSize="15sp" />
+        android:text="退出程序将导致功能无法使用"
+        android:textColor="@color/text_n"
+        android:textSize="18sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -184,12 +184,18 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             BoxBle boxBle = new BoxBle();
             if (relatedBox.code != null && relatedBox.code.length() == 24) {
                 boxBle.setCode(relatedBox.code.substring(12, 24));
+            } else {
+                return;
             }
             if (relatedBox.aliases != null) {
                 boxBle.setName(relatedBox.aliases);
+            } else {
+                return;
             }
             if (relatedBox.pic != null) {
                 boxBle.setUrl(Util.PATH + relatedBox.pic);
+            } else {
+                return;
             }
             boxBleList.add(boxBle);
         }

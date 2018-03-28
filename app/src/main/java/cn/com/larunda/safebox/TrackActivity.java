@@ -175,7 +175,7 @@ public class TrackActivity extends BaseActivity {
                 if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
                     LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
                             Float.parseFloat(locationInfo.pathDataList.get(i).longitude));
-                    if (i == locationInfo.pathDataList.size() - 2) {
+                    if (i == locationInfo.pathDataList.size() - 1) {
                         /*MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
                         baiduMap.animateMapStatus(update);
                         MapStatusUpdate update2 = MapStatusUpdateFactory.zoomTo(16f);//缩放大小

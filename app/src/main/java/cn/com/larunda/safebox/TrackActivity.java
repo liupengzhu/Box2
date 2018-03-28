@@ -34,6 +34,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -167,18 +168,18 @@ public class TrackActivity extends BaseActivity {
      * @param locationInfo
      */
     private void showInfo(LocationInfo locationInfo) {
-
         List<LatLng> points = new ArrayList<>();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         if (locationInfo.pathDataList != null) {
             for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
                 if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
                     LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
                             Float.parseFloat(locationInfo.pathDataList.get(i).longitude));
-                    if (i == locationInfo.pathDataList.size() - 1) {
-                        MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
+                    if (i == locationInfo.pathDataList.size() - 2) {
+                        /*MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
                         baiduMap.animateMapStatus(update);
-                        update = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
-                        baiduMap.animateMapStatus(update);
+                        MapStatusUpdate update2 = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
+                        baiduMap.animateMapStatus(update2);*/
                         //构建Marker图标
                         BitmapDescriptor bitmap = BitmapDescriptorFactory
                                 .fromResource(R.drawable.locatin_red);
@@ -188,11 +189,15 @@ public class TrackActivity extends BaseActivity {
                                 .icon(bitmap);
                         //在地图上添加Marker，并显示
                         baiduMap.addOverlay(option);
+
                     }
                     points.add(latLng);
+                    builder.include(latLng);
                 }
 
             }
+            baiduMap.setMapStatus(MapStatusUpdateFactory
+                    .newLatLngBounds(builder.build()));
             if (points.size() >= 2) {
                 //构建分段颜色索引数组
 

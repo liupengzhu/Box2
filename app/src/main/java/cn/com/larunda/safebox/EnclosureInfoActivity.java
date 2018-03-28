@@ -33,6 +33,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolygonOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -168,7 +169,8 @@ public class EnclosureInfoActivity extends BaseActivity {
     }
 
     private void showInfo(CoordinateInfo coordinateInfo) {
-
+        //LatLng position = null;
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         if (coordinateInfo.getF_name() != null) {
             textView.setText(coordinateInfo.getF_name());
         } else {
@@ -184,23 +186,22 @@ public class EnclosureInfoActivity extends BaseActivity {
                         if (fDataBean.getLat() != null && fDataBean.getLng() != null) {
 
                             LatLng latLng = new LatLng(Float.parseFloat(fDataBean.getLat()), Float.parseFloat(fDataBean.getLng()));
-                            if (i == 0 && j == 0) {
-                                MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(latLng);//移动到我的经纬度
-                                baiduMap.animateMapStatus(update);
-                                if (fDataBeanList.size() > 50) {
-                                    update = MapStatusUpdateFactory.zoomTo(8f);//缩放大小
-                                } else {
-                                    update = MapStatusUpdateFactory.zoomTo(16f);//缩放大小
-                                }
-                                baiduMap.animateMapStatus(update);
-                            }
+                            /*if (i == 0 && j == 0) {
+                                position = latLng;
+
+                            }*/
                             points.add(latLng);
+                            builder.include(latLng);
                         }
                     }
                     drawOverlay(points);
-
+                    baiduMap.setMapStatus(MapStatusUpdateFactory
+                            .newLatLngBounds(builder.build()));
                 }
             }
+
+            /*MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(position);//移动到我的经纬度
+            baiduMap.animateMapStatus(update);*/
         } else {
             runOnUiThread(new Runnable() {
                 @Override

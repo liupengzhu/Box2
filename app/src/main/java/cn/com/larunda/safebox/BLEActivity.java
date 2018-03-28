@@ -23,7 +23,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -185,17 +184,17 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
             if (relatedBox.code != null && relatedBox.code.length() == 24) {
                 boxBle.setCode(relatedBox.code.substring(12, 24));
             } else {
-                return;
+                boxBle.setCode("");
             }
             if (relatedBox.aliases != null) {
                 boxBle.setName(relatedBox.aliases);
             } else {
-                return;
+                boxBle.setName("");
             }
             if (relatedBox.pic != null) {
                 boxBle.setUrl(Util.PATH + relatedBox.pic);
             } else {
-                return;
+                boxBle.setUrl("");
             }
             boxBleList.add(boxBle);
         }

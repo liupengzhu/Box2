@@ -79,6 +79,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
         code = getIntent().getStringExtra("code");
         initView();
         initEvent();
+        sendRequest();
     }
 
     /**
@@ -150,7 +151,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
                             || Integer.parseInt(timeText.getText().toString().trim()) > 1800) {
                         Toast.makeText(InitActivity.this, "上传周期必须在30到18000之间", Toast.LENGTH_SHORT).show();
                     } else {
-                        sendRequest(text.getText().toString().trim(), rePassword.getText().toString().trim(), timeText.getText().toString().trim());
+                        sendInitRequest(text.getText().toString().trim(), rePassword.getText().toString().trim(), timeText.getText().toString().trim());
                     }
                 } else {
                     Toast.makeText(InitActivity.this, "密码或上传周期不能为空", Toast.LENGTH_SHORT).show();
@@ -163,35 +164,27 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * 发送网络请求
-     *
-     * @param password
-     * @param time
      */
-    private void sendRequest(final String password, final String rePassword, final String time) {
-        swipeRefreshLayout.setRefreshing(true);
+    private void sendRequest() {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("code", code);
             HttpUtil.sendPostRequestWithHttp(POST_URL + token, jsonObject.toString(), new Callback() {
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(Call call, final IOException e) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(InitActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(InitActivity.this, e.getMessage() + "", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            sendInitRequest(password, rePassword, time);
-                        }
-                    });
+
                 }
             });
         } catch (JSONException e) {
@@ -229,7 +222,14 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    sendStatusRequest();
+                    String content = response.body().string();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendStatusRequest();
+                        }
+                    });
+
                 }
             });
         } catch (JSONException e) {
@@ -256,7 +256,7 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final Message message = Util.handleMessage(content);
                     if (message != null && message.error == null) {
@@ -285,14 +285,13 @@ public class InitActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void parseMessage(Message message) {
-        Log.d("main", message.message);
         if (message.message.equals("正在初始化中，请稍后")) {
-            handler.postDelayed(runnable, 5000);
+            sendStatusRequest();
         } else if (message.message.equals("成功")) {
             finish();
+
         } else {
             Toast.makeText(InitActivity.this, message.message + "", Toast.LENGTH_SHORT).show();
-            handler.removeCallbacks(runnable);
         }
     }
 

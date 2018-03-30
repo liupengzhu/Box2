@@ -49,13 +49,16 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
     public final int MSG_PROGRESS_UPDATE = 0x110;
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
-            int progress = progressBar.getProgress();
-            progressBar.setProgress(++progress);
-            if (progress >= 1000) {
-                progressBar.setProgress(0);
-                sendRequest();
+            if (msg.what == MSG_PROGRESS_UPDATE) {
+                int progress = progressBar.getProgress();
+                progressBar.setProgress(++progress);
+                if (progress >= 1000) {
+                    progressBar.setProgress(0);
+                    sendRequest();
+                } else {
+                    mHandler.sendEmptyMessageDelayed(MSG_PROGRESS_UPDATE, 60);
+                }
             }
-            mHandler.sendEmptyMessageDelayed(MSG_PROGRESS_UPDATE, 60);
         }
 
 
@@ -83,7 +86,7 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
         }
         id = getIntent().getStringExtra("id");
         initView();
-        last_time = preferences.getLong(id + "time", 0);
+        /*last_time = preferences.getLong(id + "time", 0);
         if (last_time != 0) {
             long time = System.currentTimeMillis() - last_time;
             if (time < 60000) {
@@ -105,9 +108,9 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
             } else {
                 sendRequest();
             }
-        } else {
-            sendRequest();
-        }
+        } else {*/
+        sendRequest();
+        //}
 
 
     }
@@ -177,12 +180,13 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
                 textView4.setText(password[3] + "");
                 textView5.setText(password[4] + "");
                 textView6.setText(password[5] + "");
+                progressBar.setProgress((int) ((60 - (float) dynamicPassword.time) / 60 * 1000));
                 mHandler.sendEmptyMessage(MSG_PROGRESS_UPDATE);
-                long time = System.currentTimeMillis();
+                /*long time = System.currentTimeMillis();
                 editor = preferences.edit();
                 editor.putLong(id + "time", time);
                 editor.putString(id + "password", dynamicPassword.password);
-                editor.apply();
+                editor.apply();*/
             }
 
         }
@@ -228,13 +232,13 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
-        InputStream is ;
+        InputStream is;
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.ARGB_8888;
         opt.inPurgeable = true;
         opt.inInputShareable = true;
         opt.inSampleSize = 2;
-        is= getResources().openRawResource(R.drawable.dtbackground);
+        is = getResources().openRawResource(R.drawable.dtbackground);
         Bitmap bm = BitmapFactory.decodeStream(is, null, opt);
         BitmapDrawable bd = new BitmapDrawable(getResources(), bm);
         layout.setBackground(bd);

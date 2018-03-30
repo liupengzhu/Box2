@@ -7,4 +7,5 @@ package cn.com.larunda.safebox.gson;
 public class DynamicPassword {
     public String password;
     public String error;
+    public int time;
 }

@@ -118,6 +118,7 @@
             android:id="@+id/fingerprint_all_checked_image"
             android:layout_width="28dp"
             android:layout_height="28dp"
+            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             android:src="@mipmap/unchecked" />
@@ -128,6 +129,7 @@
             android:layout_height="match_parent"
             android:layout_marginRight="20dp"
             android:gravity="center"
+            android:visibility="gone"
             android:text="全选"
             android:textSize="18sp" />
 

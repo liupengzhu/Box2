@@ -179,6 +179,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
         } else {
+            isClick = false;
             Toast.makeText(this, "账号或者密码不能为空", Toast.LENGTH_SHORT).show();
         }
 
@@ -198,6 +199,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            isClick = false;
                             Toast.makeText(LoginActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -205,7 +207,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-
+                    isClick = false;
                     String content = response.body().string();
                     if (Util.isGoodJson(content)) {
                         UserToken userToken = Util.handleLoginInfo(content);
@@ -265,20 +267,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
             case R.id.login_button:
                 if (isClick) {
                     Toast.makeText(this, "操作过于频繁", Toast.LENGTH_SHORT).show();
                 } else {
                     isClick = true;
-                    //0.5秒后取消已经点击标记位
-                    timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            isClick = false;
-                        }
-                    }, 500);
                     login();
                 }
                 break;

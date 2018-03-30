@@ -11,6 +11,15 @@ public class FingerprintInfo {
     private String code;
     private List<DataBean> data;
     private String error;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getError() {
         return error;

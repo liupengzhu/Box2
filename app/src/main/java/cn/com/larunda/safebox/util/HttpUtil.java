@@ -21,9 +21,9 @@ import okhttp3.RequestBody;
 public class HttpUtil {
 
     //http链接
-    public final static int READER_TIMEOUT = 10;
+    public final static int READER_TIMEOUT = 30;
     public final static int WRITE_TIMEOUT = 30;
-    public final static int CONNECT_TIMEOUT = 10;
+    public final static int CONNECT_TIMEOUT = 30;
 
 
     public final static MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -73,7 +73,7 @@ public class HttpUtil {
         RequestBody fileBody = RequestBody.create(IMAGE, file);
         MultipartBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file",file.getName(),fileBody)
+                .addFormDataPart("file", file.getName(), fileBody)
                 .build();
 
         Request request = new Request.Builder()

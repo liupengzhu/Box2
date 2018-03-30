@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -35,6 +36,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.com.larunda.safebox.adapter.FingerprintAdapter;
 import cn.com.larunda.safebox.gson.BoxAddUserInfo;
@@ -61,13 +64,6 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
     public static final String POST_FINGERPRINT_URL = Util.URL + "box/add_box_finger" + Util.TOKEN;
     public static final String DELETE_URL = Util.URL + "box/del_box_finger" + Util.TOKEN;
 
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            sendGetStatusRequest();
-        }
-    };
 
     private NestedScrollView layout;
     private RelativeLayout loodingErrorLayout;
@@ -99,6 +95,9 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
 
     private Button deleteButton;
     private List<String> idList = new ArrayList<>();
+    private Timer timer;
+
+    private boolean cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,9 +194,20 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
      *
      * @param fingerprintInfo
      */
+    @SuppressLint("ResourceType")
     private void initData(FingerprintInfo fingerprintInfo) {
         fingerprintList.clear();
         code = fingerprintInfo.getCode();
+        if (fingerprintInfo.getStatus() != null && !fingerprintInfo.getStatus().equals("")
+                && Integer.valueOf(fingerprintInfo.getStatus()) == 4) {
+            addButton.setClickable(true);
+            addButton.setBackground(getResources().getDrawable(R.drawable.login_button));
+            cancel = true;
+        } else {
+            addButton.setClickable(false);
+            addButton.setBackground(getResources().getDrawable(R.drawable.login_button_null));
+            cancel = false;
+        }
         for (FingerprintInfo.DataBean dataBean : fingerprintInfo.getData()) {
             Fingerprint fingerprint = new Fingerprint();
             if (dataBean.getFinger_id() != null) {
@@ -245,10 +255,12 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
         adapter.setFingerprintOnLongClickListener(new FingerprintAdapter.FingerprintOnLongClickListener() {
             @Override
             public void onClick(View v) {
-                isLongClick = true;
-                adapter.setCheckedLayout(true);
-                adapter.notifyDataSetChanged();
-                bottom_layout.setVisibility(View.VISIBLE);
+                if (cancel) {
+                    isLongClick = true;
+                    adapter.setCheckedLayout(true);
+                    adapter.notifyDataSetChanged();
+                    bottom_layout.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -302,11 +314,11 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fingerprint_add_button:
-                if (!isLinked) {
-                    sendPostRequest();
-                    sendGetStatusRequest();
+                if (isLinked) {
+
                 } else {
                     sendGetStatusRequest();
+                    isLinked = true;
                 }
                 break;
             case R.id.fingerprint_all_checked_image:
@@ -404,6 +416,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
                 + "&code=" + code + "&user_id=" + userId, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                isLinked = false;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -422,6 +435,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
+                isLinked = false;
                 if (Util.isGoodJson(content)) {
                     final Message message = Util.handleMessage(content);
                     if (message != null && message.error == null) {
@@ -458,20 +472,23 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
      * @param message
      */
     private void parseMessage(Message message) {
-        if (dialog != null && !dialog.isShowing()) {
-            dialog.show();
-        }
-        if (dialog != null && dialog.isShowing()) {
-            dialog.setContent(message.message);
 
-        }
-        Log.d("main", message.message + "");
-        if (message.message.equals("正在录入指纹中，请稍后")) {
-            isLinked = true;
-            handler.postDelayed(runnable, 5000);
+        if (message.message.equals("time_out")) {
+            if (dialog != null && !dialog.isShowing()) {
+                dialog.show();
+                dialog.setContent("服务器链接超时");
+            }
+        } else if (message.message.equals("{FingerStatus:fingerConnect}")) {
+            if (dialog != null && !dialog.isShowing()) {
+                dialog.show();
+                dialog.setContent("正在录入指纹，请稍等");
+            }
         } else {
-            handler.removeCallbacks(runnable);
-            isLinked = false;
+            sendPostRequest();
+            if (dialog != null && !dialog.isShowing()) {
+                dialog.show();
+                dialog.setContent("正在录入指纹，请稍等");
+            }
         }
 
     }
@@ -493,10 +510,32 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (dialog != null && dialog.isShowing()) {
+                                if (content != null && content.equals("success")) {
+                                    dialog.setContent("指纹录入成功");
+                                    //0.5秒后取消已经点击标记位
+                                    timer = new Timer();
+                                    timer.schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            if (dialog != null && dialog.isShowing()) {
+                                                dialog.cancel();
 
+                                            }
+                                        }
+                                    }, 500);
+                                    sendRequest();
+                                } else if (content != null && content.equals("box_not_find")) {
+                                    dialog.setContent("箱体未找到");
+                                } else {
+                                    dialog.setContent("服务器链接超时");
+                                }
+
+                            }
                         }
                     });
 

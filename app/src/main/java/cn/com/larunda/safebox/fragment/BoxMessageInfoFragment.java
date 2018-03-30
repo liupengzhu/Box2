@@ -204,7 +204,7 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
             protect_text.setText("");
         }
         if (boxMessage.electricity != null) {
-            electricity_text.setText(boxMessage.electricity + "%");
+            electricity_text.setText((int) (Float.parseFloat(boxMessage.electricity) / 6 * 100) + "%");
         } else {
             electricity_text.setText("");
         }

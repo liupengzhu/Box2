@@ -510,12 +510,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         page = boxInfo.current_page + 1;
         count = boxInfo.per_page;
         total = boxInfo.last_page;
-        if(boxInfo.to_used==0){
-            tabNumber.setVisibility(View.GONE);
-        }else {
-            tabNumber.setVisibility(View.VISIBLE);
-            tabNumber.setText(boxInfo.to_used + "");
-        }
+        tabNumber.setVisibility(View.GONE);
         myBoxList.clear();
         if (boxInfo.boxDataList.size() == 0 || boxInfo.boxDataList.size() < count) {
             footAdapter.setHasMore(false);

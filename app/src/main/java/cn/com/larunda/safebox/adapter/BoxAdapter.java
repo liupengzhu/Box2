@@ -192,8 +192,8 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
             holder.box_issd_text.setTextColor(context.getResources().getColor(R.color.list_text_l));
         }
         if (box.getBox_dl() != null) {
-            holder.box_dl_img.setPaintColor(Integer.parseInt(box.getBox_dl()));
-            holder.box_dl_text.setText(box.getBox_dl() + "%");
+            holder.box_dl_img.setPaintColor((int) (Float.parseFloat(box.getBox_dl()) / 6 * 100));
+            holder.box_dl_text.setText((int) (Float.parseFloat(box.getBox_dl()) / 6 * 100) + "%");
         } else {
             holder.box_dl_img.setPaintColor(-1);
             holder.box_dl_text.setText("");

@@ -254,13 +254,13 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
             circleTextView.setNumber(home.info.on_line + "");
             shippingText.setText(home.info.shipping + "");
             alarmText.setText(home.info.alarm + "");
-            exceptionText.setText(home.info.exception + "");
-            totalText.setText(home.info.total + "");
+            exceptionText.setText((home.info.shipping - home.info.on_line) + "");
+            totalText.setText((home.info.total - home.info.to_used) + "");
             toUsedText.setText(home.info.to_used + "");
             if (home.info.on_line == 0) {
                 circleTextView.setCircleAngle(0);
             } else {
-                circleTextView.setCircleAngle((float) home.info.shipping / (float) home.info.on_line * 360);
+                circleTextView.setCircleAngle((float) home.info.on_line / (float) home.info.shipping * 360);
             }
             areaText.setText(home.alarm_num.area_alarm + "");
             leavingText.setText(home.alarm_num.leaving_alarm + "");

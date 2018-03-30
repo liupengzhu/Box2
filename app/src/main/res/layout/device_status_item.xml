@@ -155,7 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="通信异常"
+                        android:text="不在线"
                         android:textColor="@color/list_text_h" />
 
                     <TextView
@@ -218,7 +218,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="待使用"
+                android:text="待添加"
                 android:textColor="@color/list_text_h" />
 
             <TextView

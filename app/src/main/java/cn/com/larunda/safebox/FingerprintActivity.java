@@ -304,6 +304,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
             case R.id.fingerprint_add_button:
                 if (!isLinked) {
                     sendPostRequest();
+                    sendGetStatusRequest();
                 } else {
                     sendGetStatusRequest();
                 }
@@ -464,6 +465,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
             dialog.setContent(message.message);
 
         }
+        Log.d("main", message.message + "");
         if (message.message.equals("正在录入指纹中，请稍后")) {
             isLinked = true;
             handler.postDelayed(runnable, 5000);
@@ -483,22 +485,10 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
             jsonObject.put("box_id", boxId);
             jsonObject.put("code", code);
             jsonObject.put("user_id", userId);
-            refreshLayout.setRefreshing(true);
             HttpUtil.sendPostRequestWithHttp(POST_FINGERPRINT_URL + token, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (dialog != null && dialog.isShowing()) {
-                                dialog.cancel();
-                            }
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.GONE);
-                            layout.setVisibility(View.GONE);
-                        }
-                    });
+
                 }
 
                 @Override
@@ -506,7 +496,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendGetStatusRequest();
+
                         }
                     });
 

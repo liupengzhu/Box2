@@ -12,13 +12,16 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -53,7 +56,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class TrackActivity extends BaseActivity {
+public class TrackActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private LocationClient mLocationClient;
@@ -65,6 +68,11 @@ public class TrackActivity extends BaseActivity {
     public static final String PATH_URL = Util.URL + "location/path" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
+
+    private Button button;
+    private boolean isRefresh;
+
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +93,6 @@ public class TrackActivity extends BaseActivity {
         id = getIntent().getStringExtra("id");
         initView();
 
-
         mapView = findViewById(R.id.map_view);
         baiduMap = mapView.getMap();
         baiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
@@ -99,7 +106,6 @@ public class TrackActivity extends BaseActivity {
             // 未打开位置开关，可能导致定位失败或定位不准，提示用户或做相应处理
             Toast.makeText(TrackActivity.this, "未打开位置开关，可能导致定位失败或定位不准", Toast.LENGTH_SHORT).show();
         }
-
 
         List<String> permissionList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(TrackActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -117,27 +123,50 @@ public class TrackActivity extends BaseActivity {
         } else {
             requestLocation();
         }
+        initEvent();
         sendRequest();
 
+    }
+
+    private void initEvent() {
+        button.setOnClickListener(this);
     }
 
     /**
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(PATH_URL + token + "&box_id=" + id, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                isRefresh = false;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
-                    LocationInfo locationInfo = Util.handleLocationInfo(content);
+                    final LocationInfo locationInfo = Util.handleLocationInfo(content);
                     if (locationInfo != null && locationInfo.error == null) {
-                        showInfo(locationInfo);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isRefresh) {
+                                    Toast.makeText(TrackActivity.this, "加载完成", Toast.LENGTH_SHORT).show();
+                                }
+                                isRefresh = false;
+                                showInfo(locationInfo);
+                                refreshLayout.setRefreshing(false);
+                            }
+                        });
+
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -170,6 +199,7 @@ public class TrackActivity extends BaseActivity {
     private void showInfo(LocationInfo locationInfo) {
         List<LatLng> points = new ArrayList<>();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        baiduMap.clear();
         if (locationInfo.pathDataList != null) {
             for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
                 if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
@@ -178,7 +208,6 @@ public class TrackActivity extends BaseActivity {
                     points.add(latLng);
                     builder.include(latLng);
                 }
-
             }
             baiduMap.setMapStatus(MapStatusUpdateFactory
                     .newLatLngBounds(builder.build()));
@@ -197,6 +226,8 @@ public class TrackActivity extends BaseActivity {
                                 .icon(bitmap);
                         //在地图上添加Marker，并显示
                         baiduMap.addOverlay(option);
+                    } else {
+                        Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude),
@@ -212,6 +243,8 @@ public class TrackActivity extends BaseActivity {
                     baiduMap.addOverlay(option);
 
                 }
+            } else {
+                Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -238,6 +271,11 @@ public class TrackActivity extends BaseActivity {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(TrackActivity.this);
         token = preferences.getString("token", null);
+
+        button = findViewById(R.id.map_button);
+        refreshLayout = findViewById(R.id.map_swipe);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setEnabled(false);//设置swipe不可用
 
         titleBar = findViewById(R.id.track_title_bar);
         titleBar.setTextViewText("定位轨迹");
@@ -279,6 +317,18 @@ public class TrackActivity extends BaseActivity {
                 } else {
                     finish();
                 }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.map_button:
+                if (!isRefresh) {
+                    isRefresh = true;
+                    sendRequest();
+                }
+                break;
         }
     }
 

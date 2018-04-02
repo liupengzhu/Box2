@@ -11,9 +11,32 @@
         android:layout_height="75dp">
 
     </com.larunda.titlebar.TitleBar>
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/map_view"
-        android:clickable="true"
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/map_swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.baidu.mapapi.map.MapView>
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.baidu.mapapi.map.MapView
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"></com.baidu.mapapi.map.MapView>
+
+            <Button
+                android:id="@+id/map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/map_button2"
+                android:gravity="center"
+                android:text="刷新"
+                android:textColor="@color/white" />
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

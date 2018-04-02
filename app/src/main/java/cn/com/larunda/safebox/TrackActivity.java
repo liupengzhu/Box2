@@ -182,23 +182,23 @@ public class TrackActivity extends BaseActivity {
             }
             baiduMap.setMapStatus(MapStatusUpdateFactory
                     .newLatLngBounds(builder.build()));
-            if (locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude == null ||
-                    locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).longitude == null) {
-                if (locationInfo.pathDataList.size() > 2) {
-                    LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).latitude),
-                            Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).longitude));
-                    //构建Marker图标
-                    BitmapDescriptor bitmap = BitmapDescriptorFactory
-                            .fromResource(R.mipmap.location_null);
-                    //构建MarkerOption，用于在地图上添加Marker
-                    OverlayOptions option = new MarkerOptions()
-                            .position(latLng)
-                            .icon(bitmap);
-                    //在地图上添加Marker，并显示
-                    baiduMap.addOverlay(option);
-                }
-            } else {
-                if (locationInfo.pathDataList.size() > 1) {
+            if (locationInfo.pathDataList.size() > 0) {
+                if (locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude == null ||
+                        locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).longitude == null) {
+                    if (locationInfo.pathDataList.size() > 1) {
+                        LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).latitude),
+                                Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).longitude));
+                        //构建Marker图标
+                        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                                .fromResource(R.mipmap.location_null);
+                        //构建MarkerOption，用于在地图上添加Marker
+                        OverlayOptions option = new MarkerOptions()
+                                .position(latLng)
+                                .icon(bitmap);
+                        //在地图上添加Marker，并显示
+                        baiduMap.addOverlay(option);
+                    }
+                } else {
                     LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude),
                             Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).longitude));
                     //构建Marker图标
@@ -210,6 +210,7 @@ public class TrackActivity extends BaseActivity {
                             .icon(bitmap);
                     //在地图上添加Marker，并显示
                     baiduMap.addOverlay(option);
+
                 }
             }
 

@@ -94,50 +94,7 @@ public class AppLogFragment extends Fragment {
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
-                    if (totalLogInfo != null && totalLogInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showInfo(totalLogInfo);
-                                preferences.edit().putString("appLogInfo", content).commit();
-                                swipeRefreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                            }
-                        });
-
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
-                    }
-
-                }else {
+                if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -147,6 +104,53 @@ public class AppLogFragment extends Fragment {
                             recyclerView.setVisibility(View.GONE);
                         }
                     });
+                }
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
+                    if (getActivity() != null) {
+                        if (totalLogInfo != null && totalLogInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showInfo(totalLogInfo);
+                                    preferences.edit().putString("appLogInfo", content).commit();
+                                    swipeRefreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                }
+                            });
+
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    MainActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
+
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                swipeRefreshLayout.setRefreshing(false);
+                                loodingErrorLayout.setVisibility(View.VISIBLE);
+                                loodingLayout.setVisibility(View.GONE);
+                                recyclerView.setVisibility(View.GONE);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -230,15 +234,17 @@ public class AppLogFragment extends Fragment {
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
 
             }
 
@@ -247,29 +253,31 @@ public class AppLogFragment extends Fragment {
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
-                    if (totalLogInfo != null && totalLogInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                addInfo(totalLogInfo);
-                                swipeRefreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                            }
-                        });
+                    if (getActivity() != null) {
+                        if (totalLogInfo != null && totalLogInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addInfo(totalLogInfo);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                }
+                            });
 
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    MainActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
 
 
@@ -294,6 +302,7 @@ public class AppLogFragment extends Fragment {
         }
         footAdapter.notifyDataSetChanged();
     }
+
     @Override
     public void onResume() {
         super.onResume();

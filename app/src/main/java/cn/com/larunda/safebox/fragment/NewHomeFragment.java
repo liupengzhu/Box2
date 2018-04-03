@@ -177,17 +177,17 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
         HttpUtil.sendGetRequestWithHttp(BOX_URI + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadingLayout.setVisibility(View.GONE);
-                        loadingErrorLayout.setVisibility(View.VISIBLE);
-                        layout.setVisibility(View.GONE);
-                        refreshLayout.setRefreshing(false);
-                    }
-                });
-
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadingLayout.setVisibility(View.GONE);
+                            loadingErrorLayout.setVisibility(View.VISIBLE);
+                            layout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -195,32 +195,33 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
                 final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final NewHomeInfo home = Util.handleNewHomeInfo(content);
-                    if (home != null && home.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showInfo(home);
-                                preferences.edit().putString("homeInfo", content).commit();
-                                loadingLayout.setVisibility(View.GONE);
-                                loadingErrorLayout.setVisibility(View.GONE);
-                                layout.setVisibility(View.VISIBLE);
-                                refreshLayout.setRefreshing(false);
-                            }
-                        });
+                    if (getActivity() != null) {
+                        if (home != null && home.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showInfo(home);
+                                    preferences.edit().putString("homeInfo", content).commit();
+                                    loadingLayout.setVisibility(View.GONE);
+                                    loadingErrorLayout.setVisibility(View.GONE);
+                                    layout.setVisibility(View.VISIBLE);
+                                    refreshLayout.setRefreshing(false);
+                                }
+                            });
 
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
-
                 }
             }
         });

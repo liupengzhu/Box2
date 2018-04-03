@@ -122,15 +122,17 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
         HttpUtil.sendGetRequestWithHttp(MESSAGE_URI + BoxActivity.ID + Util.TOKEN + BoxActivity.token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        layout.setVisibility(View.GONE);
-                    }
-                });
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -138,28 +140,30 @@ public class BoxMessageSafeFragment extends Fragment implements View.OnClickList
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final BoxMessage boxMessage = Util.handleBoxMessage(content);
-                    if (boxMessage != null && boxMessage.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initBoxMessage(boxMessage);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                BoxActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
+                    if (getActivity() != null) {
+                        if (boxMessage != null && boxMessage.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    initBoxMessage(boxMessage);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                    layout.setVisibility(View.VISIBLE);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    BoxActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    ActivityCollector.finishAllActivity();
+                                }
+                            });
+                        }
                     }
                 }
             }

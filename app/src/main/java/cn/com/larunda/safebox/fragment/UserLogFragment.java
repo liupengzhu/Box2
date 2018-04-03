@@ -111,43 +111,35 @@ public class UserLogFragment extends Fragment {
                 final String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
-                    if (totalLogInfo != null && totalLogInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showInfo(totalLogInfo);
-                                preferences.edit().putString("userLogInfo", content).commit();
-                                swipeRefreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                            }
-                        });
+                    if (getActivity() != null) {
+                        if (totalLogInfo != null && totalLogInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showInfo(totalLogInfo);
+                                    preferences.edit().putString("userLogInfo", content).commit();
+                                    swipeRefreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                }
+                            });
 
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
-                    }
-
-
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.GONE);
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    MainActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
                         }
-                    });
+
+
+                    }
                 }
             }
         });
@@ -232,16 +224,17 @@ public class UserLogFragment extends Fragment {
         HttpUtil.sendGetRequestWithHttp(SQLS_URI + MainActivity.token + TYPE + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -249,32 +242,33 @@ public class UserLogFragment extends Fragment {
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final TotalLogInfo totalLogInfo = Util.handleTotalLogInfo(content);
-                    if (totalLogInfo != null && totalLogInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                addInfo(totalLogInfo);
-                                swipeRefreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                            }
-                        });
+                    if (getActivity() != null) {
+                        if (totalLogInfo != null && totalLogInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addInfo(totalLogInfo);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                }
+                            });
 
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                MainActivity.preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    MainActivity.preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
+
                     }
-
-
                 }
             }
         });

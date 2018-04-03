@@ -236,15 +236,17 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loodingErrorLayout.setVisibility(View.VISIBLE);
+                            loodingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -252,30 +254,31 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final BoxInfo boxInfo = Util.handleBoxInfo(content);
+                    if (getActivity() != null) {
+                        if (boxInfo != null && boxInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    addBoxList(boxInfo);
+                                    refreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
 
-                    if (boxInfo != null && boxInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                addBoxList(boxInfo);
-                                refreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -447,48 +450,7 @@ public class DListFragment extends Fragment implements View.OnClickListener {
         HttpUtil.sendGetRequestWithHttp(BOX_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final BoxInfo boxInfo = Util.handleBoxInfo(content);
-                    if (boxInfo != null && boxInfo.error == null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initBoxList(boxInfo);
-                                preferences.edit().putString("boxInfo", content).apply();
-                                refreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
-                    }
-                } else {
+                if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -498,6 +460,41 @@ public class DListFragment extends Fragment implements View.OnClickListener {
                             recyclerView.setVisibility(View.GONE);
                         }
                     });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                if (Util.isGoodJson(content)) {
+                    final BoxInfo boxInfo = Util.handleBoxInfo(content);
+                    if (getActivity() != null) {
+                        if (boxInfo != null && boxInfo.error == null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    initBoxList(boxInfo);
+                                    preferences.edit().putString("boxInfo", content).apply();
+                                    refreshLayout.setRefreshing(false);
+                                    loodingErrorLayout.setVisibility(View.GONE);
+                                    loodingLayout.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+                            });
+                        }
+                    }
                 }
             }
         });

@@ -7,4 +7,5 @@ package cn.com.larunda.safebox.gson;
 public class PathData {
     public String longitude;
     public String latitude;
+    public String type;
 }

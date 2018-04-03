@@ -137,7 +137,7 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
 
         refreshLayout = view.findViewById(R.id.new_home_refresh);
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        refreshLayout.setProgressViewOffset(false, 100, 300);//设置刷新进度条偏移量
+        refreshLayout.setProgressViewOffset(false, 100, 400);//设置刷新进度条偏移量
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -29,7 +29,6 @@ import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
@@ -38,6 +37,7 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -73,6 +73,8 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
     private boolean isRefresh;
 
     private SwipeRefreshLayout refreshLayout;
+    private CoordinateConverter converter;
+    private CoordinateConverter converter2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,68 +200,153 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
      */
     private void showInfo(LocationInfo locationInfo) {
         List<LatLng> points = new ArrayList<>();
+        List<LatLng> points2 = new ArrayList<>();
+        List<List<LatLng>> pointList = new ArrayList<>();
+        LatLng newPoint = null;
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         baiduMap.clear();
         if (locationInfo.pathDataList != null) {
             for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
                 if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
-                    LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
+                    LatLng sourceLatLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
                             Float.parseFloat(locationInfo.pathDataList.get(i).longitude));
+                    LatLng latLng;
+                    if (locationInfo.pathDataList.get(i).type != null && locationInfo.pathDataList.get(i).type.equals("0")) {
+                        // sourceLatLng待转换坐标
+                        converter.coord(sourceLatLng);
+                        latLng = converter.convert();
+                    } else if (locationInfo.pathDataList.get(i).type != null && locationInfo.pathDataList.get(i).type.equals("1")) {
+                        // sourceLatLng待转换坐标
+                        converter2.coord(sourceLatLng);
+                        latLng = converter2.convert();
+                    } else {
+                        latLng = sourceLatLng;
+                    }
+
                     points.add(latLng);
+                    points2.add(latLng);
+                    newPoint = latLng;
                     builder.include(latLng);
+                    if (locationInfo.pathDataList.size() > 0 && i == locationInfo.pathDataList.size() - 1) {
+                        pointList.add(points2);
+                    }
+                } else {
+
+                    if (points2.size() > 0) {
+                        pointList.add(points2);
+                        points2 = new ArrayList<>();
+                    }
                 }
             }
-            baiduMap.setMapStatus(MapStatusUpdateFactory
-                    .newLatLngBounds(builder.build()));
+
+            //画线
+            if (pointList.size() > 0) {
+                for (int i = 0; i < pointList.size(); i++) {
+                    if (pointList.get(i).size() > 1) {
+                        //构建分段颜色索引数组
+                        List<Integer> colors = new ArrayList<>();
+                        colors.add(Integer.valueOf(Color.RED));
+                        OverlayOptions ooPolyline = new PolylineOptions()
+                                .colorsValues(colors)
+                                .width(5)
+                                .points(pointList.get(i));
+                        //添加在地图中
+                        Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
+                        mPolyline.setZIndex(1);
+                    }
+                    if (i < pointList.size() - 1) {
+                        List<LatLng> line = new ArrayList<>();
+                        line.add(pointList.get(i).get(pointList.get(i).size() - 1));
+                        line.add(pointList.get(i + 1).get(0));
+                        //构建分段颜色索引数组
+                        List<Integer> colors = new ArrayList<>();
+                        colors.add(Integer.valueOf(Color.RED));
+                        OverlayOptions ooPolyline = new PolylineOptions()
+                                .colorsValues(colors)
+                                .width(5)
+                                .points(line);
+                        //添加在地图中
+                        Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
+                        mPolyline.setDottedLine(true);
+                        mPolyline.setZIndex(1);
+                    }
+                }
+            }
+
             if (locationInfo.pathDataList.size() > 0) {
-                if (locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude == null ||
-                        locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).longitude == null) {
-                    if (locationInfo.pathDataList.size() > 1) {
-                        LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).latitude),
-                                Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 2).longitude));
+                PathData data = locationInfo.pathDataList.get((locationInfo.pathDataList.size() - 1));
+                if (data.longitude == null || data.latitude == null) {
+                    if (newPoint == null) {
+                        Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                    } else {
                         //构建Marker图标
                         BitmapDescriptor bitmap = BitmapDescriptorFactory
                                 .fromResource(R.mipmap.location_null);
                         //构建MarkerOption，用于在地图上添加Marker
                         OverlayOptions option = new MarkerOptions()
-                                .position(latLng)
+                                .position(newPoint)
                                 .icon(bitmap);
                         //在地图上添加Marker，并显示
-                        baiduMap.addOverlay(option);
-                    } else {
-                        Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                        baiduMap.addOverlay(option).setZIndex(4);
                     }
                 } else {
-                    LatLng latLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).latitude),
-                            Float.parseFloat(locationInfo.pathDataList.get(locationInfo.pathDataList.size() - 1).longitude));
                     //构建Marker图标
                     BitmapDescriptor bitmap = BitmapDescriptorFactory
                             .fromResource(R.mipmap.location_red);
                     //构建MarkerOption，用于在地图上添加Marker
                     OverlayOptions option = new MarkerOptions()
-                            .position(latLng)
+                            .position(newPoint)
                             .icon(bitmap);
                     //在地图上添加Marker，并显示
                     baiduMap.addOverlay(option);
 
+                    if (points2.size() >= 2) {
+                        //构建分段颜色索引数组
+                        List<Integer> colors = new ArrayList<>();
+                        colors.add(Integer.valueOf(Color.RED));
+                        OverlayOptions ooPolyline = new PolylineOptions()
+                                .colorsValues(colors)
+                                .width(5)
+                                .points(points2);
+                        //添加在地图中
+                        Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
+                        mPolyline.setZIndex(1);
+                    }
+                    points2.clear();
                 }
             } else {
                 Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
             }
 
-
-            if (points.size() >= 2) {
-                //构建分段颜色索引数组
-                List<Integer> colors = new ArrayList<>();
-                colors.add(Integer.valueOf(Color.RED));
-                OverlayOptions ooPolyline = new PolylineOptions()
-                        .colorsValues(colors)
-                        .width(5)
-                        .points(points);
-                //添加在地图中
-                Polyline mPolyline = (Polyline) baiduMap.addOverlay(ooPolyline);
+            baiduMap.setMapStatus(MapStatusUpdateFactory
+                    .newLatLngBounds(builder.build()));
+            for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
+                if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
+                    LatLng sourceLatLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),
+                            Float.parseFloat(locationInfo.pathDataList.get(i).longitude));
+                    LatLng latLng;
+                    if (locationInfo.pathDataList.get(i).type != null && locationInfo.pathDataList.get(i).type.equals("0")) {
+                        // sourceLatLng待转换坐标
+                        converter.coord(sourceLatLng);
+                        latLng = converter.convert();
+                    } else if (locationInfo.pathDataList.get(i).type != null && locationInfo.pathDataList.get(i).type.equals("1")) {
+                        // sourceLatLng待转换坐标
+                        converter2.coord(sourceLatLng);
+                        latLng = converter2.convert();
+                    } else {
+                        latLng = sourceLatLng;
+                    }
+                    //构建Marker图标
+                    BitmapDescriptor bitmap = BitmapDescriptorFactory
+                            .fromResource(R.mipmap.circle_point);
+                    //构建MarkerOption，用于在地图上添加Marker
+                    OverlayOptions option = new MarkerOptions()
+                            .position(latLng)
+                            .icon(bitmap).anchor(0.5f, 0.5f);
+                    //在地图上添加Marker，并显示
+                    baiduMap.addOverlay(option).setZIndex(1);
+                }
             }
-
 
         }
     }
@@ -271,6 +358,14 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
 
         preferences = PreferenceManager.getDefaultSharedPreferences(TrackActivity.this);
         token = preferences.getString("token", null);
+
+        // 将GPS设备采集的原始GPS坐标转换成百度坐标
+        converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.GPS);
+
+        // 将高德坐标转换成百度坐标
+        converter2 = new CoordinateConverter();
+        converter2.from(CoordinateConverter.CoordType.COMMON);
 
         button = findViewById(R.id.map_button);
         refreshLayout = findViewById(R.id.map_swipe);

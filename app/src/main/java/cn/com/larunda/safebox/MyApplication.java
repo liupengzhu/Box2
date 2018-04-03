@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import com.baidu.mapapi.SDKInitializer;
 
@@ -14,7 +16,7 @@ import org.litepal.LitePal;
 
 public class MyApplication extends Application {
 
-    public static final String VERSION = "V1.0.1";
+    public static String VERSION;
     private static Context context;
     public static BluetoothManager bluetoothManager;
     public static BluetoothAdapter mBluetoothAdapter;
@@ -24,7 +26,14 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        PackageManager pm = getPackageManager();
+        PackageInfo pi = null;//getPackageName()是你当前类的包名，0代表是获取版本信息
+        try {
+            pi = pm.getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        VERSION = pi.versionName;
         context = getApplicationContext();
         LitePal.initialize(context);
         SDKInitializer.initialize(context);

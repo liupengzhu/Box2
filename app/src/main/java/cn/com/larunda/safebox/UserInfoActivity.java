@@ -57,6 +57,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
     public static final String USER_INFO_URL = Util.URL + "user" + Util.TOKEN;
     public static final String IMG_URL = Util.PATH;
+    public static final int REQUEST = 2;
     private TitleBar titleBar;
 
     private List<MyUserInfo> myUserInfoList = new ArrayList<>();
@@ -178,7 +179,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
             public void onRightButtonClickListener(View v) {
 
                 Intent intent = new Intent(UserInfoActivity.this, AddUserActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST);
             }
         });
 
@@ -685,8 +686,14 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     footAdapter.notifyDataSetChanged();
                 }
                 break;
+            case REQUEST:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
             default:
                 break;
         }
     }
+
 }

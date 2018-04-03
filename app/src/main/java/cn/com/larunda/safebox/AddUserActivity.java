@@ -824,6 +824,9 @@ public class AddUserActivity extends BaseActivity implements View.OnClickListene
 
     private void parseUpdata(String content) {
         if (content != null && content.equals("true")) {
+            Intent intent = new Intent();
+            intent.putExtra("isUpdate", true);
+            setResult(RESULT_OK, intent);
             finish();
         } else if (content != null && content.equals("false")) {
             Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();

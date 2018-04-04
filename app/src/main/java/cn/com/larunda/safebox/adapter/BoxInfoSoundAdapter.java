@@ -91,4 +91,6 @@ public class BoxInfoSoundAdapter extends RecyclerView.Adapter<BoxInfoSoundAdapte
     public void setBoxInfoSoundOnClickListener(BoxInfoSoundOnClickListener boxInfoSoundOnClickListener) {
         this.boxInfoSoundOnClickListener = boxInfoSoundOnClickListener;
     }
+
+
 }

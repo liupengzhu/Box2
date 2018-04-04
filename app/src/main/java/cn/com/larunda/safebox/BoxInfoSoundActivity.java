@@ -393,6 +393,7 @@ public class BoxInfoSoundActivity extends BaseActivity implements View.OnClickLi
         token = preferences.getString("token", null);
 
         recyclerView = findViewById(R.id.box_info_sound_recycler);
+        recyclerView.setItemViewCacheSize(10000);
         manager = new LinearLayoutManager(this);
         adapter = new BoxInfoSoundAdapter(this, boxInfoSoundList);
         footAdapter = new FootAdapter(this, adapter);

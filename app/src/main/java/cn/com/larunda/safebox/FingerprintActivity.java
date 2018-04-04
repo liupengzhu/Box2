@@ -394,6 +394,7 @@ public class FingerprintActivity extends BaseActivity implements View.OnClickLis
             if (message != null && message.error == null) {
                 if (message.message.equals("成功")) {
                     sendRequest();
+                    cancleLongClick();
                 } else {
                     Toast.makeText(FingerprintActivity.this, message.message, Toast.LENGTH_SHORT).show();
                 }

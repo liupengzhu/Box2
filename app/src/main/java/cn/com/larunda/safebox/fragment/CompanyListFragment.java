@@ -92,6 +92,7 @@ public class CompanyListFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
+                Log.d("main", content);
                 if (Util.isGoodJson(content)) {
                     final CompanyInfo info = Util.handleCompanyInfo(content);
                     if (getActivity() != null) {

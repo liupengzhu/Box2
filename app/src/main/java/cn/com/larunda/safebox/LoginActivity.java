@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
-    public static final String LOGIN_URI = Util.URL + "app_login";
+    public static final String LOGIN_URI = Util.URL + "login";
     private boolean isClick = false;
     EditText loginName;
     EditText loginPassword;
@@ -209,25 +209,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 public void onResponse(Call call, Response response) throws IOException {
                     isClick = false;
                     String content = response.body().string();
-                    if (Util.isGoodJson(content)) {
-                        UserToken userToken = Util.handleLoginInfo(content);
-                        if (userToken != null && userToken.message == null) {
-                            Intent intent = new Intent(LoginActivity.this, SuperAdminActivity.class);
-                            editor.putString("token", userToken.token);
-                            editor.apply();
-                            startActivity(intent);
-                            finish();
-                        } else {
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
+                    int code = response.code();
+                    if (code == 200) {
+                        Intent intent = new Intent(LoginActivity.this, SuperAdminActivity.class);
+                        editor.putString("token", content);
+                        editor.apply();
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
-
                 }
             });
         } catch (JSONException e) {

@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         initView();
         //若果token不为空 则直接进入主界面
         if (preferences.getString("token", null) != null) {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, SuperAdminActivity.class);
             startActivity(intent);
             finish();
         }
@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (Util.isGoodJson(content)) {
                         UserToken userToken = Util.handleLoginInfo(content);
                         if (userToken != null && userToken.message == null) {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, SuperAdminActivity.class);
                             editor.putString("token", userToken.token);
                             editor.apply();
                             startActivity(intent);

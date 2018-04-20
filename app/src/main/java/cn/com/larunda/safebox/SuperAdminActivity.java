@@ -6,7 +6,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +37,7 @@ public class SuperAdminActivity extends BaseActivity {
     public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
-    private String[] titles = {"总览", "企业管理"};
+    private String[] titles = {"数据总览", "企业管理"};
     private int[] icons = {R.drawable.sy1, R.drawable.dsx1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
@@ -173,7 +172,7 @@ public class SuperAdminActivity extends BaseActivity {
 
                 titleBar.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
-                titleBar.setTextViewText("企业列表");
+                titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(R.drawable.add);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override

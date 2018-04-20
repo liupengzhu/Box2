@@ -48,4 +48,5 @@ dependencies {
     implementation project(':selfdialog')
     implementation project(':horizontalprogressbar')
     implementation project(':circletextview')
+    implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
 }

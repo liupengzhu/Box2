@@ -19,6 +19,7 @@ import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.gson.BoxInitInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.gson.CompanyList;
 import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
@@ -286,6 +287,11 @@ public class Util {
         return fingerprintInfo;
     }
 
+    public static CompanyInfo handleCompanyInfo(String response) {
+        Gson gson = new Gson();
+        CompanyInfo info = gson.fromJson(response, CompanyInfo.class);
+        return info;
+    }
 
     /**
      * 判断是否是json对象

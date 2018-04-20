@@ -110,7 +110,7 @@ public class CompanyListFragment extends Fragment {
                 String content = response.body().string();
                 int code = response.code();
                 if (getActivity() != null) {
-                    if (code == 200) {
+                    if (code == 200 && Util.isGoodJson(content)) {
                         final CompanyInfo info = Util.handleCompanyInfo(content);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -118,7 +118,7 @@ public class CompanyListFragment extends Fragment {
                                 parseInfo(info);
                             }
                         });
-                    } else {
+                    } else if (code == 401) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

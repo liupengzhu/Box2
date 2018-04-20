@@ -40,6 +40,7 @@ public class HttpUtil {
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         client.newCall(request).enqueue(callback);
 
@@ -51,6 +52,7 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         client.newCall(request).enqueue(callback);
 
@@ -62,6 +64,7 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .put(requestBody)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         client.newCall(request).enqueue(callback);
 
@@ -79,6 +82,7 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         client.newCall(request).enqueue(callback);
 
@@ -90,6 +94,7 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .delete(requestBody)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         client.newCall(request).enqueue(callback);
 

@@ -92,11 +92,11 @@ public class CompanyListFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                Log.d("main", content);
+                int code = response.code();
                 if (Util.isGoodJson(content)) {
                     final CompanyInfo info = Util.handleCompanyInfo(content);
                     if (getActivity() != null) {
-                        if (info != null && info.getError() == null) {
+                        if (code == 200) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -139,6 +139,11 @@ public class CompanyListFragment extends Fragment {
                 if (dataBean.getF_pic() != null) {
                     company.setPic(Util.PATH + dataBean.getF_pic());
                 }
+                company.setContacts(dataBean.getF_contacts());
+                company.setEmail(dataBean.getF_email());
+                company.setFax(dataBean.getF_fax());
+                company.setLetter(dataBean.getF_letter());
+                company.setSalesAddress(dataBean.getF_sales_add());
                 companyList.add(company);
             }
         }

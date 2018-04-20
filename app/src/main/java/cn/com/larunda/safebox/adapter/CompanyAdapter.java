@@ -22,6 +22,8 @@ import cn.com.larunda.safebox.recycler.Company;
 public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHolder> {
     private Context context;
     private List<Company> companyList = new ArrayList<>();
+    private CompanyLayoutOnclick layoutOnclick;
+    private CompanyButtonOnclick buttonOnclick;
 
     public CompanyAdapter(Context context, List<Company> companyList) {
         this.context = context;
@@ -58,9 +60,27 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_company, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        final ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layoutOnclick != null) {
+                    int id = companyList.get(viewHolder.getAdapterPosition()).getId();
+                    layoutOnclick.onClick(v, id);
+                }
+            }
+        });
+        viewHolder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (buttonOnclick != null) {
+                    int id = companyList.get(viewHolder.getAdapterPosition()).getId();
+                    buttonOnclick.onclick(v, id);
+                }
+            }
+        });
         return viewHolder;
     }
 
@@ -103,5 +123,21 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     @Override
     public int getItemCount() {
         return companyList.size();
+    }
+
+    public interface CompanyLayoutOnclick {
+        void onClick(View v, int id);
+    }
+
+    public interface CompanyButtonOnclick {
+        void onclick(View v, int id);
+    }
+
+    public void setLayoutOnclick(CompanyLayoutOnclick layoutOnclick) {
+        this.layoutOnclick = layoutOnclick;
+    }
+
+    public void setButtonOnclick(CompanyButtonOnclick buttonOnclick) {
+        this.buttonOnclick = buttonOnclick;
     }
 }

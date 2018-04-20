@@ -9,11 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.larunda.safebox.R;
 
@@ -21,7 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.AdminRepasswordActivity;
+import cn.com.larunda.safebox.EditCompanyActivity;
 import cn.com.larunda.safebox.LoginActivity;
+import cn.com.larunda.safebox.SuperAdminActivity;
 import cn.com.larunda.safebox.adapter.CompanyAdapter;
 import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.recycler.Company;
@@ -76,7 +77,22 @@ public class CompanyListFragment extends Fragment {
      * 初始化事件
      */
     private void initEvent() {
-
+        adapter.setLayoutOnclick(new CompanyAdapter.CompanyLayoutOnclick() {
+            @Override
+            public void onClick(View v, int id) {
+                Intent intent = new Intent(getContext(), EditCompanyActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
+        adapter.setButtonOnclick(new CompanyAdapter.CompanyButtonOnclick() {
+            @Override
+            public void onclick(View v, int id) {
+                Intent intent = new Intent(getContext(), AdminRepasswordActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -93,30 +109,29 @@ public class CompanyListFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
                 int code = response.code();
-                if (Util.isGoodJson(content)) {
-                    final CompanyInfo info = Util.handleCompanyInfo(content);
-                    if (getActivity() != null) {
-                        if (code == 200) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    parseInfo(info);
-                                }
-                            });
-                        } else {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                    intent.putExtra("token_timeout", "登录超时");
-                                    preferences.edit().putString("token", null).commit();
-                                    startActivity(intent);
-                                    getActivity().finish();
-                                }
-                            });
-                        }
+                if (getActivity() != null) {
+                    if (code == 200) {
+                        final CompanyInfo info = Util.handleCompanyInfo(content);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                parseInfo(info);
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
                     }
                 }
+
             }
         });
     }

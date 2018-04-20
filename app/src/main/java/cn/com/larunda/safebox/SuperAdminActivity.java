@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -7,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.HomeAdapter;
+import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.CompanyListFragment;
 import cn.com.larunda.safebox.fragment.DListFragment;
 import cn.com.larunda.safebox.fragment.NewHomeFragment;
@@ -34,7 +37,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SuperAdminActivity extends BaseActivity {
 
-    public static CustomViewPager viewPager;
+    public static ViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
     private String[] titles = {"数据总览", "企业管理"};
@@ -74,7 +77,7 @@ public class SuperAdminActivity extends BaseActivity {
         tabLayout = findViewById(R.id.super_tab_layout);
         titleBar = findViewById(R.id.super_title_bar);
 
-        fragments.add(new NewHomeFragment());
+        fragments.add(new AdminHomeFragment());
         fragments.add(new CompanyListFragment());
 
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
@@ -144,8 +147,6 @@ public class SuperAdminActivity extends BaseActivity {
     private void setTitleInfo(int i) {
         switch (i) {
             case 0:
-                tabLayout.setVisibility(View.VISIBLE);
-                titleBar.setVisibility(View.GONE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(0);
@@ -170,7 +171,6 @@ public class SuperAdminActivity extends BaseActivity {
                 break;
             case 1:
 
-                titleBar.setVisibility(View.VISIBLE);
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");
                 titleBar.setRightButtonSrc(R.drawable.add);
@@ -188,8 +188,8 @@ public class SuperAdminActivity extends BaseActivity {
 
                     @Override
                     public void onRightButtonClickListener(View v) {
-                        /*Intent intent = new Intent(MainActivity.this, BoxInitActivity.class);
-                        startActivity(intent);*/
+                        Intent intent = new Intent(SuperAdminActivity.this, AddCompanyActivity.class);
+                        startActivity(intent);
                     }
                 });
                 break;
@@ -212,7 +212,6 @@ public class SuperAdminActivity extends BaseActivity {
             imageView.setBackgroundResource(R.drawable.sy2);
             textView.setTextColor(getResources().getColor(R.color.normal));
             //初始化tab时同时初始化title
-            titleBar.setVisibility(View.GONE);
             titleBar.setRightButtonSrc(R.drawable.menu);
             titleBar.setTextViewText("");
             titleBar.setRightButtonSrc(0);

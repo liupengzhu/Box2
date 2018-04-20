@@ -117,7 +117,10 @@
 
         <activity android:name="cn.com.larunda.safebox.FingerprintActivity" />
         <activity android:name="cn.com.larunda.safebox.InitActivity" />
-        <activity android:name="cn.com.larunda.safebox.SuperAdminActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.SuperAdminActivity" />
+        <activity android:name="cn.com.larunda.safebox.EditCompanyActivity" />
+        <activity android:name="cn.com.larunda.safebox.AddCompanyActivity" />
+        <activity android:name="cn.com.larunda.safebox.AdminRepasswordActivity"></activity>
     </application>
 
 </manifest>

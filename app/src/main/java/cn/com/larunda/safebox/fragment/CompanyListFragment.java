@@ -157,6 +157,7 @@ public class CompanyListFragment extends Fragment {
                 company.setContacts(dataBean.getF_contacts());
                 company.setEmail(dataBean.getF_email());
                 company.setFax(dataBean.getF_fax());
+                company.setAddress(dataBean.getF_add());
                 company.setLetter(dataBean.getF_letter());
                 company.setSalesAddress(dataBean.getF_sales_add());
                 companyList.add(company);

@@ -225,6 +225,9 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
         } else if (email.isEmpty()) {
             Toast.makeText(this, "邮箱不能为空", Toast.LENGTH_SHORT).show();
             return true;
+        } else if (!Util.isValidEmail(email)) {
+            Toast.makeText(this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
+            return true;
         } else if (contacts.isEmpty()) {
             Toast.makeText(this, "联系人不能为空", Toast.LENGTH_SHORT).show();
             return true;

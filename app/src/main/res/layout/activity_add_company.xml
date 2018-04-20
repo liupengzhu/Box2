@@ -337,7 +337,6 @@
                     android:gravity="right|center"
                     android:hint="请输入"
                     android:imeOptions="actionNext"
-                    android:inputType="phone"
                     android:maxLength="15"
                     android:maxLines="1"
                     android:singleLine="true"

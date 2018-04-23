@@ -26,6 +26,7 @@ import cn.com.larunda.safebox.SuperAdminActivity;
 import cn.com.larunda.safebox.adapter.CompanyAdapter;
 import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.recycler.Company;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -126,7 +127,7 @@ public class CompanyListFragment extends Fragment {
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
-                                getActivity().finish();
+                                ActivityCollector.finishAllActivity();
                             }
                         });
                     }

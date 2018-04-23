@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_margin="20dp"
-        android:src="@drawable/box_null" />
+        android:src="@drawable/add_company" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"

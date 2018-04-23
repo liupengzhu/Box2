@@ -42,13 +42,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class AddCompanyActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddCompanyActivity extends BaseActivity implements View.OnClickListener {
 
     private static final int TAKE_PHOTO = 2;
     private static final int CHOOSE_ALBUM = 3;
@@ -217,6 +218,7 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
                                 if (dialog != null && dialog.isShowing()) {
                                     dialog.cancel();
                                 }
+                                Toast.makeText(AddCompanyActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -366,7 +368,7 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
                                         }
                                         if (code == 200) {
                                             parseContent(content);
-                                        } else if (code == 422) {
+                                        } else if (code == 401) {
                                             Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
                                             intent.putExtra("token_timeout", "登录超时");
                                             preferences.edit().putString("token", null).commit();
@@ -471,7 +473,7 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
                             }
                             if (code == 200) {
                                 parseContent(content);
-                            } else if (code == 422) {
+                            } else if (code == 401) {
                                 Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();

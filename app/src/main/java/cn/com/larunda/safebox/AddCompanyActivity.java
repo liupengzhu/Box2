@@ -15,6 +15,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -231,11 +232,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                     dialog.cancel();
                                 }
                                 if (code == 200) {
-                                    if(content.equals("true")) {
-                                        finish();
-                                    }else {
-                                        Toast.makeText(AddCompanyActivity.this, "上传失败！", Toast.LENGTH_SHORT).show();
-                                    }
+                                    finish();
                                 } else if (code == 422) {
                                     Toast.makeText(AddCompanyActivity.this, "名称或简码重复！", Toast.LENGTH_SHORT).show();
                                 } else if (code == 401) {
@@ -244,7 +241,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                     preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
                                     ActivityCollector.finishAllActivity();
-                                }else {
+                                } else {
                                     Toast.makeText(AddCompanyActivity.this, "上传失败！", Toast.LENGTH_SHORT).show();
                                 }
                             }

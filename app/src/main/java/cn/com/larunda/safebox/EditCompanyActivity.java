@@ -18,6 +18,7 @@ import cn.com.larunda.safebox.util.BaseActivity;
 public class EditCompanyActivity extends BaseActivity {
 
     private TitleBar titleBar;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class EditCompanyActivity extends BaseActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-
+        id = getIntent().getIntExtra("id", 0);
         initView();
         intEvent();
     }

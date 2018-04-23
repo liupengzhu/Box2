@@ -90,7 +90,9 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         if (company.getPic() != null) {
             Glide.with(context).load(company.getPic())
                     .placeholder(R.drawable.box_null)
-                    .error(R.drawable.box_null).into(holder.pic);
+                    .error(R.drawable.box_null)
+                    .dontAnimate()
+                    .into(holder.pic);
         } else {
             holder.pic.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
         }

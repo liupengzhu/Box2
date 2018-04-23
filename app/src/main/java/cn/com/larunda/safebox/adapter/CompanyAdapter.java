@@ -62,62 +62,75 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_company, parent, false);
         final ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (layoutOnclick != null) {
-                    int id = companyList.get(viewHolder.getAdapterPosition()).getId();
-                    layoutOnclick.onClick(v, id);
-                }
-            }
-        });
-        viewHolder.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (buttonOnclick != null) {
-                    int id = companyList.get(viewHolder.getAdapterPosition()).getId();
-                    buttonOnclick.onclick(v, id);
-                }
-            }
-        });
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         Company company = companyList.get(position);
-        if (company.getPic() != null) {
-            Glide.with(context).load(company.getPic())
-                    .placeholder(R.drawable.company_bull)
-                    .error(R.drawable.company_bull)
-                    .dontAnimate()
-                    .into(holder.pic);
-        } else {
-            holder.pic.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
-        }
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layoutOnclick != null) {
+                    int id = companyList.get(position).getId();
+                    layoutOnclick.onClick(v, id);
+                }
+            }
+        });
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (buttonOnclick != null) {
+                    int id = companyList.get(position).getId();
+                    buttonOnclick.onclick(v, id);
+                }
+            }
+        });
+        Glide.with(context).load(company.getPic())
+                .placeholder(R.drawable.company_bull)
+                .error(R.drawable.company_bull)
+                .dontAnimate()
+                .into(holder.pic);
         if (company.getName() != null) {
             holder.name.setText(company.getName());
+        } else {
+            holder.name.setText("");
         }
         if (company.getTel() != null) {
             holder.tel.setText(company.getTel());
+        } else {
+            holder.tel.setText("");
         }
         if (company.getAddress() != null) {
             holder.address.setText(company.getAddress());
+        } else {
+            holder.address.setText("");
         }
         if (company.getLetter() != null) {
             holder.letter.setText(company.getLetter());
+        } else {
+            holder.letter.setText("");
         }
         if (company.getSalesAddress() != null) {
             holder.salesAddress.setText(company.getSalesAddress());
+        } else {
+            holder.salesAddress.setText("");
         }
         if (company.getEmail() != null) {
             holder.email.setText(company.getEmail());
+        } else {
+            holder.email.setText("");
         }
         if (company.getContacts() != null) {
             holder.contacts.setText(company.getContacts());
+        } else {
+            holder.contacts.setText("");
         }
         if (company.getFax() != null) {
             holder.fax.setText(company.getFax());
+        } else {
+            holder.fax.setText("");
         }
     }
 

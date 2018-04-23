@@ -5,8 +5,58 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/company_list_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/company_list_swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/company_list_fragment_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.larunda.recycler.PullToLoadRecyclerView
+                    android:id="@+id/company_list_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </com.larunda.recycler.PullToLoadRecyclerView>
+
+            </FrameLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <RelativeLayout
+            android:id="@+id/company_list_loading_error_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/login_error"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/loading_error" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="网络链接异常,点击刷新"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </FrameLayout>
 </LinearLayout>

@@ -152,9 +152,7 @@ public class CompanyListFragment extends Fragment {
                 company.setId(dataBean.getId());
                 company.setName(dataBean.getF_name());
                 company.setTel(dataBean.getF_tel());
-                if (dataBean.getF_pic() != null) {
-                    company.setPic(Util.PATH + dataBean.getF_pic());
-                }
+                company.setPic(Util.PATH + dataBean.getF_pic());
                 company.setContacts(dataBean.getF_contacts());
                 company.setEmail(dataBean.getF_email());
                 company.setFax(dataBean.getF_fax());

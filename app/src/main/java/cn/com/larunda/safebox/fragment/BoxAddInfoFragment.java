@@ -461,8 +461,8 @@ public class BoxAddInfoFragment extends Fragment implements View.OnClickListener
                 Glide.with(this).load(Util.PATH + url)
                         .skipMemoryCache(true) // 不使用内存缓存
                         .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
-                        .placeholder(R.drawable.box_null)
-                        .error(R.drawable.box_null).into(photo);
+                        .placeholder(R.drawable.company_bull)
+                        .error(R.drawable.company_bull).into(photo);
                 Toast.makeText(getContext(), "图片上传成功", Toast.LENGTH_SHORT).show();
                 swipeRefreshLayout.setRefreshing(false);
             }

@@ -2,10 +2,7 @@ package cn.com.larunda.safebox.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +10,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.larunda.battery.BatteryView;
-
-import cn.com.larunda.safebox.BoxActivity;
-import cn.com.larunda.safebox.MyApplication;
 
 import com.larunda.safebox.R;
 
@@ -136,10 +128,10 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
         MyBox box = myBoxList.get(position);
         if (box.getBox_img() != null) {
             Glide.with(context).load(box.getBox_img())
-                    .placeholder(R.drawable.box_null)
-                    .error(R.drawable.box_null).into(holder.boxImg);
+                    .placeholder(R.drawable.company_bull)
+                    .error(R.drawable.company_bull).into(holder.boxImg);
         } else {
-            holder.boxImg.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
+            holder.boxImg.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
         }
         if (box.getBox_name() != null) {
             holder.boxName.setText(box.getBox_name());

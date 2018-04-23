@@ -14,9 +14,7 @@ import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,7 +26,6 @@ import android.widget.Toast;
 import com.android.tu.loadingdialog.LoadingDailog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.PhotoDialog;
 import com.larunda.titlebar.TitleBar;
@@ -225,6 +222,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        final String content = response.body().string();
                         final int code = response.code();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -233,7 +231,11 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                     dialog.cancel();
                                 }
                                 if (code == 200) {
-                                    finish();
+                                    if(content.equals("true")) {
+                                        finish();
+                                    }else {
+                                        Toast.makeText(AddCompanyActivity.this, "上传失败！", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else if (code == 422) {
                                     Toast.makeText(AddCompanyActivity.this, "名称或简码重复！", Toast.LENGTH_SHORT).show();
                                 } else if (code == 401) {
@@ -241,6 +243,9 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                     intent.putExtra("token_timeout", "登录超时");
                                     preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
+                                    ActivityCollector.finishAllActivity();
+                                }else {
+                                    Toast.makeText(AddCompanyActivity.this, "上传失败！", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -511,7 +516,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
         Glide.with(this).load(Util.PATH + src)
                 .skipMemoryCache(true) // 不使用内存缓存
                 .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
-                .error(R.drawable.box_null).into(pic);
+                .error(R.drawable.company_bull).into(pic);
         Toast.makeText(this, "图片上传成功", Toast.LENGTH_SHORT).show();
     }
 }

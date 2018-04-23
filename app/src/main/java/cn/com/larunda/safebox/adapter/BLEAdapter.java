@@ -2,7 +2,6 @@ package cn.com.larunda.safebox.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,10 +83,10 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
         holder.boxName.setText(ble.getName() + "");
         if (ble.getUrl() != null) {
             Glide.with(context).load(ble.getUrl())
-                    .placeholder(R.drawable.box_null)
-                    .error(R.drawable.box_null).into(holder.imageView);
+                    .placeholder(R.drawable.company_bull)
+                    .error(R.drawable.company_bull).into(holder.imageView);
         } else {
-            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
+            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
         }
     }
 

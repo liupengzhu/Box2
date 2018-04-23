@@ -1,7 +1,6 @@
 package cn.com.larunda.safebox.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,12 +88,12 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         Company company = companyList.get(position);
         if (company.getPic() != null) {
             Glide.with(context).load(company.getPic())
-                    .placeholder(R.drawable.box_null)
-                    .error(R.drawable.box_null)
+                    .placeholder(R.drawable.company_bull)
+                    .error(R.drawable.company_bull)
                     .dontAnimate()
                     .into(holder.pic);
         } else {
-            holder.pic.setImageDrawable(context.getResources().getDrawable(R.drawable.box_null));
+            holder.pic.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
         }
         if (company.getName() != null) {
             holder.name.setText(company.getName());

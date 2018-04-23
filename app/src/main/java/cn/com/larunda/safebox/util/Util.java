@@ -19,6 +19,7 @@ import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
 import cn.com.larunda.safebox.gson.BoxInitInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.CompanyData;
 import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.gson.CompanyList;
 import cn.com.larunda.safebox.gson.Config;
@@ -292,6 +293,12 @@ public class Util {
     public static CompanyInfo handleCompanyInfo(String response) {
         Gson gson = new Gson();
         CompanyInfo info = gson.fromJson(response, CompanyInfo.class);
+        return info;
+    }
+
+    public static CompanyData handleCompanyData(String response) {
+        Gson gson = new Gson();
+        CompanyData info = gson.fromJson(response, CompanyData.class);
         return info;
     }
 

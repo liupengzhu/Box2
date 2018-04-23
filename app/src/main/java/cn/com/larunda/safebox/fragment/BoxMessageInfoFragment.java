@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -18,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.com.larunda.safebox.BoxActivity;
-import cn.com.larunda.safebox.BoxAddActivity;
 import cn.com.larunda.safebox.BoxAddUserActivity;
 import cn.com.larunda.safebox.BoxInfoLogActivity;
 import cn.com.larunda.safebox.BoxInfoSoundActivity;
 import cn.com.larunda.safebox.DynamicPasswordActivity;
-import cn.com.larunda.safebox.EditUserActivity;
 import cn.com.larunda.safebox.LoginActivity;
-import cn.com.larunda.safebox.MainActivity;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
@@ -221,9 +216,9 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
         }
         if (boxMessage.f_pic != null) {
             Glide.with(this).load(Util.PATH + boxMessage.f_pic)
-                    .placeholder(R.drawable.box_null)
+                    .placeholder(R.drawable.company_bull)
                     .dontAnimate()
-                    .error(R.drawable.box_null).into(photo);
+                    .error(R.drawable.company_bull).into(photo);
         }
         if (boxMessage.f_pic_orig != null) {
             url = boxMessage.f_pic_orig;
@@ -667,8 +662,8 @@ public class BoxMessageInfoFragment extends Fragment implements View.OnClickList
                 Glide.with(this).load(Util.PATH + "/api/file?" + url)
                         .skipMemoryCache(true) // 不使用内存缓存
                         .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
-                        .placeholder(R.drawable.box_null)
-                        .error(R.drawable.box_null).into(photo);
+                        .placeholder(R.drawable.company_bull)
+                        .error(R.drawable.company_bull).into(photo);
                 Toast.makeText(getContext(), "图片上传成功", Toast.LENGTH_SHORT).show();
                 swipeRefreshLayout.setRefreshing(false);
             }

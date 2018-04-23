@@ -65,7 +65,7 @@ public class Util {
 
     public static final String URL = "http://192.168.188.129:8082/api/";
     public static final String TOKEN = "?_token=";
-    public static final String PATH = "http://192.168.188.129:8082";
+    public static final String PATH = "http://192.168.188.129:8082/api/file/image?";
     public static String TYPE = "&request_type=app";
 
     public static Home handleHomeInfo(String response) {

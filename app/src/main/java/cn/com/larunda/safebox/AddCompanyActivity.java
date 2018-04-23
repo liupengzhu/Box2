@@ -1,10 +1,19 @@
 package cn.com.larunda.safebox;
 
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,16 +26,22 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.tu.loadingdialog.LoadingDailog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.PhotoDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
@@ -35,7 +50,10 @@ import okhttp3.Response;
 
 public class AddCompanyActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int TAKE_PHOTO = 2;
+    private static final int CHOOSE_ALBUM = 3;
     private final String URL = Util.URL + "company" + Util.TOKEN;
+    private final String UPLOAD = Util.URL + "upload/logo" + Util.TOKEN;
     private TitleBar titleBar;
     private ImageView pic;
     private EditText nameText;
@@ -47,10 +65,13 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
     private EditText telText;
     private EditText letterText;
     private Button saveButton;
-    private String src = "11";
+    private String src;
     private SharedPreferences preferences;
     private String token;
     private LoadingDailog dialog;
+    private PhotoDialog photoDialog;
+    private Uri imageUri;
+    private String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +93,8 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
      * 初始化view
      */
     private void initView() {
+
+        photoDialog = new PhotoDialog(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -106,6 +129,20 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
      */
     private void intEvent() {
 
+        photoDialog.setPhotoButtonOnClick(new PhotoDialog.PhotoOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseFromAlbum();
+            }
+        });
+        photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraPhoto();
+            }
+        });
+
+        pic.setOnClickListener(this);
         saveButton.setOnClickListener(this);
 
         titleBar.setOnClickListener(new TitleListener() {
@@ -121,7 +158,6 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onRightButtonClickListener(View v) {
 
-
             }
         });
     }
@@ -136,6 +172,11 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
         switch (v.getId()) {
             case R.id.add_company_button:
                 sendPostRequest();
+                break;
+            case R.id.add_company_pic:
+                if (photoDialog != null) {
+                    photoDialog.show();
+                }
                 break;
             default:
                 break;
@@ -210,7 +251,10 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
     }
 
     public boolean isEmpty(String name, String salesAddress, String address, String fax, String email, String contacts, String tel, String letter) {
-        if (name.isEmpty()) {
+        if (src == null || src.equals("")) {
+            Toast.makeText(this, "企业图片不能为空", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (name.isEmpty()) {
             Toast.makeText(this, "名称不能为空", Toast.LENGTH_SHORT).show();
             return true;
         } else if (salesAddress.isEmpty()) {
@@ -239,5 +283,233 @@ public class AddCompanyActivity extends AppCompatActivity implements View.OnClic
             return true;
         }
         return false;
+    }
+
+    /**
+     * 拍照方法
+     */
+    private void cameraPhoto() {
+        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            imageUri = FileProvider.getUriForFile(this,
+                    "cn.com.larunda.cameraalbumtest.fileprovider", outputImage);
+        } else {
+            imageUri = Uri.fromFile(outputImage);
+        }
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, TAKE_PHOTO);
+    }
+
+    /**
+     * 从相册选取照片的方法
+     */
+    private void chooseFromAlbum() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_ALBUM);
+    }
+
+    /**
+     * activity回调方法
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
+                        //swipeRefreshLayout.setRefreshing(true);
+                        if (dialog != null && !dialog.isShowing()) {
+                            dialog.show();
+                        }
+                        HttpUtil.sendPostImageWithHttp(UPLOAD + token, path, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (dialog != null && dialog.isShowing()) {
+                                            dialog.cancel();
+                                        }
+                                        Toast.makeText(AddCompanyActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                final String content = response.body().string();
+                                final int code = response.code();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //parseContent(content);
+                                        if (dialog != null && dialog.isShowing()) {
+                                            dialog.cancel();
+                                        }
+                                        if (code == 200) {
+                                            parseContent(content);
+                                        } else if (code == 422) {
+                                            Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
+                                            intent.putExtra("token_timeout", "登录超时");
+                                            preferences.edit().putString("token", null).commit();
+                                            startActivity(intent);
+                                            ActivityCollector.finishAllActivity();
+                                        } else {
+                                            Toast.makeText(AddCompanyActivity.this, "图片上传失败", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        photoDialog.cancel();
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                break;
+            case CHOOSE_ALBUM:
+                if (resultCode == RESULT_OK) {
+                    if (Build.VERSION.SDK_INT >= 19) {
+                        handleImageOnKitKat(data);
+                    } else {
+                        handleImageBeforeKitKat(data);
+                    }
+                }
+                break;
+
+        }
+    }
+
+    private void handleImageBeforeKitKat(Intent data) {
+        Uri uri = data.getData();
+        String imagePath = getImagePath(uri, null);
+        displayImage(imagePath);
+
+    }
+
+    @TargetApi(19)
+    private void handleImageOnKitKat(Intent data) {
+        String imagePath = null;
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(this, uri)) {
+            //如果是document类型的uri，则通过documentId处理
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+
+            }
+
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            //如果是content了类型的Uri，则使用普通方法处理
+            imagePath = getImagePath(uri, null);
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            //如果是file 类型的uri 直接获取图片路径即可
+            imagePath = uri.getPath();
+        }
+        displayImage(imagePath);
+
+
+    }
+
+    private void displayImage(String imagePath) {
+        if (imagePath != null) {
+            path = imagePath;
+            if (dialog != null && !dialog.isShowing()) {
+                dialog.show();
+            }
+            HttpUtil.sendPostImageWithHttp(UPLOAD + token, imagePath, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
+                            Toast.makeText(AddCompanyActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    final int code = response.code();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //parseContent(content);
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
+                            if (code == 200) {
+                                parseContent(content);
+                            } else if (code == 422) {
+                                Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else {
+                                Toast.makeText(AddCompanyActivity.this, "图片上传失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+
+                }
+            });
+            photoDialog.cancel();
+        }
+
+    }
+
+
+    private String getImagePath(Uri externalContentUri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(externalContentUri, null, selection, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    private void parseContent(String content) {
+        src = content;
+        Glide.with(this).load(Util.PATH + src)
+                .skipMemoryCache(true) // 不使用内存缓存
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                .error(R.drawable.box_null).into(pic);
+        Toast.makeText(this, "图片上传成功", Toast.LENGTH_SHORT).show();
     }
 }

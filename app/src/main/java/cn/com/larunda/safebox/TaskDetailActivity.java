@@ -7,6 +7,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,11 +15,23 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.tu.loadingdialog.LoadingDailog;
+import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
-public class TaskDetailActivity extends AppCompatActivity implements View.OnClickListener {
+import java.io.IOException;
+
+import cn.com.larunda.safebox.util.ActivityCollector;
+import cn.com.larunda.safebox.util.BaseActivity;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+public class TaskDetailActivity extends BaseActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
     private SharedPreferences preferences;
@@ -32,6 +45,7 @@ public class TaskDetailActivity extends AppCompatActivity implements View.OnClic
     private String name;
     private String createTime;
     private String completedTime;
+    private LoadingDailog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +78,12 @@ public class TaskDetailActivity extends AppCompatActivity implements View.OnClic
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
+
+        LoadingDailog.Builder loadBuilder = new LoadingDailog.Builder(this)
+                .setMessage("上传中...")
+                .setCancelable(false)
+                .setCancelOutside(false);
+        dialog = loadBuilder.create();
 
         nameText = findViewById(R.id.task_detail_name);
         startText = findViewById(R.id.task_detail_start_time);
@@ -115,10 +135,62 @@ public class TaskDetailActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.task_detail_button:
-
+                sendPostRequest();
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 发送结束任务请求
+     */
+    private void sendPostRequest() {
+        JsonObject jsonObject = new JsonObject();
+        dialog.show();
+        HttpUtil.sendPostRequestWithHttp(Util.URL + "task/" + id + "/make_it_complete" + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
+                        }
+                        Toast.makeText(TaskDetailActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
+                        }
+                        if (code == 200) {
+                            if (content.equals("true")) {
+                                finish();
+                            } else {
+                                Toast.makeText(TaskDetailActivity.this, "结束失败！", Toast.LENGTH_SHORT).show();
+                            }
+                        } else if (code == 401) {
+                            Intent intent = new Intent(TaskDetailActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        } else {
+                            Toast.makeText(TaskDetailActivity.this, "结束失败！", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
     }
 }

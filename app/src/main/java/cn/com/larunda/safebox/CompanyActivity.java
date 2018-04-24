@@ -1,6 +1,5 @@
 package cn.com.larunda.safebox;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -8,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +25,6 @@ import java.util.List;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.BoxListFragment;
-import cn.com.larunda.safebox.fragment.CompanyListFragment;
 import cn.com.larunda.safebox.fragment.EnclosureFragment;
 import cn.com.larunda.safebox.fragment.SettingFragment;
 import cn.com.larunda.safebox.util.BaseActivity;
@@ -183,7 +180,7 @@ public class CompanyActivity extends BaseActivity {
             case 1:
 
                 titleBar.setRightButtonSrc(R.drawable.menu);
-                titleBar.setTextViewText("");
+                titleBar.setTextViewText("箱体列表");
                 titleBar.setRightButtonSrc(R.drawable.add);
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override

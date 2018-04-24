@@ -1,22 +1,16 @@
 package cn.com.larunda.safebox.util;
 
 
-import android.bluetooth.BluetoothGatt;
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import cn.com.larunda.safebox.fragment.NewHomeFragment;
 import cn.com.larunda.safebox.gson.AddPerson;
 import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
-import cn.com.larunda.safebox.gson.BoxAddUserInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
-import cn.com.larunda.safebox.gson.BoxInfoLogInfo;
-import cn.com.larunda.safebox.gson.BoxInitInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CompanyData;
@@ -49,11 +43,8 @@ import cn.com.larunda.safebox.gson.VersionInfo;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,12 +86,6 @@ public class Util {
         return menuUserInfo;
     }
 
-    public static BoxInfo handleBoxInfo(String response) {
-        Gson gson = new Gson();
-        BoxInfo boxInfo = gson.fromJson(response, BoxInfo.class);
-        return boxInfo;
-
-    }
 
     public static SqInfo handleSqInfo(String response) {
         Gson gson = new Gson();
@@ -177,17 +162,6 @@ public class Util {
         return dynamicPassword;
     }
 
-    public static BoxAddUserInfo handleBoxAddUserInfo(String response) {
-        Gson gson = new Gson();
-        BoxAddUserInfo boxAddUserInfo = gson.fromJson(response, BoxAddUserInfo.class);
-        return boxAddUserInfo;
-    }
-
-    public static BoxInfoLogInfo handleBoxInfoLogInfo(String response) {
-        Gson gson = new Gson();
-        BoxInfoLogInfo boxInfoLogInfo = gson.fromJson(response, BoxInfoLogInfo.class);
-        return boxInfoLogInfo;
-    }
 
     public static LocationInfo handleLocationInfo(String response) {
         Gson gson = new Gson();
@@ -243,6 +217,13 @@ public class Util {
         return message;
     }
 
+    public static BoxInfo handleBoxInfo(String response) {
+        Gson gson = new Gson();
+        BoxInfo boxInfo = gson.fromJson(response, BoxInfo.class);
+        return boxInfo;
+
+    }
+
     public static String listToString(List<String> stringList) {
         if (stringList == null) {
             return null;
@@ -264,12 +245,6 @@ public class Util {
         Gson gson = new Gson();
         PhotoUrl photoUrl = gson.fromJson(response, PhotoUrl.class);
         return photoUrl;
-    }
-
-    public static BoxInitInfo handleBoxInitInfo(String response) {
-        Gson gson = new Gson();
-        BoxInitInfo boxInitInfo = gson.fromJson(response, BoxInitInfo.class);
-        return boxInitInfo;
     }
 
     public static ValidateData handleValidatedata(String response) {

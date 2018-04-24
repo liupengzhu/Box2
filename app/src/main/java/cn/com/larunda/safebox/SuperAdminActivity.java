@@ -9,7 +9,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -27,13 +26,7 @@ import java.util.List;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.CompanyListFragment;
-import cn.com.larunda.safebox.fragment.DListFragment;
-import cn.com.larunda.safebox.fragment.NewHomeFragment;
-import cn.com.larunda.safebox.fragment.TotalLogFragment;
-import cn.com.larunda.safebox.service.DownloadService;
 import cn.com.larunda.safebox.util.BaseActivity;
-import cn.com.larunda.safebox.util.CustomViewPager;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SuperAdminActivity extends BaseActivity {
 

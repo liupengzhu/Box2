@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -26,8 +24,6 @@ import com.larunda.safebox.R;
 import java.io.IOException;
 
 import cn.com.larunda.safebox.LoginActivity;
-import cn.com.larunda.safebox.MainActivity;
-import cn.com.larunda.safebox.gson.Home;
 import cn.com.larunda.safebox.gson.NewHomeInfo;
 import cn.com.larunda.safebox.util.HttpUtil;
 import cn.com.larunda.safebox.util.Util;
@@ -36,7 +32,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static cn.com.larunda.safebox.MainActivity.drawerLayout;
 
 /**
  * Created by sddt on 18-2-24.
@@ -158,14 +153,14 @@ public class NewHomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.new_home_left_button:
+            /*case R.id.new_home_left_button:
                 drawerLayout.openDrawer(Gravity.START);
                 break;
             case R.id.device_status_button:
                 MainActivity.viewPager.setCurrentItem(1);
                 break;
             default:
-                break;
+                break;*/
         }
     }
 

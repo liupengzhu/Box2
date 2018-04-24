@@ -26,4 +26,8 @@
     <color name="list_text_l">#b1b1bb</color>
     <color name="log_wdu">#ff5b1f</color>
     <color name="tab_text_color2">#333333</color>
+    <color name="type_color1">#12ce66</color>
+    <color name="type_color2">#f56c6c</color>
+    <color name="type_color3">#e6a23c</color>
+    <color name="type_color4">#8391a5</color>
 </resources>

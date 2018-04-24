@@ -15,8 +15,6 @@ import com.larunda.safebox.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.com.larunda.safebox.BoxActivity;
-import cn.com.larunda.safebox.MyApplication;
 import cn.com.larunda.safebox.recycler.BoxAddUser;
 import de.hdodenhof.circleimageview.CircleImageView;
 

@@ -1,241 +1,81 @@
 package cn.com.larunda.safebox.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.larunda.battery.BatteryView;
-
 import com.larunda.safebox.R;
 
-import cn.com.larunda.safebox.recycler.MyBox;
-
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Administrator on 2018/1/9.
- */
+import cn.com.larunda.safebox.recycler.Box;
 
 public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
-
-    private List<MyBox> myBoxList;
     private Context context;
-    private DsxLongClickListener dsxLongClickListener;
-    private DsxOnClickListener dsxOnClickListener;
+    private List<Box> boxList = new ArrayList<>();
 
-    private boolean isCheckedLayout = false;
-
-    public BoxAdapter(List<MyBox> myBoxList) {
-        super();
-        this.myBoxList = myBoxList;
+    public BoxAdapter(Context context, List<Box> boxList) {
+        this.context = context;
+        this.boxList = boxList;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        RelativeLayout box_layout;
-        ImageView boxImg;
-        TextView boxName;
-        ImageView box_one;
-        ImageView box_two;
-        ImageView box_three;
-        ImageView box_isbf_img;
-        TextView box_isbf_text;
-        ImageView box_issd_img;
-        TextView box_issd_text;
-        BatteryView box_dl_img;
-        TextView box_dl_text;
-        ImageView checked_button;
-        ImageView isImg;
-
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private RelativeLayout layout;
+        private TextView name;
+        private TextView code;
+        private TextView status;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
-            boxImg = itemView.findViewById(R.id.dsx_img);
-            boxName = itemView.findViewById(R.id.dsx_name);
-            box_one = itemView.findViewById(R.id.dsx_x1);
-            box_two = itemView.findViewById(R.id.dsx_x2);
-            box_three = itemView.findViewById(R.id.dsx_x3);
-            box_isbf_img = itemView.findViewById(R.id.dsx_bf_img);
-            box_isbf_text = itemView.findViewById(R.id.dsx_bf_text);
-            box_issd_img = itemView.findViewById(R.id.dsx_sd_img);
-            box_issd_text = itemView.findViewById(R.id.dsx_sd_text);
-            box_dl_img = itemView.findViewById(R.id.dsx_dl_img);
-            box_dl_text = itemView.findViewById(R.id.dsx_dl_text);
-            box_layout = itemView.findViewById(R.id.dsx_layout);
-            checked_button = itemView.findViewById(R.id.dsx_check_button);
-
-            isImg = itemView.findViewById(R.id.dsx_is_img);
-
+            layout = itemView.findViewById(R.id.box_layout);
+            name = itemView.findViewById(R.id.box_name);
+            code = itemView.findViewById(R.id.box_code);
+            status = itemView.findViewById(R.id.box_status);
         }
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dsx_list_item, parent, false);
-        context = parent.getContext();
-        final ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.box_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = viewHolder.getAdapterPosition();
-                MyBox box = myBoxList.get(position);
-                if (dsxOnClickListener != null) {
-                    dsxOnClickListener.onClick(v, box.getId(), position);
-                }
-
-            }
-        });
-        viewHolder.box_layout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (dsxLongClickListener != null) {
-                    dsxLongClickListener.onLongClick(v);
-                    return true;
-                }
-                return false;
-            }
-        });
-        viewHolder.checked_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = viewHolder.getAdapterPosition();
-                MyBox box = myBoxList.get(position);
-                if (box.isImgIsChecked()) {
-                    box.setImgIsChecked(false);
-                    viewHolder.checked_button.setImageResource(R.mipmap.unchecked);
-                } else {
-                    box.setImgIsChecked(true);
-                    viewHolder.checked_button.setImageResource(R.mipmap.checked);
-                }
-            }
-        });
-
-
-        return viewHolder;
+        View view = LayoutInflater.from(context).inflate(R.layout.item_box_list, parent, false);
+        return new ViewHolder(view);
     }
 
-    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        MyBox box = myBoxList.get(position);
-        if (box.getBox_img() != null) {
-            Glide.with(context).load(box.getBox_img())
-                    .placeholder(R.drawable.company_bull)
-                    .error(R.drawable.company_bull).into(holder.boxImg);
+        Box box = boxList.get(position);
+        if (box.getName() != null) {
+            holder.name.setText(box.getName());
         } else {
-            holder.boxImg.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
+            holder.name.setText("");
         }
-        if (box.getBox_name() != null) {
-            holder.boxName.setText(box.getBox_name());
+        if (box.getCode() != null) {
+            holder.code.setText(box.getCode());
         } else {
-            holder.boxName.setText("");
+            holder.code.setText("");
         }
-        if (isCheckedLayout) {
-            holder.checked_button.setVisibility(View.VISIBLE);
-        } else {
-            holder.checked_button.setVisibility(View.GONE);
-        }
-        if (box.isImgIsChecked()) {
-            holder.checked_button.setImageResource(R.mipmap.checked);
-        } else {
-            holder.checked_button.setImageResource(R.mipmap.unchecked);
-        }
-        if (box.getBox_qx() == 3) {
-            holder.box_one.setVisibility(View.VISIBLE);
-            holder.box_two.setVisibility(View.VISIBLE);
-            holder.box_three.setVisibility(View.VISIBLE);
-        } else if (box.getBox_qx() == 2) {
-            holder.box_one.setVisibility(View.VISIBLE);
-            holder.box_two.setVisibility(View.VISIBLE);
-            holder.box_three.setVisibility(View.INVISIBLE);
-        } else if (box.getBox_qx() == 1) {
-            holder.box_one.setVisibility(View.VISIBLE);
-            holder.box_two.setVisibility(View.INVISIBLE);
-            holder.box_three.setVisibility(View.INVISIBLE);
-        } else {
-            holder.box_one.setVisibility(View.INVISIBLE);
-            holder.box_two.setVisibility(View.INVISIBLE);
-            holder.box_three.setVisibility(View.INVISIBLE);
-        }
-        if (box.isIs_bf()) {
-            holder.box_isbf_img.setImageResource(R.mipmap.list_ybf);
-            holder.box_isbf_text.setText("已布防");
-            holder.box_isbf_text.setTextColor(context.getResources().getColor(R.color.list_text_h));
-        } else {
-            holder.box_isbf_img.setImageResource(R.mipmap.list_wbf);
-            holder.box_isbf_text.setText("未布防");
-            holder.box_isbf_text.setTextColor(context.getResources().getColor(R.color.list_text_l));
-        }
-        if (box.isIs_sd()) {
-            holder.box_issd_img.setImageResource(R.mipmap.list_ys);
-            holder.box_issd_text.setText("已锁定");
-            holder.box_issd_text.setTextColor(context.getResources().getColor(R.color.list_text_h));
-        } else {
-            holder.box_issd_img.setImageResource(R.mipmap.list_ws);
-            holder.box_issd_text.setText("未锁定");
-            holder.box_issd_text.setTextColor(context.getResources().getColor(R.color.list_text_l));
-        }
-        if (box.getBox_dl() != null) {
-            holder.box_dl_img.setPaintColor((int) (Float.parseFloat(box.getBox_dl()) / 6 * 100));
-            holder.box_dl_text.setText((int) (Float.parseFloat(box.getBox_dl()) / 6 * 100) + "%");
-        } else {
-            holder.box_dl_img.setPaintColor(-1);
-            holder.box_dl_text.setText("");
-        }
-        if (box.isIs_use()) {
-            holder.isImg.setVisibility(View.INVISIBLE);
-        } else {
-            holder.isImg.setVisibility(View.VISIBLE);
+        if (box.getStatus() != null && box.getStatus().equals("0")) {
+            holder.status.setText("离线");
+            holder.status.setBackground(context.getResources().getDrawable(R.drawable.text_gray));
+        } else if (box.getStatus() != null && box.getStatus().equals("1")) {
+            holder.status.setText("正常");
+            holder.status.setBackground(context.getResources().getDrawable(R.drawable.text_green));
+        } else if (box.getStatus() != null && box.getStatus().equals("2")) {
+            holder.status.setText("警报");
+            holder.status.setBackground(context.getResources().getDrawable(R.drawable.text_yellow));
+        } else if (box.getStatus() != null && box.getStatus().equals("3")) {
+            holder.status.setText("异常");
+            holder.status.setBackground(context.getResources().getDrawable(R.drawable.text_red));
         }
     }
 
     @Override
     public int getItemCount() {
-        return myBoxList.size();
-    }
-
-
-    public void setOnLongClickListener(DsxLongClickListener dsxLongClickListener) {
-        this.dsxLongClickListener = dsxLongClickListener;
-    }
-
-    public interface DsxLongClickListener {
-        void onLongClick(View v);
-    }
-
-    public interface DsxOnClickListener {
-        void onClick(View v, String id, int position);
-    }
-
-    public boolean isCheckedLayout() {
-        return isCheckedLayout;
-    }
-
-    public void setCheckedLayout(boolean checkedLayout) {
-        isCheckedLayout = checkedLayout;
-    }
-
-    public List<MyBox> getMyBoxList() {
-        return myBoxList;
-    }
-
-    public void setDsxOnClickListener(DsxOnClickListener dsxOnClickListener) {
-        this.dsxOnClickListener = dsxOnClickListener;
-    }
-
-    public void addData(int position, MyBox myBox) {
-        myBoxList.add(position, myBox);
-    }
-
-    public void removeData(int position) {
-        myBoxList.remove(position);
+        return boxList.size();
     }
 }

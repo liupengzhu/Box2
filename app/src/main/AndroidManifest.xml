@@ -42,9 +42,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="cn.com.larunda.safebox.MainActivity"
-            android:launchMode="singleTop" />
-        <activity
             android:name="cn.com.larunda.safebox.LoginActivity"
             android:launchMode="singleTask" />
         <activity android:name="cn.com.larunda.safebox.LaunchActivity">
@@ -57,11 +54,9 @@
         <activity android:name="cn.com.larunda.safebox.UserInfoActivity" />
         <activity android:name="cn.com.larunda.safebox.EnclosureActivity" />
         <activity android:name="cn.com.larunda.safebox.LeavingAlarmActivity" />
-        <activity android:name="cn.com.larunda.safebox.SoundActivity" />
         <activity android:name="cn.com.larunda.safebox.SystemSettingActivity" />
         <activity android:name="cn.com.larunda.safebox.EditUserActivity" />
         <activity android:name="cn.com.larunda.safebox.BoxAddActivity" />
-        <activity android:name="cn.com.larunda.safebox.BoxActivity" />
         <activity android:name="cn.com.larunda.safebox.AddUserActivity" />
         <activity android:name="cn.com.larunda.safebox.AddEnclosureActivity" />
         <activity android:name="cn.com.larunda.safebox.PersonalInfoActivity" />
@@ -81,8 +76,6 @@
         <activity android:name="cn.com.larunda.safebox.SettingStatesActivity" />
         <activity android:name="cn.com.larunda.safebox.BindingUserActivity" />
         <activity android:name="cn.com.larunda.safebox.DynamicPasswordActivity" />
-        <activity android:name="cn.com.larunda.safebox.BoxAddUserActivity" />
-        <activity android:name="cn.com.larunda.safebox.BoxInfoLogActivity" />
         <activity android:name="cn.com.larunda.safebox.BoxInfoSoundActivity" />
         <activity android:name="cn.com.larunda.safebox.DetailedSoundActivity" />
         <activity android:name="cn.com.larunda.safebox.LeavingInfoActivity" />
@@ -100,7 +93,6 @@
         <activity android:name="cn.com.larunda.safebox.TrackActivity" />
         <activity android:name="cn.com.larunda.safebox.EnclosureInfoActivity" />
         <activity android:name="cn.com.larunda.safebox.AreaInfoActivity" />
-        <activity android:name="cn.com.larunda.safebox.BoxInitActivity" />
         <activity android:name="cn.com.larunda.safebox.ValidateActivity" />
 
         <service

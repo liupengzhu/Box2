@@ -1,5 +1,6 @@
 package cn.com.larunda.safebox;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -196,8 +197,8 @@ public class CompanyActivity extends BaseActivity {
 
                     @Override
                     public void onRightButtonClickListener(View v) {
-                        /*Intent intent = new Intent(CompanyActivity.this, AddCompanyActivity.class);
-                        startActivity(intent);*/
+                        Intent intent = new Intent(CompanyActivity.this, AddBoxActivity.class);
+                        startActivity(intent);
                     }
                 });
                 break;

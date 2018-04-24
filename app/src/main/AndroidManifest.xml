@@ -120,7 +120,8 @@
         <activity android:name="cn.com.larunda.safebox.SuperAdminActivity" />
         <activity android:name="cn.com.larunda.safebox.EditCompanyActivity" />
         <activity android:name="cn.com.larunda.safebox.AddCompanyActivity" />
-        <activity android:name="cn.com.larunda.safebox.AdminRepasswordActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.AdminRepasswordActivity" />
+        <activity android:name="cn.com.larunda.safebox.CompanyActivity"></activity>
     </application>
 
 </manifest>

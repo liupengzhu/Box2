@@ -10,10 +10,10 @@
 -->
     <!--隐藏状态 不显示title-->
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
-        
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        
+
     </style>
 
 
@@ -24,7 +24,7 @@
 
     </style>
     <style name="AppTheme" parent="BaseAppTheme"></style>
-    
+
 
 
 </resources>

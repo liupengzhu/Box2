@@ -21,6 +21,9 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import cn.com.larunda.safebox.util.ActivityCollector;
@@ -166,7 +169,6 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
             public void onResponse(Call call, Response response) throws IOException {
                 final String content = response.body().string();
                 final int code = response.code();
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -175,6 +177,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                         }
                         if (code == 200) {
                             if (content.equals("true")) {
+                                setResult(RESULT_OK);
                                 finish();
                             } else {
                                 Toast.makeText(TaskDetailActivity.this, "结束失败！", Toast.LENGTH_SHORT).show();
@@ -185,6 +188,13 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                             preferences.edit().putString("token", null).commit();
                             startActivity(intent);
                             ActivityCollector.finishAllActivity();
+                        } else if (code == 422) {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskDetailActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             Toast.makeText(TaskDetailActivity.this, "结束失败！", Toast.LENGTH_SHORT).show();
                         }

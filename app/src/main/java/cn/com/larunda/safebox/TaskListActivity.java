@@ -20,6 +20,9 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +54,8 @@ public class TaskListActivity extends BaseActivity {
     private List<Task> taskList = new ArrayList<>();
     private int maxPage;
     private int page;
+    private final int ADD_REQUEST = 1;
+    private final int FINISH_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +107,7 @@ public class TaskListActivity extends BaseActivity {
                 intent.putExtra("name", name);
                 intent.putExtra("createTime", createTime);
                 intent.putExtra("completedTime", completedTime);
-                startActivity(intent);
+                startActivityForResult(intent, FINISH_REQUEST);
             }
         });
 
@@ -125,7 +130,7 @@ public class TaskListActivity extends BaseActivity {
                 } else {
                     Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
                     intent.putExtra("id", id);
-                    startActivity(intent);
+                    startActivityForResult(intent, ADD_REQUEST);
                 }
             }
         });
@@ -143,7 +148,7 @@ public class TaskListActivity extends BaseActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
+                final String content = response.body().string();
                 int code = response.code();
                 if (code == 200 && Util.isGoodJson(content)) {
                     final TaskInfo info = Util.handleTaskInfo(content);
@@ -164,6 +169,19 @@ public class TaskListActivity extends BaseActivity {
                             ActivityCollector.finishAllActivity();
                         }
                     });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskListActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
                 }
 
             }
@@ -198,5 +216,21 @@ public class TaskListActivity extends BaseActivity {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ADD_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
+            case FINISH_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
+        }
     }
 }

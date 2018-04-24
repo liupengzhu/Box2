@@ -155,6 +155,7 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
                                     dialog.cancel();
                                 }
                                 if (code == 200) {
+                                    setResult(RESULT_OK);
                                     finish();
                                 } else if (code == 401) {
                                     Intent intent = new Intent(AddTaskActivity.this, LoginActivity.class);
@@ -162,6 +163,13 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
                                     preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
                                     ActivityCollector.finishAllActivity();
+                                } else if (code == 422) {
+                                    try {
+                                        JSONObject js = new JSONObject(content);
+                                        Toast.makeText(AddTaskActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     Toast.makeText(AddTaskActivity.this, "添加失败！", Toast.LENGTH_SHORT).show();
                                 }

@@ -168,6 +168,13 @@ public class AddBoxActivity extends BaseActivity implements View.OnClickListener
                                     preferences.edit().putString("token", null).commit();
                                     startActivity(intent);
                                     ActivityCollector.finishAllActivity();
+                                } else if (code == 422) {
+                                    try {
+                                        JSONObject js = new JSONObject(content);
+                                        Toast.makeText(AddBoxActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     Toast.makeText(AddBoxActivity.this, "添加失败！", Toast.LENGTH_SHORT).show();
                                 }

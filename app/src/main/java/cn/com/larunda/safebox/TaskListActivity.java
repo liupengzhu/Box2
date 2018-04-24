@@ -93,6 +93,19 @@ public class TaskListActivity extends BaseActivity {
      * 初始化点击事件
      */
     private void initEvent() {
+
+        adapter.setItemOnclickListener(new TaskAdapter.ItemOnclickListener() {
+            @Override
+            public void onClick(View v, int id, String name, String createTime, String completedTime) {
+                Intent intent = new Intent(TaskListActivity.this, TaskDetailActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("name", name);
+                intent.putExtra("createTime", createTime);
+                intent.putExtra("completedTime", completedTime);
+                startActivity(intent);
+            }
+        });
+
         titleBar.setOnClickListener(new TitleListener() {
             @Override
             public void onLeftButtonClickListener(View v) {
@@ -180,6 +193,7 @@ public class TaskListActivity extends BaseActivity {
                 task.setCompletedTime(dataBean.getCompleted_at());
                 task.setOriginCity(dataBean.getF_origin_city());
                 task.setDestinationCity(dataBean.getF_destination_city());
+                task.setName(dataBean.getF_name());
                 taskList.add(task);
             }
         }

@@ -116,7 +116,8 @@
         <activity android:name="cn.com.larunda.safebox.CompanyActivity" />
         <activity android:name="cn.com.larunda.safebox.AddBoxActivity" />
         <activity android:name="cn.com.larunda.safebox.TaskListActivity" />
-        <activity android:name="cn.com.larunda.safebox.AddTaskActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.AddTaskActivity" />
+        <activity android:name="cn.com.larunda.safebox.TaskDetailActivity"></activity>
     </application>
 
 </manifest>

@@ -7,6 +7,7 @@ public class Task {
     private String completedTime;
     private String originCity;
     private String destinationCity;
+    private String name;
 
     public Task() {
         super();
@@ -58,5 +59,13 @@ public class Task {
 
     public void setDestinationCity(String destinationCity) {
         this.destinationCity = destinationCity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

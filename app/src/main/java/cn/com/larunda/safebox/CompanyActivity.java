@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -32,6 +33,7 @@ import cn.com.larunda.safebox.util.BaseActivity;
 
 public class CompanyActivity extends BaseActivity {
 
+    public static final int ADD_REQUEST = 1;
     public static ViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
@@ -198,7 +200,7 @@ public class CompanyActivity extends BaseActivity {
                     @Override
                     public void onRightButtonClickListener(View v) {
                         Intent intent = new Intent(CompanyActivity.this, AddBoxActivity.class);
-                        startActivity(intent);
+                        startActivityForResult(intent, ADD_REQUEST);
                     }
                 });
                 break;
@@ -291,5 +293,18 @@ public class CompanyActivity extends BaseActivity {
         }
         return view;
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ADD_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    adapter.getItem(1).onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

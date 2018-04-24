@@ -160,6 +160,7 @@ public class AddBoxActivity extends BaseActivity implements View.OnClickListener
                                     dialog.cancel();
                                 }
                                 if (code == 200) {
+                                    setResult(RESULT_OK);
                                     finish();
                                 } else if (code == 401) {
                                     Intent intent = new Intent(AddBoxActivity.this, LoginActivity.class);

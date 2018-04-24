@@ -33,6 +33,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.app.Activity.RESULT_OK;
+import static cn.com.larunda.safebox.CompanyActivity.ADD_REQUEST;
+
 public class BoxListFragment extends Fragment {
 
     private final String URL = Util.URL + "box" + Util.TOKEN;
@@ -148,5 +151,19 @@ public class BoxListFragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ADD_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -110,7 +110,9 @@ public class TaskListActivity extends BaseActivity {
                 } else if (!isCompleted) {
                     Toast.makeText(TaskListActivity.this, "当前任务未完成!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(TaskListActivity.this, "点击!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);
+                    intent.putExtra("id", id);
+                    startActivity(intent);
                 }
             }
         });

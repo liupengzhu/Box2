@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.LoginActivity;
+import cn.com.larunda.safebox.TaskListActivity;
 import cn.com.larunda.safebox.adapter.BoxAdapter;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.CompanyInfo;
@@ -76,6 +77,15 @@ public class BoxListFragment extends Fragment {
      * 初始化点击事件
      */
     private void initEvent() {
+        adapter.setItemOnClickListener(new BoxAdapter.ItemOnClickListener() {
+            @Override
+            public void onClick(View v, int id, String status) {
+                Intent intent = new Intent(getContext(), TaskListActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("status", status);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

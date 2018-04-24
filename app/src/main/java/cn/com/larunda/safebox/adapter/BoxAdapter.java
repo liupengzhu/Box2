@@ -19,6 +19,7 @@ import cn.com.larunda.safebox.recycler.Box;
 public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     private Context context;
     private List<Box> boxList = new ArrayList<>();
+    private ItemOnClickListener itemOnClickListener;
 
     public BoxAdapter(Context context, List<Box> boxList) {
         this.context = context;
@@ -48,7 +49,15 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Box box = boxList.get(position);
+        final Box box = boxList.get(position);
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemOnClickListener != null) {
+                    itemOnClickListener.onClick(v, box.getId(), box.getStatus());
+                }
+            }
+        });
         if (box.getName() != null) {
             holder.name.setText(box.getName());
         } else {
@@ -77,5 +86,13 @@ public class BoxAdapter extends RecyclerView.Adapter<BoxAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return boxList.size();
+    }
+
+    public interface ItemOnClickListener {
+        void onClick(View v, int id, String status);
+    }
+
+    public void setItemOnClickListener(ItemOnClickListener itemOnClickListener) {
+        this.itemOnClickListener = itemOnClickListener;
     }
 }

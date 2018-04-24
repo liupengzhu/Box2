@@ -34,11 +34,13 @@ import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
+import cn.com.larunda.safebox.gson.TaskInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.gson.UserToken;
 import cn.com.larunda.safebox.gson.ValidateData;
 import cn.com.larunda.safebox.gson.VersionInfo;
+import cn.com.larunda.safebox.recycler.Task;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -222,6 +224,12 @@ public class Util {
         BoxInfo boxInfo = gson.fromJson(response, BoxInfo.class);
         return boxInfo;
 
+    }
+
+    public static TaskInfo handleTaskInfo(String response) {
+        Gson gson = new Gson();
+        TaskInfo taskInfo = gson.fromJson(response, TaskInfo.class);
+        return taskInfo;
     }
 
     public static String listToString(List<String> stringList) {

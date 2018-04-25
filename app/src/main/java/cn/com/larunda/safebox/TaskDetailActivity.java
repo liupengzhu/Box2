@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,8 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
     private String completedTime;
     private LoadingDailog dialog;
 
+    private RelativeLayout destinationButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +76,9 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      * 初始化View
      */
     private void initView() {
+
+        destinationButton = findViewById(R.id.task_detail_destination_button);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
@@ -111,6 +117,8 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      */
     private void initEvent() {
 
+        destinationButton.setOnClickListener(this);
+
         endButton.setOnClickListener(this);
 
         titleBar.setOnClickListener(new TitleListener() {
@@ -139,6 +147,11 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.task_detail_button:
                 sendPostRequest();
+                break;
+            case R.id.task_detail_destination_button:
+                Intent intent = new Intent(this, DestinationActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
                 break;
             default:
                 break;

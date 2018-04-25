@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <com.larunda.titlebar.TitleBar
+        android:id="@+id/destination_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/destination_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+</LinearLayout>

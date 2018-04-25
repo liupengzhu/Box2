@@ -20,6 +20,7 @@ import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
+import cn.com.larunda.safebox.gson.DestinationInfo;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.gson.EditUserInfo;
@@ -282,6 +283,12 @@ public class Util {
     public static CompanyData handleCompanyData(String response) {
         Gson gson = new Gson();
         CompanyData info = gson.fromJson(response, CompanyData.class);
+        return info;
+    }
+
+    public static DestinationInfo handleDestinationInfo(String response) {
+        Gson gson = new Gson();
+        DestinationInfo info = gson.fromJson(response, DestinationInfo.class);
         return info;
     }
 

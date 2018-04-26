@@ -50,4 +50,5 @@ dependencies {
     implementation project(':circletextview')
     implementation 'com.github.gittjy:LoadingDialog:1.0.2'
     implementation project(':recycler')
+    implementation 'com.contrarywind:Android-PickerView:4.1.3'
 }

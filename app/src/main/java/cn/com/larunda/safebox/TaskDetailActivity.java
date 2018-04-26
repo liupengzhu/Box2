@@ -151,6 +151,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
             case R.id.task_detail_destination_button:
                 Intent intent = new Intent(this, DestinationActivity.class);
                 intent.putExtra("id", id);
+                intent.putExtra("completedTime", completedTime);
                 startActivity(intent);
                 break;
             default:

@@ -47,7 +47,7 @@ public class AddEnclosureActivity extends BaseActivity implements View.OnClickLi
 
     private TitleBar titleBar;
     private String id;
-    public static final String ADD_ENCLOSURE_URL = Util.URL + "app/box/area_add_lists" + Util.TOKEN;
+    public static final String ADD_ENCLOSURE_URL = Util.URL + "fence" + Util.TOKEN;
     public static final String POST_URL = Util.URL + "box/add_bind_area" + Util.TOKEN;
 
     private RelativeLayout enclosureButton;
@@ -102,7 +102,7 @@ public class AddEnclosureActivity extends BaseActivity implements View.OnClickLi
      */
     private void sendRequest() {
         swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token + "&id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(ADD_ENCLOSURE_URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -119,34 +119,10 @@ public class AddEnclosureActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final AreaInfo areaInfo = Util.handleAreaInfo(content);
-                    if (areaInfo != null && areaInfo.getError() == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initAreaInfo(areaInfo);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
+                int code = response.code();
+                Log.d("main", content);
+                Log.d("main", code + "");
 
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(AddEnclosureActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-
-                            }
-                        });
-                    }
-                }
             }
         });
     }

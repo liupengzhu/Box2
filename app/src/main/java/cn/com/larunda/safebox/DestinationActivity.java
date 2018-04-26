@@ -44,6 +44,7 @@ public class DestinationActivity extends BaseActivity {
 
     private TitleBar titleBar;
     private int id;
+    private String completedTime;
     private SharedPreferences preferences;
     private String token;
 
@@ -51,6 +52,7 @@ public class DestinationActivity extends BaseActivity {
     private DestinationAdapter adapter;
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
+    private static final int ADD_DESTINATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class DestinationActivity extends BaseActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         id = getIntent().getIntExtra("id", 0);
+        completedTime = getIntent().getStringExtra("completedTime");
         initView();
         initEvent();
         sendRequest();
@@ -76,10 +79,16 @@ public class DestinationActivity extends BaseActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
+
         titleBar = findViewById(R.id.destination_title_bar);
         titleBar.setTextViewText("目的地列表");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
+        if (completedTime == null) {
+            titleBar.setRightButtonSrc(R.drawable.add);
+        } else {
+            titleBar.setRightButtonSrc(0);
+        }
 
         recyclerView = findViewById(R.id.destination_recycler);
         adapter = new DestinationAdapter(this, destinationList);
@@ -104,7 +113,9 @@ public class DestinationActivity extends BaseActivity {
 
             @Override
             public void onRightButtonClickListener(View v) {
-
+                Intent intent = new Intent(DestinationActivity.this, AddDestinationActivity.class);
+                intent.putExtra("id", id);
+                startActivityForResult(intent, ADD_DESTINATION);
             }
         });
     }
@@ -194,6 +205,17 @@ public class DestinationActivity extends BaseActivity {
             e.printStackTrace();
         } finally {
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ADD_DESTINATION:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
         }
     }
 }

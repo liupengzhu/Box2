@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
@@ -80,6 +81,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
     private SwipeRefreshLayout refreshLayout;
     private CoordinateConverter converter;
     private CoordinateConverter converter2;
+    private LoadingDailog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,14 +162,15 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
             public void onResponse(Call call, Response response) throws IOException {
                 final String content = response.body().string();
                 int code = response.code();
+                isRefresh = false;
                 if (code == 200) {
+                    String content2 = "{path:" + content + "}";
+                    final LocationInfo locationInfo = Util.handleLocationInfo(content2);
+                    showInfo(locationInfo);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            String content2 = "{path:" + content + "}";
-                            Log.d("main", content2);
-                            LocationInfo locationInfo = Util.handleLocationInfo(content2);
-                            showInfo(locationInfo);
+                            refreshLayout.setRefreshing(false);
                         }
                     });
                 } else if (code == 401) {
@@ -182,26 +185,23 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
                         }
                     });
                 } else if (code == 422) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                JSONObject js = new JSONObject(content);
-                                Toast.makeText(TrackActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+
+                    try {
+                        refreshLayout.setRefreshing(false);
+                        final JSONObject js = new JSONObject(content);
+                        final String message = (String) js.get("message");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(TrackActivity.this, message + "", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    });
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
 
                 }
-                isRefresh = false;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                    }
-                });
             }
         });
     }

@@ -18,6 +18,7 @@ import cn.com.larunda.safebox.recycler.Destination;
 public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.ViewHolder> {
     private Context context;
     private List<Destination> destinationList = new ArrayList<>();
+    private ItemButtonOnclickListener itemButtonOnclickListener;
 
     public DestinationAdapter(Context context, List<Destination> destinationList) {
         this.context = context;
@@ -52,9 +53,17 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         Destination destination = destinationList.get(position);
         holder.rankText.setText("任务" + (position + 1));
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemButtonOnclickListener != null) {
+                    itemButtonOnclickListener.onClick(v, position);
+                }
+            }
+        });
         if (destination.getOriginCity() != null) {
             holder.originText.setText(destination.getOriginCity());
         } else {
@@ -89,5 +98,13 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     @Override
     public int getItemCount() {
         return destinationList.size();
+    }
+
+    public interface ItemButtonOnclickListener {
+        void onClick(View v, int id);
+    }
+
+    public void setItemButtonOnclickListener(ItemButtonOnclickListener itemButtonOnclickListener) {
+        this.itemButtonOnclickListener = itemButtonOnclickListener;
     }
 }

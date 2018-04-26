@@ -104,6 +104,15 @@ public class DestinationActivity extends BaseActivity {
      */
     private void initEvent() {
 
+        adapter.setItemButtonOnclickListener(new DestinationAdapter.ItemButtonOnclickListener() {
+            @Override
+            public void onClick(View v, int id) {
+                Intent intent = new Intent(DestinationActivity.this, ManagerActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
+
         //为RecycleView绑定触摸事件
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override

@@ -52,6 +52,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
     private LoadingDailog dialog;
 
     private RelativeLayout destinationButton;
+    private RelativeLayout trackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
     private void initView() {
 
         destinationButton = findViewById(R.id.task_detail_destination_button);
+        trackButton = findViewById(R.id.task_detail_track);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -117,6 +119,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      */
     private void initEvent() {
 
+        trackButton.setOnClickListener(this);
         destinationButton.setOnClickListener(this);
 
         endButton.setOnClickListener(this);
@@ -153,6 +156,11 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 intent.putExtra("id", id);
                 intent.putExtra("completedTime", completedTime);
                 startActivity(intent);
+                break;
+            case R.id.task_detail_track:
+                Intent trackIntent = new Intent(this, TrackActivity.class);
+                trackIntent.putExtra("id", id+"");
+                startActivity(trackIntent);
                 break;
             default:
                 break;

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class LocationInfo {
 
-    public String error;
     @SerializedName("path")
     public List<PathData> pathDataList;
+
 }

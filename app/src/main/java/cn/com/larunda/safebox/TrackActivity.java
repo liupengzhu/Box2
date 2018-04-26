@@ -42,12 +42,17 @@ import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.gson.LocationInfo;
 import cn.com.larunda.safebox.gson.PathData;
+import cn.com.larunda.safebox.gson.TaskInfo;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
@@ -65,7 +70,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
     private MyLocationListener myListener = new MyLocationListener();
     private String id;
 
-    public static final String PATH_URL = Util.URL + "location/path" + Util.TOKEN;
+    public static final String PATH_URL = Util.URL + "task/location" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
@@ -139,7 +144,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(PATH_URL + token + "&box_id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/track" + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 isRefresh = false;
@@ -153,35 +158,50 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final LocationInfo locationInfo = Util.handleLocationInfo(content);
-                    if (locationInfo != null && locationInfo.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isRefresh) {
-                                    Toast.makeText(TrackActivity.this, "加载完成", Toast.LENGTH_SHORT).show();
-                                }
-                                isRefresh = false;
-                                showInfo(locationInfo);
-                                refreshLayout.setRefreshing(false);
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String content2 = "{path:" + content + "}";
+                            Log.d("main", content2);
+                            LocationInfo locationInfo = Util.handleLocationInfo(content2);
+                            showInfo(locationInfo);
+                        }
+                    });
+                } else if (code == 401) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TrackActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TrackActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
+                        }
+                    });
 
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(TrackActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
                 }
+                isRefresh = false;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
         });
     }

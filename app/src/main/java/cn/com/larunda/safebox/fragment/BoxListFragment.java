@@ -14,14 +14,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.com.larunda.safebox.AddBoxActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.TaskListActivity;
 import cn.com.larunda.safebox.adapter.BoxAdapter;
@@ -82,6 +88,44 @@ public class BoxListFragment extends Fragment {
      * 初始化点击事件
      */
     private void initEvent() {
+        //为RecycleView绑定触摸事件
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                //首先回调的方法 返回int表示是否监听该方向
+                int dragFlags = 0;// ItemTouchHelper.UP|ItemTouchHelper.DOWN;//拖拽
+                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;//侧滑删除
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                //滑动事件
+                Collections.swap(boxList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                sendDeleteRequest(boxList.get(viewHolder.getAdapterPosition()).getId());
+                //侧滑事件
+                //adapter.notifyItemRangeChanged(viewHolder.getAdapterPosition(), boxList.size());
+                boxList.remove(viewHolder.getAdapterPosition());
+                adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                //是否可拖拽
+                return true;
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
+
+
         adapter.setItemOnClickListener(new BoxAdapter.ItemOnClickListener() {
             @Override
             public void onClick(View v, int id, String status) {
@@ -167,5 +211,61 @@ public class BoxListFragment extends Fragment {
             default:
                 break;
         }
+    }
+
+    /**
+     * 发送删除请求
+     *
+     * @param id
+     */
+    private void sendDeleteRequest(int id) {
+        JsonObject jsonObject = new JsonObject();
+        HttpUtil.sendDeleteWithHttp(Util.URL + "box/" + id + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "网络异常!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 200) {
+                                if (content.equals("false")) {
+                                    Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } else if (code == 401) {
+                                Intent intent = new Intent(getContext(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(getContext(), js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 }

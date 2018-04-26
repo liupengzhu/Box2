@@ -30,11 +30,12 @@ import cn.com.larunda.safebox.fragment.BoxListFragment;
 import cn.com.larunda.safebox.fragment.EnclosureFragment;
 import cn.com.larunda.safebox.fragment.SettingFragment;
 import cn.com.larunda.safebox.util.BaseActivity;
+import cn.com.larunda.safebox.util.CustomViewPager;
 
 public class CompanyActivity extends BaseActivity {
 
     public static final int ADD_REQUEST = 1;
-    public static ViewPager viewPager;
+    public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
     private String[] titles = {"数据总览", "箱体管理", "地理围栏", "系统设置"};

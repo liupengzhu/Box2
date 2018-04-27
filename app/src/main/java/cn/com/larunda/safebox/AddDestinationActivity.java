@@ -33,6 +33,7 @@ import com.larunda.selfdialog.TimeDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -353,19 +354,19 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
      * 发送网络请求
      */
     private void sendPostReques() {
-        String originCity = originCityText.getText().toString().trim();
+        String originCity = originCityText.getText().toString();
         String origin = originText.getText().toString().trim();
-        String destinationCity = destinationCityText.getText().toString().trim();
+        String destinationCity = destinationCityText.getText().toString();
         String destination = destinationText.getText().toString().trim();
         String interval = intervalText.getText().toString().trim();
         String time = timeText.getText().toString().trim();
         if (!isEmpty(originCity, origin, destinationCity, destination, interval, time)) {
-            JSONObject jsonObject = new JSONObject();
+            final JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("f_origin", origin);
-                jsonObject.put("f_origin_city", originCity);
+                jsonObject.put("f_origin_city", new JSONArray(originCity.split(" ")));
                 jsonObject.put("f_destination", destination);
-                jsonObject.put("f_destination_city", destinationCity);
+                jsonObject.put("f_destination_city", new JSONArray(destinationCity.split(" ")));
                 jsonObject.put("f_release_time", time);
                 jsonObject.put("f_upload_interval", interval);
                 dialog.show();
@@ -388,6 +389,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
                         final int code = response.code();
+                      
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

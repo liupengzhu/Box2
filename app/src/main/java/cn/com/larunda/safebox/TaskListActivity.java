@@ -158,7 +158,7 @@ public class TaskListActivity extends BaseActivity {
                             parseInfo(info);
                         }
                     });
-                } else if (code == 401) {
+                } else if (code == 401 || code == 412) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

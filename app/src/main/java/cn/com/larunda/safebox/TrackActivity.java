@@ -173,7 +173,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
                             refreshLayout.setRefreshing(false);
                         }
                     });
-                } else if (code == 401) {
+                } else if (code == 401 || code == 412) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

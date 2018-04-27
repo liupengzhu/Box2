@@ -246,7 +246,7 @@ public class BoxListFragment extends Fragment {
                                     Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
                                 }
 
-                            } else if (code == 401) {
+                            } else if (code == 401 || code == 412) {
                                 Intent intent = new Intent(getContext(), LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();

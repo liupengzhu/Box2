@@ -211,7 +211,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                             } else {
                                 Toast.makeText(TaskDetailActivity.this, "结束失败！", Toast.LENGTH_SHORT).show();
                             }
-                        } else if (code == 401) {
+                        } else if (code == 401 || code == 412) {
                             Intent intent = new Intent(TaskDetailActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
                             preferences.edit().putString("token", null).commit();

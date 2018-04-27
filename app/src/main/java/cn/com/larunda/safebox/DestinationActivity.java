@@ -187,7 +187,7 @@ public class DestinationActivity extends BaseActivity {
                             parseInfo(content);
                         }
                     });
-                } else if (code == 401) {
+                } else if (code == 401 || code == 412) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

@@ -235,7 +235,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                     finish();
                                 } else if (code == 422) {
                                     Toast.makeText(AddCompanyActivity.this, "名称或简码重复！", Toast.LENGTH_SHORT).show();
-                                } else if (code == 401) {
+                                } else if (code == 401 || code == 412) {
                                     Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
                                     intent.putExtra("token_timeout", "登录超时");
                                     preferences.edit().putString("token", null).commit();
@@ -370,7 +370,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                                         }
                                         if (code == 200) {
                                             parseContent(content);
-                                        } else if (code == 401) {
+                                        } else if (code == 401 || code == 412) {
                                             Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
                                             intent.putExtra("token_timeout", "登录超时");
                                             preferences.edit().putString("token", null).commit();
@@ -475,7 +475,7 @@ public class AddCompanyActivity extends BaseActivity implements View.OnClickList
                             }
                             if (code == 200) {
                                 parseContent(content);
-                            } else if (code == 401) {
+                            } else if (code == 401 || code == 412) {
                                 Intent intent = new Intent(AddCompanyActivity.this, LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();

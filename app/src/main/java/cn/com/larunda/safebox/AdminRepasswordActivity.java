@@ -168,7 +168,7 @@ public class AdminRepasswordActivity extends BaseActivity implements View.OnClic
                                             } else {
                                                 Toast.makeText(AdminRepasswordActivity.this, "密码重置失败", Toast.LENGTH_SHORT).show();
                                             }
-                                        } else if (code == 401) {
+                                        } else if (code == 401 || code == 412) {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {

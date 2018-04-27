@@ -170,7 +170,7 @@ public class CompanyListFragment extends Fragment {
                                 errorLayout.setVisibility(View.GONE);
                             }
                         });
-                    } else if (code == 401) {
+                    } else if (code == 401 || code == 412) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -225,7 +225,7 @@ public class CompanyListFragment extends Fragment {
      * 发送网络请求
      */
     private void sendAddRequest() {
-        HttpUtil.sendGetRequestWithHttp(URL + token + "&search=" + search + "&page="+page, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(URL + token + "&search=" + search + "&page=" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (getActivity() != null) {

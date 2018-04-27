@@ -211,7 +211,7 @@ public class EditCompanyActivity extends BaseActivity implements View.OnClickLis
                             refreshLayout.setRefreshing(false);
                             layout.setVisibility(View.VISIBLE);
                             errorLayout.setVisibility(View.GONE);
-                        } else if (code == 401) {
+                        } else if (code == 401 || code == 412) {
                             Intent intent = new Intent(EditCompanyActivity.this, LoginActivity.class);
                             intent.putExtra("token_timeout", "登录超时");
                             preferences.edit().putString("token", null).commit();

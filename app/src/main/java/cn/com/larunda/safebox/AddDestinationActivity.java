@@ -397,7 +397,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                                 if (code == 200) {
                                     setResult(RESULT_OK);
                                     finish();
-                                } else if (code == 401) {
+                                } else if (code == 401 || code == 412) {
                                     Intent intent = new Intent(AddDestinationActivity.this, LoginActivity.class);
                                     intent.putExtra("token_timeout", "登录超时");
                                     preferences.edit().putString("token", null).commit();

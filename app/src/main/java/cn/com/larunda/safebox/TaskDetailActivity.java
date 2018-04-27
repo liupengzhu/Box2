@@ -166,7 +166,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.task_detail_log_button:
                 Intent logIntent = new Intent(this, LogActivity.class);
-                logIntent.putExtra("id", id + "");
+                logIntent.putExtra("id", id);
                 startActivity(logIntent);
                 break;
             default:

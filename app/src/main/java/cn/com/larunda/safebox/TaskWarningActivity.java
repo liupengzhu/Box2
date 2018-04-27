@@ -1,6 +1,5 @@
 package cn.com.larunda.safebox;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -8,11 +7,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -20,42 +17,20 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.selfdialog.DateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.com.larunda.safebox.adapter.TaskLogAdapter;
-import cn.com.larunda.safebox.gson.TaskInfo;
-import cn.com.larunda.safebox.gson.TaskLogInfo;
-import cn.com.larunda.safebox.recycler.TaskLog;
-import cn.com.larunda.safebox.util.ActivityCollector;
-import cn.com.larunda.safebox.util.HttpUtil;
-import cn.com.larunda.safebox.util.Util;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import cn.com.larunda.safebox.util.BaseActivity;
 
-public class LogActivity extends AppCompatActivity implements View.OnClickListener {
-    private final String URL = Util.URL + "box/log" + Util.TOKEN;
+public class TaskWarningActivity extends BaseActivity implements View.OnClickListener {
     private TitleBar titleBar;
     private int id;
     private SharedPreferences preferences;
     private String token;
-
-    private RecyclerView recyclerView;
-    private LinearLayoutManager manager;
-    private TaskLogAdapter adapter;
-    private List<TaskLog> taskLogList = new ArrayList<>();
 
     private EditText searchText;
     private ImageView cancelButton;
@@ -68,7 +43,7 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log);
+        setContentView(R.layout.activity_task_warning);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -79,7 +54,6 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
         id = getIntent().getIntExtra("id", 0);
         initView();
         initEvent();
-        sendRequest();
     }
 
     /**
@@ -89,21 +63,21 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
-        titleBar = findViewById(R.id.log_title_bar);
-        titleBar.setTextViewText("日志列表");
+        titleBar = findViewById(R.id.warning_title_bar);
+        titleBar.setTextViewText("警报列表");
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
-        recyclerView = findViewById(R.id.task_log_recycler);
+        /*recyclerView = findViewById(R.id.task_log_recycler);
         manager = new LinearLayoutManager(this);
         adapter = new TaskLogAdapter(this, taskLogList);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);*/
 
-        searchText = findViewById(R.id.log_search_edit);
-        cancelButton = findViewById(R.id.log_cancel_button);
-        ensureButton = findViewById(R.id.log_ensure_button);
+        searchText = findViewById(R.id.warning_search_edit);
+        cancelButton = findViewById(R.id.warning_cancel_button);
+        ensureButton = findViewById(R.id.warning_ensure_button);
         dateDialog = new DateDialog(this);
     }
 
@@ -136,7 +110,7 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 search = searchText.getText().toString().trim();
-                sendRequest();
+                //sendRequest();
                 return false;
             }
         });
@@ -187,96 +161,22 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.log_cancel_button:
+            case R.id.warning_cancel_button:
                 if (searchText != null) {
                     searchText.setText("");
                 }
                 break;
-            case R.id.log_ensure_button:
+            case R.id.warning_ensure_button:
                 if (searchText != null) {
                     search = searchText.getText().toString().trim();
-                    sendRequest();
+                    //sendRequest();
                 }
                 break;
-            case R.id.log_search_edit:
+            case R.id.warning_search_edit:
                 dateDialog.show();
                 break;
             default:
                 break;
         }
-    }
-
-    /**
-     * 发送网络请求
-     */
-    private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(URL + token + "&task_id=" + id + "&time=" + search, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                int code = response.code();
-                if (code == 200 && Util.isGoodJson(content)) {
-                    final TaskLogInfo info = Util.handleTaskLogInfo(content);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseInfo(info);
-                        }
-                    });
-                } else if (code == 401 || code == 412) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(LogActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            ActivityCollector.finishAllActivity();
-                        }
-                    });
-                } else if (code == 422) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                JSONObject js = new JSONObject(content);
-                                Toast.makeText(LogActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
-                }
-            }
-        });
-    }
-
-    /**
-     * 解析服务器返回数据
-     *
-     * @param info
-     */
-    private void parseInfo(TaskLogInfo info) {
-        page = info.getCurrent_page() + 1;
-        maxPage = info.getLast_page();
-        taskLogList.clear();
-        if (info.getData() != null) {
-            for (TaskLogInfo.DataBean dataBean : info.getData()) {
-                TaskLog taskLog = new TaskLog();
-                taskLog.setContent(dataBean.getInfo());
-                taskLog.setProcess(dataBean.getProcess_name().getOrigin() + " - - "
-                        + dataBean.getProcess_name().getDestination());
-                taskLog.setTime(dataBean.getTime());
-                taskLog.setTitle(dataBean.getTitle());
-                taskLogList.add(taskLog);
-            }
-        }
-        adapter.notifyDataSetChanged();
     }
 }

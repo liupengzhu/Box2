@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -54,6 +52,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
     private RelativeLayout destinationButton;
     private RelativeLayout trackButton;
     private RelativeLayout logButton;
+    private RelativeLayout warningButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +78,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      */
     private void initView() {
 
+        warningButton = findViewById(R.id.task_detail_warning_button);
         destinationButton = findViewById(R.id.task_detail_destination_button);
         trackButton = findViewById(R.id.task_detail_track);
         logButton = findViewById(R.id.task_detail_log_button);
@@ -120,6 +120,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      * 点击事件处理
      */
     private void initEvent() {
+        warningButton.setOnClickListener(this);
         logButton.setOnClickListener(this);
         trackButton.setOnClickListener(this);
         destinationButton.setOnClickListener(this);
@@ -165,9 +166,14 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 startActivity(trackIntent);
                 break;
             case R.id.task_detail_log_button:
-                Intent logIntent = new Intent(this, LogActivity.class);
+                Intent logIntent = new Intent(this, TaskLogActivity.class);
                 logIntent.putExtra("id", id);
                 startActivity(logIntent);
+                break;
+            case R.id.task_detail_warning_button:
+                Intent warningIntent = new Intent(this, TaskWarningActivity.class);
+                warningIntent.putExtra("id", id);
+                startActivity(warningIntent);
                 break;
             default:
                 break;

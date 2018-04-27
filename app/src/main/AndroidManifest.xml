@@ -123,8 +123,9 @@
             android:name="cn.com.larunda.safebox.AddDestinationActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name="cn.com.larunda.safebox.ManagerActivity" />
-        <activity android:name="cn.com.larunda.safebox.LogActivity" />
-        <activity android:name="cn.com.larunda.safebox.NormalUserActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.TaskLogActivity" />
+        <activity android:name="cn.com.larunda.safebox.NormalUserActivity" />
+        <activity android:name="cn.com.larunda.safebox.TaskWarningActivity"></activity>
     </application>
 
 </manifest>

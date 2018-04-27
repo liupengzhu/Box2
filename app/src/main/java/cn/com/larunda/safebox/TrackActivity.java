@@ -297,7 +297,12 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
                 PathData data = locationInfo.pathDataList.get((locationInfo.pathDataList.size() - 1));
                 if (data.longitude == null || data.latitude == null) {
                     if (newPoint == null) {
-                        Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(TrackActivity.this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
                         //构建Marker图标
                         BitmapDescriptor bitmap = BitmapDescriptorFactory
@@ -335,11 +340,17 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
                     points2.clear();
                 }
             } else {
-                Toast.makeText(this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(TrackActivity.this, "当前没有定位信息!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
-
-            baiduMap.setMapStatus(MapStatusUpdateFactory
-                    .newLatLngBounds(builder.build()));
+            if (builder.build().getCenter().latitude != 0) {
+                baiduMap.setMapStatus(MapStatusUpdateFactory
+                        .newLatLngBounds(builder.build()));
+            }
             for (int i = 0; i < locationInfo.pathDataList.size(); i++) {
                 if (locationInfo.pathDataList.get(i).latitude != null && locationInfo.pathDataList.get(i).longitude != null) {
                     LatLng sourceLatLng = new LatLng(Float.parseFloat(locationInfo.pathDataList.get(i).latitude),

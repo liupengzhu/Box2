@@ -107,4 +107,8 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     public void setItemButtonOnclickListener(ItemButtonOnclickListener itemButtonOnclickListener) {
         this.itemButtonOnclickListener = itemButtonOnclickListener;
     }
+
+    public List<Destination> getDestinationList() {
+        return destinationList;
+    }
 }

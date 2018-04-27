@@ -128,6 +128,8 @@ public class DestinationActivity extends BaseActivity {
                 //滑动事件
                 Collections.swap(destinationList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                List<Destination> list = adapter.getDestinationList();
+                sendPostRequest(list);
                 return false;
             }
 
@@ -164,6 +166,54 @@ public class DestinationActivity extends BaseActivity {
                 startActivityForResult(intent, ADD_DESTINATION);
             }
         });
+    }
+
+    /**
+     * 提交排序
+     *
+     * @param list
+     */
+    private void sendPostRequest(List<Destination> list) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                jsonObject.put(list.get(i).getId() + "", i);
+            }
+            HttpUtil.sendPostRequestWithHttp(Util.URL + "task/" + id + "/process/sorting" + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Toast.makeText(DestinationActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String content = response.body().string();
+                    final int code = response.code();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 200) {
+
+                            } else if (code == 401 || code == 412) {
+                                Intent intent = new Intent(DestinationActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            }
+                        }
+                    });
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -264,4 +314,5 @@ public class DestinationActivity extends BaseActivity {
                 break;
         }
     }
+
 }

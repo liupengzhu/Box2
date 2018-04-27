@@ -8,12 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,17 +23,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.larunda.safebox.R;
-
-import cn.com.larunda.safebox.gson.TotalLogInfo;
-import cn.com.larunda.safebox.gson.UserToken;
-import cn.com.larunda.safebox.service.AutoUpdateService;
-import cn.com.larunda.safebox.util.BaseActivity;
-import cn.com.larunda.safebox.util.HttpUtil;
-import cn.com.larunda.safebox.util.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,21 +34,27 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final int USER_LEVER_ROOT = 9;
+    public static final int USER_LEVER_ADMIN = 7;
+    public static final int USER_LEVER_USER = 5;
+    public static final int USER_LEVER_COURIER = 3;
+    public static final int USER_LEVER_ADDRESSEE = 2;
+    public static final int USER_LEVER_LOCKED = 0;
+
     public static final String LOGIN_NAME = "login_name";
     public static final String LOGIN_PASSWORD = "login_password";
     public static final String LOGIN_URI = Util.URL + "login";
-    private boolean isClick = false;
     EditText loginName;
     EditText loginPassword;
     CheckBox checkBox;
@@ -68,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayout layout;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private List<String> permissionList = new ArrayList();
+    private LoadingDailog dialog;
 
 
     @Override
@@ -78,10 +78,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //初始化界面控件
         initView();
         //若果token不为空 则直接进入主界面
-        if (preferences.getString("token", null) != null) {
-            Intent intent = new Intent(this, CompanyActivity.class);
-            startActivity(intent);
-            finish();
+        if (preferences.getString("token", null) != null && preferences.getInt("level", 0) != 0) {
+            int level = preferences.getInt("level", 0);
+            if (level == USER_LEVER_ROOT) {
+                Intent intent = new Intent(LoginActivity.this, SuperAdminActivity.class);
+                startActivity(intent);
+                finish();
+            } else if (level == USER_LEVER_ADMIN) {
+                Intent intent = new Intent(LoginActivity.this, CompanyActivity.class);
+                startActivity(intent);
+                finish();
+            } else if (level >= USER_LEVER_ADDRESSEE && level <= USER_LEVER_USER) {
+                Intent intent = new Intent(LoginActivity.this, NormalUserActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
 
         //从数据库获取登录名和密码并设置到界面
@@ -179,7 +190,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
         } else {
-            isClick = false;
             Toast.makeText(this, "账号或者密码不能为空", Toast.LENGTH_SHORT).show();
         }
 
@@ -192,14 +202,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try {
             jsonObject.put("user", name);
             jsonObject.put("pwd", password);
-
+            if (dialog != null && !dialog.isShowing()) {
+                dialog.show();
+            }
             HttpUtil.sendPostRequestWithHttp(LOGIN_URI, jsonObject.toString(), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            isClick = false;
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
                             Toast.makeText(LoginActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -207,19 +221,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    isClick = false;
                     String content = response.body().string();
                     int code = response.code();
                     if (code == 200) {
-                        Intent intent = new Intent(LoginActivity.this, CompanyActivity.class);
-                        editor.putString("token", content);
-                        editor.apply();
-                        startActivity(intent);
-                        finish();
+                        sendRequestForType(content);
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (dialog != null && dialog.isShowing()) {
+                                    dialog.cancel();
+                                }
                                 Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -231,6 +243,80 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
 
+    }
+
+    /**
+     * 获取当前用户权限
+     *
+     * @param content
+     */
+    private void sendRequestForType(final String content) {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "user/info" + Util.TOKEN + content, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
+                        }
+                        Toast.makeText(LoginActivity.this, "网络异常", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String content2 = response.body().string();
+                int code = response.code();
+                if (code == 200) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(content2);
+                        int level = jsonObject.getInt("f_level");
+                        editor.putString("token", content);
+                        editor.putInt("level", level);
+                        editor.apply();
+                        if (level == USER_LEVER_ROOT) {
+                            Intent intent = new Intent(LoginActivity.this, SuperAdminActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (level == USER_LEVER_ADMIN) {
+                            Intent intent = new Intent(LoginActivity.this, CompanyActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (level >= USER_LEVER_ADDRESSEE && level <= USER_LEVER_USER) {
+                            Intent intent = new Intent(LoginActivity.this, NormalUserActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (level == USER_LEVER_LOCKED) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(LoginActivity.this, "当前用户被锁定！", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
+                            Toast.makeText(LoginActivity.this, "账号或者密码不正确！", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
     }
 
     private void initView() {
@@ -253,6 +339,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 return false;
             }
         });
+
+        LoadingDailog.Builder loadBuilder = new LoadingDailog.Builder(this)
+                .setMessage("登录中...")
+                .setCancelable(false)
+                .setCancelOutside(false);
+        dialog = loadBuilder.create();
     }
 
     /**
@@ -264,12 +356,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login_button:
-                if (isClick) {
-                    Toast.makeText(this, "操作过于频繁", Toast.LENGTH_SHORT).show();
-                } else {
-                    isClick = true;
-                    login();
-                }
+                login();
                 break;
 
             case R.id.back_button:

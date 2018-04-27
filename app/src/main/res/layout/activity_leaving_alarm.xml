@@ -42,7 +42,7 @@
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="50dp"
-                android:src="@mipmap/list_serch" />
+                android:src="@mipmap/list_search" />
 
             <ImageView
                 android:layout_width="20dp"
@@ -50,7 +50,7 @@
                 android:layout_alignRight="@+id/leaving_alarm_serch_edit"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
-                android:src="@mipmap/list_unsherch" />
+                android:src="@mipmap/list_unshearch" />
 
             <TextView
                 android:layout_width="wrap_content"

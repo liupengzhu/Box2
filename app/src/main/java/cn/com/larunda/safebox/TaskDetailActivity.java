@@ -53,6 +53,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
 
     private RelativeLayout destinationButton;
     private RelativeLayout trackButton;
+    private RelativeLayout logButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
 
         destinationButton = findViewById(R.id.task_detail_destination_button);
         trackButton = findViewById(R.id.task_detail_track);
+        logButton = findViewById(R.id.task_detail_log_button);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -118,7 +120,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
      * 点击事件处理
      */
     private void initEvent() {
-
+        logButton.setOnClickListener(this);
         trackButton.setOnClickListener(this);
         destinationButton.setOnClickListener(this);
 
@@ -159,8 +161,13 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.task_detail_track:
                 Intent trackIntent = new Intent(this, TrackActivity.class);
-                trackIntent.putExtra("id", id+"");
+                trackIntent.putExtra("id", id + "");
                 startActivity(trackIntent);
+                break;
+            case R.id.task_detail_log_button:
+                Intent logIntent = new Intent(this, LogActivity.class);
+                logIntent.putExtra("id", id + "");
+                startActivity(logIntent);
                 break;
             default:
                 break;

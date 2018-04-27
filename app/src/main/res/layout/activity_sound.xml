@@ -42,7 +42,7 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="35dp"
-            android:src="@mipmap/list_serch" />
+            android:src="@mipmap/list_search" />
 
         <ImageView
             android:id="@+id/sound_cancel_button"
@@ -51,7 +51,7 @@
             android:layout_alignRight="@+id/sound_serch_edit"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@mipmap/list_unsherch"
+            android:src="@mipmap/list_unshearch"
             android:visibility="gone" />
 
         <TextView

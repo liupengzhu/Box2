@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <com.larunda.titlebar.TitleBar
+        android:id="@+id/log_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
+
+    </com.larunda.titlebar.TitleBar>
+
+    <RelativeLayout
+        android:id="@+id/user_info_top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <EditText
+            android:id="@+id/log_search_edit"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:focusable="false"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="70dp"
+            android:background="@drawable/serch_edit"
+            android:hint="请选择查询时间"
+            android:imeOptions="actionSearch"
+            android:maxLines="1"
+            android:textColor="@color/list_text_n"
+            android:textSize="15sp"
+            android:nextFocusDown="@id/log_search_edit"
+            android:singleLine="true"
+            android:textCursorDrawable="@drawable/color_cursor" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="35dp"
+            android:src="@mipmap/list_search" />
+
+        <ImageView
+            android:id="@+id/log_cancel_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignRight="@+id/log_search_edit"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/list_unshearch"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/log_ensure_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="搜索"
+            android:textColor="@color/menu_sz_color"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+</LinearLayout>

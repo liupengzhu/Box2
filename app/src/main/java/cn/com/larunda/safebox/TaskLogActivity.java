@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -208,7 +209,8 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(URL + token + "&task_id=" + id + "&time=" + search, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/logs"
+                + Util.TOKEN + token + "&time=" + search, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -267,11 +269,11 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
         if (info.getData() != null) {
             for (TaskLogInfo.DataBean dataBean : info.getData()) {
                 TaskLog taskLog = new TaskLog();
-                taskLog.setContent(dataBean.getInfo());
-                taskLog.setProcess(dataBean.getProcess_name().getOrigin() + " - - "
-                        + dataBean.getProcess_name().getDestination());
-                taskLog.setTime(dataBean.getTime());
-                taskLog.setTitle(dataBean.getTitle());
+                taskLog.setContent(dataBean.getF_info());
+                taskLog.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
+                        + dataBean.getProcess().getF_destination_city());
+                taskLog.setTime(dataBean.getCreated_at());
+                taskLog.setTitle(dataBean.getF_title());
                 taskLogList.add(taskLog);
             }
         }

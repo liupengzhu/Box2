@@ -280,6 +280,7 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
                 taskWarning.setContent(dataBean.getF_content());
                 taskWarning.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
                         + dataBean.getProcess().getF_destination_city());
+                taskWarning.setTime(dataBean.getCreated_at());
                 taskWarning.setTitle(AlarmType.getName(dataBean.getF_type()));
                 if (dataBean.getF_is_fixed() != null) {
                     if (dataBean.getF_is_fixed().equals("1")) {

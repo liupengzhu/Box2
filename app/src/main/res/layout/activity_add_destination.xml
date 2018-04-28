@@ -244,7 +244,53 @@
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
             <RelativeLayout
+                android:id="@+id/add_destination_area_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/add_destination_area_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="地理围栏："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/add_destination_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/add_destination_area_text"
+                    android:hint="请选择区域"
+                    android:textColor="@color/list_text_n"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/right_icon" />
+
+            </RelativeLayout>
+
+            <!--<RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -277,9 +323,9 @@
                 android:nestedScrollingEnabled="false"
                 android:orientation="vertical">
 
-            </android.support.v7.widget.RecyclerView>
+            </android.support.v7.widget.RecyclerView>-->
 
-            <RelativeLayout
+            <!--<RelativeLayout
                 android:id="@+id/add_destination_area_add"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -298,7 +344,7 @@
                     android:textColor="@color/list_text_n"
                     android:textSize="12sp" />
 
-            </RelativeLayout>
+            </RelativeLayout>-->
 
             <RelativeLayout
                 android:layout_width="match_parent"

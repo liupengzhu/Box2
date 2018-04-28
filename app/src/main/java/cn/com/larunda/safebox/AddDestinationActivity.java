@@ -29,6 +29,7 @@ import com.bigkoo.pickerview.builder.OptionsPickerBuilder;
 import com.bigkoo.pickerview.listener.OnOptionsSelectListener;
 import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ChooseDialog;
 import com.larunda.selfdialog.TimeDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.DestinationAreaAdapter;
@@ -54,12 +56,15 @@ import cn.com.larunda.safebox.recycler.Person;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.LogType;
 import cn.com.larunda.safebox.util.Util;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class AddDestinationActivity extends BaseActivity implements View.OnClickListener {
+
+    private final String URL = Util.URL + "fence/map" + Util.TOKEN;
 
     private static final int ADD_ENCLOSURE = 1;
     private OptionsPickerView pvOptions;//地址选择器
@@ -85,16 +90,17 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     private RelativeLayout timeButton;
     private TextView timeText;
 
+    private RelativeLayout areaButton;
+    private TextView areaText;
+    private ChooseDialog enclosureDialog;
+    private List<String> enclosureData = new ArrayList<>();
+    private List<Integer> enclosureId = new ArrayList<>();
+    private int areaId;
+
     private EditText originText;
     private EditText destinationText;
     private EditText intervalText;
     private Button addButton;
-
-    private RecyclerView areaGroup;
-    private RelativeLayout areaAddButton;
-    private DestinationAreaAdapter areaAdapter;
-    private LinearLayoutManager areaManager;
-    private List<Area> areaList = new ArrayList<>();
 
     private RecyclerView personGroup;
     private RelativeLayout personAddButton;
@@ -102,6 +108,8 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     private LinearLayoutManager personManager;
     private List<Person> personList = new ArrayList<>();
     private LoadingDailog dialog;
+    private String key;
+    private String value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +125,72 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
             window.setStatusBarColor(Color.TRANSPARENT);
         }
         id = getIntent().getIntExtra("id", 0);
-        initData();
         initView();
+        sendRequest();
         initEvent();
+        initData();
+    }
+
+    /**
+     * 请求地理围栏数据
+     */
+    private void sendRequest() {
+        HttpUtil.sendGetRequestWithHttp(URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
+                        }*/
+                        Toast.makeText(AddDestinationActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (code == 200) {
+                    enclosureData.clear();
+                    enclosureId.clear();
+                    try {
+                        JSONObject jsonObject = new JSONObject(content);
+                        Iterator iterator = jsonObject.keys();
+                        while (iterator.hasNext()) {
+                            key = (String) iterator.next();
+                            value = jsonObject.getString(key);
+                            enclosureData.add(value);
+                            enclosureId.add(Integer.valueOf(key));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 401 || code == 412) {
+                                Intent intent = new Intent(AddDestinationActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(AddDestinationActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -144,12 +215,8 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
         timeText = findViewById(R.id.add_destination_time);
         timeDialog = new TimeDialog(this);
 
-        areaGroup = findViewById(R.id.add_destination_area_layout);
-        areaAddButton = findViewById(R.id.add_destination_area_add);
-        areaAdapter = new DestinationAreaAdapter(this, areaList);
-        areaManager = new LinearLayoutManager(this);
-        areaGroup.setAdapter(areaAdapter);
-        areaGroup.setLayoutManager(areaManager);
+        areaButton = findViewById(R.id.add_destination_area_button);
+        areaText = findViewById(R.id.add_destination_area);
 
         personGroup = findViewById(R.id.add_destination_person_layout);
         personAddButton = findViewById(R.id.add_destination_person_add);
@@ -175,6 +242,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
      */
     private void initEvent() {
 
+        areaButton.setOnClickListener(this);
         addButton.setOnClickListener(this);
 
         personAdapter.setItemOnclickListener(new DestinationPersonAdapter.ItemOnclickListener() {
@@ -211,7 +279,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
             }
         });
 
-        areaAddButton.setOnClickListener(this);
+        /*areaAddButton.setOnClickListener(this);*/
         personAddButton.setOnClickListener(this);
 
         destinationButton.setOnClickListener(this);
@@ -247,39 +315,6 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
             }
         });
 
-        //为RecycleView绑定触摸事件
-        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                //首先回调的方法 返回int表示是否监听该方向
-                int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;//拖拽
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;//侧滑删除
-                return makeMovementFlags(dragFlags, swipeFlags);
-            }
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                //滑动事件
-                Collections.swap(areaList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                areaAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                //侧滑事件
-                areaList.remove(viewHolder.getAdapterPosition());
-                areaAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                areaAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public boolean isLongPressDragEnabled() {
-                //是否可拖拽
-                return true;
-            }
-        });
-        helper.attachToRecyclerView(areaGroup);
 
         //为RecycleView绑定触摸事件
         ItemTouchHelper helper2 = new ItemTouchHelper(new ItemTouchHelper.Callback() {
@@ -330,20 +365,25 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
             case R.id.add_destination_time_button:
                 timeDialog.show();
                 break;
-            case R.id.add_destination_area_add:
-                /*Intent enclosureIntent = new Intent(this, AddEnclosureActivity.class);
-                enclosureIntent.putExtra("id", id);
-                startActivityForResult(enclosureIntent, ADD_ENCLOSURE);*/
-                addArea("盐城市", "外");
+
+            case R.id.add_destination_area_button:
+                enclosureDialog = new ChooseDialog(this, enclosureData);
+                enclosureDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                    @Override
+                    public void OnClick(View v, int position) {
+                        areaId = enclosureId.get(position);
+                        areaText.setText(enclosureData.get(position));
+                        enclosureDialog.cancel();
+
+                    }
+                });
+                enclosureDialog.show();
                 break;
             case R.id.add_destination_person_add:
-                /*Intent enclosureIntent = new Intent(this, AddEnclosureActivity.class);
-                enclosureIntent.putExtra("id", id);
-                startActivityForResult(enclosureIntent, ADD_ENCLOSURE);*/
                 addPerson();
                 break;
             case R.id.add_destination_button:
-                sendPostReques();
+                sendPostRequest();
                 break;
             default:
                 break;
@@ -353,13 +393,14 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     /**
      * 发送网络请求
      */
-    private void sendPostReques() {
+    private void sendPostRequest() {
         String originCity = originCityText.getText().toString();
         String origin = originText.getText().toString().trim();
         String destinationCity = destinationCityText.getText().toString();
         String destination = destinationText.getText().toString().trim();
         String interval = intervalText.getText().toString().trim();
         String time = timeText.getText().toString().trim();
+        String area = areaText.getText().toString().trim();
         if (!isEmpty(originCity, origin, destinationCity, destination, interval, time)) {
             final JSONObject jsonObject = new JSONObject();
             try {
@@ -369,6 +410,9 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                 jsonObject.put("f_destination_city", new JSONArray(destinationCity.split(" ")));
                 jsonObject.put("f_release_time", time);
                 jsonObject.put("f_upload_interval", interval);
+                if (!area.isEmpty()) {
+                    jsonObject.put("fence_id", areaId);
+                }
                 dialog.show();
                 HttpUtil.sendPostRequestWithHttp(Util.URL + "task/" + id + "/process" + Util.TOKEN
                         + token, jsonObject.toString(), new Callback() {
@@ -389,7 +433,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
                         final int code = response.code();
-                      
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -464,9 +508,11 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     }
 
 
+    /* */
+
     /**
      * 添加view
-     */
+     *//*
     private void addArea(String name, String type) {
         Area area = new Area();
         area.setName(name);
@@ -476,8 +522,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
         area.setType(type);
         areaList.add(area);
         areaAdapter.notifyDataSetChanged();
-    }
-
+    }*/
     private void addPerson() {
         Person person = new Person();
         personList.add(person);

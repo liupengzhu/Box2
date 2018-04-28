@@ -7,10 +7,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +28,7 @@ import java.util.List;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.BoxListFragment;
-import cn.com.larunda.safebox.fragment.EnclosureFragment;
+import cn.com.larunda.safebox.fragment.SystemLogFragment;
 import cn.com.larunda.safebox.fragment.SettingFragment;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
@@ -42,8 +40,8 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
-    private String[] titles = {"数据总览", "箱体管理", "地理围栏", "系统设置"};
-    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.enclosure1, R.drawable.setting1};
+    private String[] titles = {"数据总览", "箱体管理", "系统日志", "系统设置"};
+    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.rz1, R.drawable.setting1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
     private String token;
@@ -90,7 +88,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
         fragments.add(new AdminHomeFragment());
         fragments.add(new BoxListFragment());
-        fragments.add(new EnclosureFragment());
+        fragments.add(new SystemLogFragment());
         fragments.add(new SettingFragment());
 
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
@@ -121,7 +119,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
                         setTitleInfo(1);
                         break;
                     case 2:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.enclosure2);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz2);
                         setTitleInfo(2);
                         break;
                     case 3:
@@ -147,7 +145,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx1);
                         break;
                     case 2:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.enclosure1);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz1);
                         break;
                     case 3:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.setting1);
@@ -225,7 +223,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
                 break;
             case 2:
                 titleBar.setRightButtonSrc(R.drawable.menu);
-                titleBar.setTextViewText("");
+                titleBar.setTextViewText("系统日志");
                 titleBar.setRightButtonSrc(0);
                 titleBar.setOnClickListener(new TitleListener() {
 

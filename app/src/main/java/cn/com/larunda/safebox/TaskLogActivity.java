@@ -270,8 +270,10 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
             for (TaskLogInfo.DataBean dataBean : info.getData()) {
                 TaskLog taskLog = new TaskLog();
                 taskLog.setContent(dataBean.getF_info());
-                taskLog.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
-                        + dataBean.getProcess().getF_destination_city());
+                if (dataBean.getProcess() != null) {
+                    taskLog.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
+                            + dataBean.getProcess().getF_destination_city());
+                }
                 taskLog.setTime(dataBean.getCreated_at());
                 taskLog.setTitle(dataBean.getF_title());
                 taskLogList.add(taskLog);

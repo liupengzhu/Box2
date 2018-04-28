@@ -35,6 +35,7 @@ import cn.com.larunda.safebox.gson.PhotoUrl;
 import cn.com.larunda.safebox.gson.Result;
 import cn.com.larunda.safebox.gson.SqInfo;
 import cn.com.larunda.safebox.gson.SqLsInfo;
+import cn.com.larunda.safebox.gson.SystemLogInfo;
 import cn.com.larunda.safebox.gson.TaskInfo;
 import cn.com.larunda.safebox.gson.TaskLogInfo;
 import cn.com.larunda.safebox.gson.TaskWarningInfo;
@@ -397,6 +398,12 @@ public class Util {
     public static TaskWarningInfo handleTaskWarningInfo(String content) {
         Gson gson = new Gson();
         TaskWarningInfo info = gson.fromJson(content, TaskWarningInfo.class);
+        return info;
+    }
+
+    public static SystemLogInfo handleSystemLogInfo(String response) {
+        Gson gson = new Gson();
+        SystemLogInfo info = gson.fromJson(response, SystemLogInfo.class);
         return info;
     }
 }

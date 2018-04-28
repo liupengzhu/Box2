@@ -9,12 +9,15 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
@@ -29,10 +32,11 @@ import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.BoxListFragment;
 import cn.com.larunda.safebox.fragment.EnclosureFragment;
 import cn.com.larunda.safebox.fragment.SettingFragment;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.CustomViewPager;
 
-public class CompanyActivity extends BaseActivity {
+public class CompanyActivity extends BaseActivity implements View.OnClickListener {
 
     public static final int ADD_REQUEST = 1;
     public static CustomViewPager viewPager;
@@ -44,6 +48,9 @@ public class CompanyActivity extends BaseActivity {
     private SharedPreferences preferences;
     private String token;
     private HomeAdapter adapter;
+
+    private DrawerLayout drawerLayout;
+    private RelativeLayout backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,14 @@ public class CompanyActivity extends BaseActivity {
 
         initView();
         initTabs();
+        initEvent();
+    }
+
+    /**
+     * 点击事件初始化
+     */
+    private void initEvent() {
+        backButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -81,6 +96,9 @@ public class CompanyActivity extends BaseActivity {
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        drawerLayout = findViewById(R.id.company_drawer_layout);
+        backButton = findViewById(R.id.menu_back_button);
     }
 
     //初始化Tab；
@@ -166,7 +184,7 @@ public class CompanyActivity extends BaseActivity {
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -189,7 +207,7 @@ public class CompanyActivity extends BaseActivity {
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -213,7 +231,7 @@ public class CompanyActivity extends BaseActivity {
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -236,7 +254,7 @@ public class CompanyActivity extends BaseActivity {
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -276,7 +294,7 @@ public class CompanyActivity extends BaseActivity {
             titleBar.setOnClickListener(new TitleListener() {
                 @Override
                 public void onLeftButtonClickListener(View v) {
-                    //drawerLayout.openDrawer(Gravity.START);
+                    drawerLayout.openDrawer(Gravity.START);
 
                 }
 
@@ -305,6 +323,18 @@ public class CompanyActivity extends BaseActivity {
                 }
                 break;
             default:
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.menu_back_button:
+                Intent intent = new Intent(this, LoginActivity.class);
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                ActivityCollector.finishAllActivity();
                 break;
         }
     }

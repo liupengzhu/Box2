@@ -5,15 +5,6 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/user_info_check_button"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="15dp"
-        android:src="@mipmap/unchecked"
-        android:visibility="gone" />
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/user_info_button"
         android:layout_width="match_parent"
@@ -39,7 +30,6 @@
                 android:id="@+id/user_info_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="zzz"
                 android:maxLines="1"
                 android:textColor="@color/list_text_h"
                 android:textSize="15sp" />
@@ -49,7 +39,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="zq053694"
                 android:textColor="@color/list_text_n"
                 android:textSize="15sp" />
         </LinearLayout>

@@ -31,6 +31,7 @@ import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.FootAdapter;
 import cn.com.larunda.safebox.adapter.UserInfoAdapter;
+import cn.com.larunda.safebox.gson.TaskInfo;
 import cn.com.larunda.safebox.gson.UserData;
 import cn.com.larunda.safebox.gson.UserInfo;
 import cn.com.larunda.safebox.recycler.MyUserInfo;
@@ -65,8 +66,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private RecyclerView recyclerView;
     private UserInfoAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
-    private RelativeLayout loodingErrorLayout;
-    private ImageView loodingLayout;
+    private RelativeLayout loadingErrorLayout;
+    private ImageView loadingLayout;
     private SharedPreferences preferences;
     private String token;
 
@@ -74,32 +75,17 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private ImageView cancelButton;
     private TextView ensureButton;
 
-    /**
-     * 是否在长按状态
-     */
-    public boolean isLongClick = false;
 
-    /**
-     * 是否在全选状态
-     */
-    private boolean isAllChecked = false;
-    private ImageView allCheckedImage;
-    private TextView allCheckedText;
-    private RelativeLayout top_layout;
-    private LinearLayout bottom_layout;
-
-    private Button deleteButton;
     private ArrayList<String> idList = new ArrayList<>();
-    private String serch;
+    private String search;
 
     private int page;
-    private int lastVisibleItem;
-    private int count;
-    private static FootAdapter footAdapter;
-    private int total;
+    private int maxPage;
+
     private int lastPosition;
     private MyUserInfo lastUser;
     private static final int REQUEST_USERINFO = 1;
+
 
 
     @Override
@@ -122,17 +108,17 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                serch = null;
+                search = null;
                 sendRequest();
 
             }
         });
 
         //每次创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
+        loadingErrorLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
-        serch = null;
+        search = null;
         sendRequest();
 
     }
@@ -143,23 +129,12 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private void initEvent() {
         adapter.setUserInfoOnClickListener(new UserInfoAdapter.UserInfoOnClickListener() {
             @Override
-            public void onClick(View v, String id, int position) {
+            public void onClick(View v, int id, int position) {
                 Intent intent = new Intent(UserInfoActivity.this, EditUserActivity.class);
                 intent.putExtra("id", id);
                 lastPosition = position;
                 lastUser = adapter.getMyUserInfoList().get(lastPosition);
                 startActivityForResult(intent, REQUEST_USERINFO);
-            }
-        });
-
-        adapter.setUserInfoOnLongClickListener(new UserInfoAdapter.UserInfoOnLongClickListener() {
-            @Override
-            public void onClick(View v) {
-                isLongClick = true;
-                adapter.setCheckedLayout(true);
-                footAdapter.notifyDataSetChanged();
-                top_layout.setVisibility(View.GONE);
-                bottom_layout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -186,44 +161,11 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);
 
-        allCheckedImage.setOnClickListener(this);
-        allCheckedText.setOnClickListener(this);
-        deleteButton.setOnClickListener(this);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (page <= total) {
-                    //在newState为滑到底部时
-                    if (lastVisibleItem + 1 == footAdapter.getItemCount()) {
-                        if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                            footAdapter.setHasMore(true);
-                            footAdapter.notifyDataSetChanged();
-                        }
-                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                            if (myUserInfoList.size() < count) {
-                                serch = null;
-                                sendRequest();
-                            } else {
-                                sendAddRequest();
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                lastVisibleItem = manager.findLastVisibleItemPosition();
-            }
-        });
 
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                serch = searchText.getText().toString().trim();
+                search = searchText.getText().toString().trim();
                 sendRequest();
                 return false;
             }
@@ -255,115 +197,12 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 发送加载下一页
-     */
-    private void sendAddRequest() {
-        String searchText;
-        if (serch != null) {
-            searchText = "&search=" + serch;
-        } else {
-            searchText = "";
-        }
-
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final UserInfo userInfo = Util.handleUserInfo(response.body().string());
-                if (userInfo != null && userInfo.error == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addUserInfo(userInfo);
-                            refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.GONE);
-                            loodingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            ActivityCollector.finishAllActivity();
-                        }
-                    });
-                }
-            }
-        });
-
-
-    }
-
-    /**
-     * 添加数据
-     *
-     * @param userInfo
-     */
-    private void addUserInfo(UserInfo userInfo) {
-        page = userInfo.current_page + 1;
-        if (userInfo.userData.size() == 0 || userInfo.userData.size() < count) {
-            footAdapter.setHasMore(false);
-        }
-        if (userInfo.userData != null) {
-            for (UserData userData : userInfo.userData) {
-                MyUserInfo myUserInfo = new MyUserInfo();
-                String imgUrl = null;
-                if (userData.pic != null) {
-                    imgUrl = userData.pic.replace('\\', ' ');
-                    myUserInfo.setUserImg(IMG_URL + imgUrl);
-                } else {
-                    myUserInfo.setUserImg(null);
-                }
-                if (userData.id != null) {
-                    myUserInfo.setUserId(userData.id);
-                }
-                if (userData.level != null) {
-                    if (userData.level.equals("1")) {
-                        myUserInfo.setUserQx("管理员");
-                    } else {
-                        myUserInfo.setUserQx("一般用户");
-                    }
-                }
-                if (userData.name != null) {
-                    myUserInfo.setUserName(userData.name);
-                }
-                if (userData.user != null) {
-                    myUserInfo.setUser(userData.user);
-                }
-                myUserInfoList.add(myUserInfo);
-            }
-        }
-        footAdapter.notifyDataSetChanged();
-
-    }
-
-
-    /**
      * 发送网络请求
      */
     private void sendRequest() {
         String searchText;
-        if (serch != null) {
-            searchText = "&search=" + serch;
+        if (search != null) {
+            searchText = "&search=" + search;
         } else {
             searchText = "";
         }
@@ -376,8 +215,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         refreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
+                        loadingErrorLayout.setVisibility(View.VISIBLE);
+                        loadingLayout.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                     }
                 });
@@ -385,33 +224,50 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final UserInfo userInfo = Util.handleUserInfo(content);
-                    if (userInfo != null && userInfo.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initUserInfo(userInfo);
-                                refreshLayout.setRefreshing(false);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                                recyclerView.setVisibility(View.VISIBLE);
-                            }
-                        });
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final UserInfo info = Util.handleUserInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUserInfo(info);
+                            refreshLayout.setRefreshing(false);
+                            loadingErrorLayout.setVisibility(View.GONE);
+                            loadingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
 
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            loadingErrorLayout.setVisibility(View.VISIBLE);
+                            loadingLayout.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(UserInfoActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    }
+
+                        }
+                    });
+
                 }
             }
         });
@@ -425,43 +281,37 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
      * @param userInfo
      */
     private void initUserInfo(UserInfo userInfo) {
-        page = userInfo.current_page + 1;
-        count = userInfo.per_page;
-        total = userInfo.last_page;
-        if (userInfo.userData.size() == 0 || userInfo.userData.size() < count) {
-            footAdapter.setHasMore(false);
-        }
+        page = userInfo.getCurrent_page() + 1;
+        maxPage = userInfo.getLast_page();
+
         myUserInfoList.clear();
-        if (userInfo.userData != null) {
-            for (UserData userData : userInfo.userData) {
+        if (userInfo.getData() != null) {
+            for (UserInfo.DataBean userData : userInfo.getData()) {
                 MyUserInfo myUserInfo = new MyUserInfo();
                 String imgUrl = null;
-                if (userData.pic != null) {
-                    imgUrl = userData.pic.replace('\\', ' ');
-                    myUserInfo.setUserImg(IMG_URL + imgUrl);
-                } else {
-                    myUserInfo.setUserImg(null);
-                }
-                if (userData.id != null) {
-                    myUserInfo.setUserId(userData.id);
-                }
-                if (userData.level != null) {
-                    if (userData.level.equals("1")) {
+
+                imgUrl = userData.getF_pic();
+                myUserInfo.setUserImg(IMG_URL + imgUrl);
+
+                myUserInfo.setUserId(userData.getId());
+
+                if (userData.getF_level() != null) {
+                    if (userData.getF_level().equals("7")) {
                         myUserInfo.setUserQx("管理员");
                     } else {
                         myUserInfo.setUserQx("一般用户");
                     }
                 }
-                if (userData.name != null) {
-                    myUserInfo.setUserName(userData.name);
+                if (userData.getF_name() != null) {
+                    myUserInfo.setUserName(userData.getF_name());
                 }
-                if (userData.user != null) {
-                    myUserInfo.setUser(userData.user);
+                if (userData.getF_user() != null) {
+                    myUserInfo.setUser(userData.getF_user());
                 }
                 myUserInfoList.add(myUserInfo);
             }
         }
-        footAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -476,19 +326,13 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
-        allCheckedImage = findViewById(R.id.user_info_all_checked_image);
-        allCheckedText = findViewById(R.id.user_info_all_checked_text);
-        deleteButton = findViewById(R.id.user_info_delete_button);
-        top_layout = findViewById(R.id.user_info_top_layout);
-        bottom_layout = findViewById(R.id.user_info_bottom_layout);
 
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(myUserInfoList);
-        footAdapter = new FootAdapter(this, adapter);
 
         refreshLayout = findViewById(R.id.user_info_swiper);
-        loodingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
-        loodingLayout = findViewById(R.id.user_info_loading_layout);
+        loadingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
+        loadingLayout = findViewById(R.id.user_info_loading_layout);
 
         searchText = findViewById(R.id.user_info_serch_edit);
         cancelButton = findViewById(R.id.user_info_cancel_button);
@@ -496,7 +340,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
         recyclerView = findViewById(R.id.user_info_recycler);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(footAdapter);
+        recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
     }
@@ -516,22 +360,11 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.user_info_ensure_button:
                 if (searchText != null) {
-                    serch = searchText.getText().toString().trim();
+                    search = searchText.getText().toString().trim();
                     sendRequest();
                 }
                 break;
-            case R.id.user_info_all_checked_image:
-            case R.id.user_info_all_checked_text:
-                allCheckedClick();
-                break;
-            case R.id.user_info_delete_button:
-                checkIsChecked();
-                if (idList.size() == 0) {
-                    Toast.makeText(UserInfoActivity.this, "还没有选择用户", Toast.LENGTH_SHORT).show();
-                } else {
-                    sendDeleteRequest();
-                }
-                break;
+
             default:
                 break;
 
@@ -553,8 +386,8 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                         @Override
                         public void run() {
                             refreshLayout.setRefreshing(false);
-                            loodingErrorLayout.setVisibility(View.VISIBLE);
-                            loodingLayout.setVisibility(View.GONE);
+                            loadingErrorLayout.setVisibility(View.VISIBLE);
+                            loadingLayout.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.GONE);
                         }
                     });
@@ -604,69 +437,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /**
-     * 检查选中的用户
-     */
-    private void checkIsChecked() {
-        idList.clear();
-        for (MyUserInfo myUserInfo : myUserInfoList) {
-            if (myUserInfo.isImgIsChecked()) {
-                idList.add(myUserInfo.getUserId());
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        //判断递送箱列表是否是多选状态
-        if (isLongClick) {
-            cancleLongClick();
-
-        } else {
-            finish();
-
-        }
-    }
-
-    /**
-     * 取消多选状态
-     */
-    public void cancleLongClick() {
-        isLongClick = false;
-        adapter.setCheckedLayout(false);
-        footAdapter.notifyDataSetChanged();
-        top_layout.setVisibility(View.VISIBLE);
-        bottom_layout.setVisibility(View.GONE);
-    }
-
-    /**
-     * 处理全选按钮的点击事件
-     */
-    private void allCheckedClick() {
-        //判断当前全选是否是选中状态
-        if (isAllChecked) {
-            isAllChecked = false;
-            allCheckedImage.setImageResource(R.mipmap.unchecked);
-            List<MyUserInfo> myUserInfos = adapter.getMyUserInfoList();
-            for (MyUserInfo myUserInfo : myUserInfos) {
-                myUserInfo.setImgIsChecked(false);
-            }
-            footAdapter.notifyDataSetChanged();
-
-
-        } else {
-            isAllChecked = true;
-            allCheckedImage.setImageResource(R.mipmap.checked);
-            List<MyUserInfo> myUserInfos = adapter.getMyUserInfoList();
-            for (MyUserInfo myUserInfo : myUserInfos) {
-                myUserInfo.setImgIsChecked(true);
-            }
-            footAdapter.notifyDataSetChanged();
-
-        }
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -683,7 +453,7 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
                     lastUser.setUserQx(level);
                     lastUser.setUserImg(url);
                     adapter.addData(lastPosition, lastUser);
-                    footAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                 }
                 break;
             case REQUEST:

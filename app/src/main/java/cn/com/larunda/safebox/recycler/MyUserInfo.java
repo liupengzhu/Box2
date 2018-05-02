@@ -8,7 +8,7 @@ public class MyUserInfo {
 
     private String userName;
     private String user;
-    private String userId;
+    private int userId;
     private String userQx;
     private String userImg;
     private boolean imgIsChecked = false;
@@ -17,7 +17,7 @@ public class MyUserInfo {
 
     }
 
-    public MyUserInfo(String userName, String user, String userId, String userQx, String userImg) {
+    public MyUserInfo(String userName, String user, int userId, String userQx, String userImg) {
         this.userName = userName;
         this.userId = userId;
         this.userQx = userQx;
@@ -49,11 +49,11 @@ public class MyUserInfo {
         this.userName = userName;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

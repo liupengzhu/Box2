@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -50,6 +51,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     private DrawerLayout drawerLayout;
     private RelativeLayout backButton;
     private RelativeLayout settingButton;
+    private LinearLayout userButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     private void initEvent() {
         backButton.setOnClickListener(this);
         settingButton.setOnClickListener(this);
+        userButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -100,6 +103,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         drawerLayout = findViewById(R.id.company_drawer_layout);
         backButton = findViewById(R.id.menu_back_button);
         settingButton = findViewById(R.id.menu_set_button);
+        userButton = findViewById(R.id.user_info_layout);
     }
 
     //初始化Tab；
@@ -340,6 +344,10 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
             case R.id.menu_set_button:
                 Intent settingIntent = new Intent(this, PersonalSettingActivity.class);
                 startActivity(settingIntent);
+                break;
+            case R.id.user_info_layout:
+                Intent userIntent = new Intent(this, UserInfoActivity.class);
+                startActivity(userIntent);
                 break;
             default:
                 break;

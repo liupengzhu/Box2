@@ -49,7 +49,6 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
         TextView user;
         TextView userQx;
         LinearLayout userLayout;
-        ImageView checked_button;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -58,7 +57,6 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
             user = itemView.findViewById(R.id.user_info_username);
             userQx = itemView.findViewById(R.id.user_info_qx);
             userLayout = itemView.findViewById(R.id.user_info_item_layout);
-            checked_button = itemView.findViewById(R.id.user_info_check_button);
         }
     }
 
@@ -89,23 +87,6 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
                 return false;
             }
         });
-        /**
-         * 设置多选按钮的单击事件 改变当前条目的选中状态
-         */
-        viewHolder.checked_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = viewHolder.getAdapterPosition();
-                MyUserInfo userInfo = myUserInfoList.get(position);
-                if (userInfo.isImgIsChecked()) {
-                    userInfo.setImgIsChecked(false);
-                    viewHolder.checked_button.setImageResource(R.mipmap.unchecked);
-                } else {
-                    userInfo.setImgIsChecked(true);
-                    viewHolder.checked_button.setImageResource(R.mipmap.checked);
-                }
-            }
-        });
 
 
         return viewHolder;
@@ -116,22 +97,6 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
         MyUserInfo myUserInfo = myUserInfoList.get(position);
 
-        /**
-         * 判断当前是否是长按状态设置多选按钮是否可见
-         */
-        if (isCheckedLayout) {
-            holder.checked_button.setVisibility(View.VISIBLE);
-        } else {
-            holder.checked_button.setVisibility(View.GONE);
-        }
-        /**
-         * 判断当前按钮是否是选中状态 改变图标
-         */
-        if (myUserInfo.isImgIsChecked()) {
-            holder.checked_button.setImageResource(R.mipmap.checked);
-        } else {
-            holder.checked_button.setImageResource(R.mipmap.unchecked);
-        }
         if (myUserInfo.getUserImg() != null) {
             Glide.with(MyApplication.getContext()).load(myUserInfo.getUserImg())
                     .placeholder(R.drawable.user).dontAnimate()
@@ -163,7 +128,7 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
 
     public interface UserInfoOnClickListener {
-        void onClick(View v, String id, int position);
+        void onClick(View v, int id, int position);
     }
 
     public interface UserInfoOnLongClickListener {
@@ -172,10 +137,6 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
     public void setUserInfoOnClickListener(UserInfoOnClickListener userInfoOnClickListener) {
         this.userInfoOnClickListener = userInfoOnClickListener;
-    }
-
-    public void setUserInfoOnLongClickListener(UserInfoOnLongClickListener userInfoOnLongClickListener) {
-        this.userInfoOnLongClickListener = userInfoOnLongClickListener;
     }
 
     public void setCheckedLayout(boolean checkedLayout) {

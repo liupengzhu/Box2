@@ -9,4 +9,9 @@
         android:id="@+id/finger_title_bar"
         android:layout_width="match_parent"
         android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/task_finger_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 </LinearLayout>

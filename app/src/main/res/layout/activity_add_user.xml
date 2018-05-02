@@ -12,554 +12,394 @@
 
     </com.larunda.titlebar.TitleBar>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/add_user_swipe"
+    <LinearLayout
+        android:id="@+id/add_user_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <FrameLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <LinearLayout
-                android:id="@+id/add_user_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical">
 
-                <android.support.v4.widget.NestedScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@color/white"
-                        android:focusableInTouchMode="true"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginTop="12dp"
-                            android:text="基本资料"
-                            android:textColor="@color/black"
-                            android:textSize="17sp" />
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:id="@+id/add_user_setting_photo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="个人头像"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/add_user_photo"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:src="@mipmap/user_img" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="15dp"
-                                android:src="@drawable/right_icon" />
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="用户名"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_user"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:imeOptions="actionNext"
-                                android:maxLength="15"
-                                android:maxLines="1"
-                                android:nextFocusDown="@id/add_user_name"
-                                android:singleLine="true"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="姓名"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_name"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:imeOptions="actionNext"
-                                android:maxLength="15"
-                                android:maxLines="1"
-                                android:nextFocusDown="@id/add_user_password"
-                                android:singleLine="true"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="密码"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_password"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:inputType="textPassword"
-                                android:maxLength="15"
-                                android:maxLines="1"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="确认密码"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_repassword"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:inputType="textPassword"
-                                android:maxLength="15"
-                                android:maxLines="1"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="电话"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_tel"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:inputType="phone"
-                                android:maxLength="11"
-                                android:maxLines="1"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:inputType="textEmailAddress"
-                                android:text="邮箱"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <EditText
-                                android:id="@+id/add_user_email"
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:background="@drawable/text_edit"
-                                android:gravity="right|center"
-                                android:hint="请输入"
-                                android:imeOptions="actionNone"
-                                android:maxLength="20"
-                                android:maxLines="1"
-                                android:singleLine="true"
-                                android:textColor="@color/list_text_l"
-                                android:textCursorDrawable="@drawable/color_cursor"
-                                android:textSize="15sp" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:id="@+id/add_user_level"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="权限等级"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <TextView
-                                android:id="@+id/add_user_level_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:text="请选择权限等级"
-                                android:textColor="@color/list_text_l"
-                                android:textSize="15sp" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="15dp"
-                                android:src="@drawable/right_icon" />
-
-
-                        </RelativeLayout>
-
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp"
-                            android:background="@color/login_error"
-                            android:orientation="vertical" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginTop="12dp"
-                            android:text="组织架构"
-                            android:textColor="@color/black"
-                            android:textSize="17sp" />
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:id="@+id/add_user_company"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="单位"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <TextView
-                                android:id="@+id/add_user_company_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:text="请选择单位"
-                                android:textColor="@color/list_text_l"
-                                android:textSize="15sp" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="15dp"
-                                android:src="@drawable/right_icon" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/line"
-                            android:orientation="vertical" />
-
-                        <RelativeLayout
-                            android:id="@+id/add_user_department"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:paddingTop="5dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginTop="10dp"
-                                android:text="部门"
-                                android:textColor="@color/list_text_h"
-                                android:textSize="15sp" />
-
-                            <TextView
-                                android:id="@+id/add_user_department_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="50dp"
-                                android:text="请选择部门"
-                                android:textColor="@color/list_text_l"
-                                android:textSize="15sp" />
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginRight="15dp"
-                                android:src="@drawable/right_icon" />
-
-
-                        </RelativeLayout>
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp"
-                            android:background="@color/login_error" />
-
-
-                    </LinearLayout>
-                </android.support.v4.widget.NestedScrollView>
-
-
-                <Button
-                    android:id="@+id/add_user_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="@color/menu_sz_color"
-                    android:text="保存"
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:id="@+id/add_user_loading_error_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/login_error"
-                android:visibility="gone">
-
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="12dp"
+                    android:text="基本资料"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
 
-                    <ImageView
-                        android:layout_width="250dp"
-                        android:layout_height="250dp"
-                        android:layout_gravity="center"
-                        android:src="@mipmap/loading_error" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:id="@+id/add_user_setting_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
 
                     <TextView
-                        android:id="@+id/loading_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="点击刷新"
-                        android:textSize="20sp" />
-                </LinearLayout>
-            </RelativeLayout>
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="个人头像"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
 
-            <ImageView
-                android:id="@+id/add_user_loading_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/login_error"
-                android:visibility="gone" />
-        </FrameLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/add_user_photo"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:src="@mipmap/user_img" />
 
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/right_icon" />
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="用户名"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_user"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:imeOptions="actionNext"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:nextFocusDown="@id/add_user_name"
+                        android:singleLine="true"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="姓名"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_name"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:imeOptions="actionNext"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:nextFocusDown="@id/add_user_password"
+                        android:singleLine="true"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="密码"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_password"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:inputType="textPassword"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="确认密码"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_repassword"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:inputType="textPassword"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="电话"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_tel"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:inputType="phone"
+                        android:maxLength="11"
+                        android:maxLines="1"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:inputType="textEmailAddress"
+                        android:text="邮箱"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/add_user_email"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:background="@drawable/text_edit"
+                        android:gravity="right|center"
+                        android:hint="请输入"
+                        android:imeOptions="actionNone"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="20"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/list_text_l"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:textSize="15sp" />
+
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line"
+                    android:orientation="vertical" />
+
+                <RelativeLayout
+                    android:id="@+id/add_user_level"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:text="权限等级"
+                        android:textColor="@color/list_text_h"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/add_user_level_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="50dp"
+                        android:text="请选择权限等级"
+                        android:textColor="@color/list_text_l"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/right_icon" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+
+        <Button
+            android:id="@+id/add_user_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/menu_sz_color"
+            android:text="保存"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+    </LinearLayout>
 
 </LinearLayout>
 

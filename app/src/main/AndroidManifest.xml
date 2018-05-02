@@ -125,7 +125,8 @@
         <activity android:name="cn.com.larunda.safebox.ManagerActivity" />
         <activity android:name="cn.com.larunda.safebox.TaskLogActivity" />
         <activity android:name="cn.com.larunda.safebox.NormalUserActivity" />
-        <activity android:name="cn.com.larunda.safebox.TaskWarningActivity"></activity>
+        <activity android:name="cn.com.larunda.safebox.TaskWarningActivity" />
+        <activity android:name="cn.com.larunda.safebox.TaskFingerActivity"></activity>
     </application>
 
 </manifest>

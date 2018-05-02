@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.gson.Company;
+import cn.com.larunda.safebox.gson.CompanyData;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.EditUserInfo;
@@ -76,18 +77,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     private ChooseDialog levelDialog;
     private List<String> levelData = new ArrayList<>();
 
-    private RelativeLayout companyButton;
-    private TextView companyText;
-    private ChooseDialog companyDialog;
-    private List<String> companyData = new ArrayList<>();
-    private List<Integer> companyId = new ArrayList<>();
-
-    private RelativeLayout departmentButton;
-    private TextView departmentText;
-    private ChooseDialog departmentDialog;
-    private List<String> departmentData = new ArrayList<>();
-    private List<Integer> departmentId = new ArrayList<>();
-
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_ALBUM = 0;
     private PhotoDialog photoDialog;
@@ -102,8 +91,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     EditText emailText;
 
     public SwipeRefreshLayout swipeRefreshLayout;
-    private RelativeLayout loodingErrorLayout;
-    private ImageView loodingLayout;
+    private RelativeLayout loadingErrorLayout;
+    private ImageView loadingLayout;
     private LinearLayout layout;
     private Button putButton;
 
@@ -111,13 +100,11 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     private String token;
 
     public static final String EDIT_USER_URL = Util.URL + "user/";
-    public static final String COMPANY_URL = Util.URL + "company/";
-    public static final String DEPARTMENT_LIST_URL = Util.URL + "app/user_info/department_lists" + Util.TOKEN;
-    public static final String DEPARTMENT_URL = Util.URL + "department/";
-    public static final String IMG_URL = "http://safebox.dsmcase.com:90";
+
+    public static final String IMG_URL = Util.PATH;
 
     public static final String UPLOAD = Util.URL + "upload/file" + Util.TOKEN;
-    private String userId = "";
+    private int userId;
     private String path;
     private String url = null;
     private int id;
@@ -135,16 +122,14 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        userId = getIntent().getStringExtra("id");
+        userId = getIntent().getIntExtra("id", 0);
         initData();
         initView();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
+        loadingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
-        if (userId != null) {
-            sendRequest();
-        }
+        sendRequest();
         initEvent();
 
     }
@@ -169,8 +154,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                     @Override
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
+                        loadingErrorLayout.setVisibility(View.VISIBLE);
+                        loadingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
                     }
                 });
@@ -178,34 +163,34 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final EditUserInfo userInfo = Util.handleEditUserInfo(content);
-                    if (userInfo != null && userInfo.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initUserInfo(userInfo);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
+                final String content = response.body().string();
+                final int code = response.code();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (code == 200) {
+                            EditUserInfo info = Util.handleEditUserInfo(content);
+                            initUserInfo(info);
+                            swipeRefreshLayout.setRefreshing(false);
+                            loadingErrorLayout.setVisibility(View.GONE);
+                            loadingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.VISIBLE);
+                        } else if (code == 401 || code == 412) {
+                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        } else {
+                            swipeRefreshLayout.setRefreshing(false);
+                            loadingErrorLayout.setVisibility(View.VISIBLE);
+                            loadingLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.GONE);
+                        }
                     }
-                }
+                });
+
+
             }
         });
     }
@@ -217,48 +202,32 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
      */
     private void initUserInfo(EditUserInfo userInfo) {
 
-        companyData.clear();
-        companyId.clear();
-        if (userInfo.companyList != null) {
-            for (EditUserInfo.Company company : userInfo.companyList) {
-                if (company.id != null && company.name != null) {
-                    companyId.add(Integer.parseInt(company.id));
-                    companyData.add(company.name.trim());
-                }
-            }
-        }
-        String imgUrl = null;
-        if (userInfo.pic != null) {
-            imgUrl = userInfo.pic.replace('\\', ' ');
-            Glide.with(this).load(IMG_URL + imgUrl).placeholder(R.drawable.user).dontAnimate()
-                    .error(R.mipmap.user_img).into(photo);
-        }
-        if (userInfo.f_pic_orig != null) {
-            url = userInfo.f_pic_orig;
-        }
+        url = userInfo.getF_pic();
+        Glide.with(this).load(IMG_URL + url).placeholder(R.drawable.user).dontAnimate()
+                .error(R.mipmap.user_img).into(photo);
 
-        if (userInfo.user != null) {
-            userText.setText(userInfo.user);
+        if (userInfo.getF_user() != null) {
+            userText.setText(userInfo.getF_user());
         } else {
             userText.setText("");
         }
-        if (userInfo.name != null) {
-            nameText.setText(userInfo.name);
+        if (userInfo.getF_name() != null) {
+            nameText.setText(userInfo.getF_name());
         } else {
             nameText.setText("");
         }
-        if (userInfo.tel != null) {
-            telText.setText(userInfo.tel);
+        if (userInfo.getF_tel() != null) {
+            telText.setText(userInfo.getF_tel());
         } else {
             telText.setText("");
         }
-        if (userInfo.email != null) {
-            emailText.setText(userInfo.email);
+        if (userInfo.getF_email() != null) {
+            emailText.setText(userInfo.getF_email());
         } else {
             emailText.setText("");
         }
-        if (userInfo.level != null) {
-            if (userInfo.level.equals("1")) {
+        if (userInfo.getF_level() != null) {
+            if (userInfo.getF_level().equals("7")) {
                 levelText.setText("管理员");
             } else {
                 levelText.setText("一般用户");
@@ -267,197 +236,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
             levelText.setText("一般用户");
         }
 
-        if (userInfo.company_id != "") {
-            sendRequestForCompany(userInfo.company_id);
-            sendRequestForDepartmentList(userInfo.company_id);
-        } else {
-            companyText.setText("");
-        }
-        if (userInfo.department_id != "") {
-            id = Integer.parseInt(userInfo.department_id);
-            sendRequestForDepartment(userInfo.department_id);
-        } else {
-            departmentText.setText("");
-        }
-    }
-
-    /**
-     * 请求部门列表
-     *
-     * @param company_id
-     */
-    private void sendRequestForDepartmentList(String company_id) {
-        swipeRefreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_LIST_URL + token + "&company_id=" + company_id, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        layout.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final DepartmentInfo departmentInfo = Util.handleDepartmentInfo(content);
-                    if (departmentInfo != null && departmentInfo.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initDepartmentList(departmentInfo);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * 解析部门列表
-     *
-     * @param departmentInfo
-     */
-    private void initDepartmentList(DepartmentInfo departmentInfo) {
-        departmentData.clear();
-        departmentId.clear();
-        if (departmentInfo.getData() != null) {
-            for (DepartmentInfo.DataBean data : departmentInfo.getData()) {
-                if (data.getF_name() != null) {
-                    departmentData.add(data.getF_name());
-                    departmentId.add(data.getId());
-                }
-            }
-        }
-    }
-
-    /**
-     * 请求部门信息
-     *
-     * @param department_id
-     */
-    private void sendRequestForDepartment(String department_id) {
-        HttpUtil.sendGetRequestWithHttp(DEPARTMENT_URL + department_id + Util.TOKEN + token, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        layout.setVisibility(View.GONE);
-                    }
-                });
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final Department department = Util.handleDepartment(content);
-                    if (department != null && department.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                departmentText.setText(department.f_name);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * 请求公司信息
-     *
-     * @param company_id
-     */
-    private void sendRequestForCompany(String company_id) {
-        HttpUtil.sendGetRequestWithHttp(COMPANY_URL + company_id + Util.TOKEN + token, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
-                        layout.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final Company company = Util.handleCompany(content);
-                    if (company != null && company.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                companyText.setText(company.f_name);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
-                }
-            }
-        });
     }
 
     /**
@@ -488,8 +266,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                 levelDialog.cancel();
             }
         });
-        companyButton.setOnClickListener(this);
-        departmentButton.setOnClickListener(this);
         settingPhoto.setOnClickListener(this);
 
         photoDialog.setCameraButtonOnClick(new PhotoDialog.CameraOnClickListener() {
@@ -504,7 +280,7 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                 chooseFromAlbum();
             }
         });
-        loodingErrorLayout.setOnClickListener(this);
+        loadingErrorLayout.setOnClickListener(this);
         putButton.setOnClickListener(this);
     }
 
@@ -554,8 +330,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         photo = findViewById(R.id.edit_user_photo);
 
         putButton = findViewById(R.id.edit_user_button);
-        loodingErrorLayout = findViewById(R.id.edit_user_loading_error_layout);
-        loodingLayout = findViewById(R.id.edit_user_loading_layout);
+        loadingErrorLayout = findViewById(R.id.edit_user_loading_error_layout);
+        loadingLayout = findViewById(R.id.edit_user_loading_layout);
         layout = findViewById(R.id.edit_user_layout);
         swipeRefreshLayout = findViewById(R.id.edit_user_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
@@ -564,13 +340,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         levelButton = findViewById(R.id.edit_user_level);
         levelText = findViewById(R.id.edit_user_level_text);
         levelDialog = new ChooseDialog(this, levelData);
-
-        companyButton = findViewById(R.id.edit_user_company);
-        companyText = findViewById(R.id.edit_user_company_text);
-
-
-        departmentButton = findViewById(R.id.edit_user_department);
-        departmentText = findViewById(R.id.edit_user_department_text);
 
         photoDialog = new PhotoDialog(this);
 
@@ -603,44 +372,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
             case R.id.edit_user_level:
                 levelDialog.show();
                 break;
-            case R.id.edit_user_company:
-                companyDialog = new ChooseDialog(this, companyData);
-                companyDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                    @Override
-                    public void OnClick(View v, int positon) {
-                        String company = companyData.get(positon).trim();
-                        if (companyText.getText().toString().trim().equals(company)) {
-                            companyDialog.cancel();
-                        } else {
-                            companyText.setText(company);
-                            Integer id = companyId.get(positon);
-                            departmentText.setText("请选择部门");
-                            sendRequestForDepartmentList(id + "");
-                            companyDialog.cancel();
-                        }
-                    }
-                });
-                companyDialog.show();
-                break;
-            case R.id.edit_user_department:
-                if (isCheckedCompany()) {
-                    if (departmentData.size() == 0) {
-                        Toast.makeText(this, "没有更多部门", Toast.LENGTH_SHORT).show();
-                    } else {
-                        departmentDialog = new ChooseDialog(EditUserActivity.this, departmentData);
-                        departmentDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
-                            @Override
-                            public void OnClick(View v, int positon) {
-                                departmentText.setText(departmentData.get(positon));
-                                id = departmentId.get(positon);
-                                departmentDialog.cancel();
-                            }
-                        });
-                        departmentDialog.show();
-                    }
-                }
-
-                break;
             case R.id.edit_user_loading_error_layout:
                 sendRequest();
                 break;
@@ -664,9 +395,7 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         String tel = telText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
         String level = levelText.getText().toString().trim();
-        String company = companyText.getText().toString().trim();
-        String department = departmentText.getText().toString().trim();
-        if (!isEmpty(name, user, tel, email, level, company, department)) {
+        if (!isEmpty(name, user, tel, email, level)) {
             final JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("f_name", name);
@@ -699,8 +428,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                             public void run() {
                                 swipeRefreshLayout.setRefreshing(false);
                                 layout.setVisibility(View.GONE);
-                                loodingErrorLayout.setVisibility(View.VISIBLE);
-                                loodingLayout.setVisibility(View.GONE);
+                                loadingErrorLayout.setVisibility(View.VISIBLE);
+                                loadingLayout.setVisibility(View.GONE);
                             }
                         });
                     }
@@ -772,10 +501,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
      * @param tel
      * @param email
      * @param level
-     * @param company
-     * @param department @return
      */
-    private boolean isEmpty(String name, String user, String tel, String email, String level, String company, String department) {
+    private boolean isEmpty(String name, String user, String tel, String email, String level) {
         if (url == null) {
             Toast.makeText(this, "头像不能为空", Toast.LENGTH_SHORT).show();
             return true;
@@ -794,28 +521,8 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         } else if (TextUtils.isEmpty(level) || level.equals("请选择权限等级")) {
             Toast.makeText(this, "权限等级不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (TextUtils.isEmpty(company) || company.equals("请选择单位")) {
-            Toast.makeText(this, "单位不能为空", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (TextUtils.isEmpty(department) || department.equals("请选择部门")) {
-            Toast.makeText(this, "部门不能为空", Toast.LENGTH_SHORT).show();
-            return true;
         }
         return false;
-    }
-
-    /**
-     * 判断选择企业的方法
-     *
-     * @return
-     */
-    private boolean isCheckedCompany() {
-        if (companyText.getText().toString().trim() == null) {
-            Toast.makeText(this, "请先选择单位", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**

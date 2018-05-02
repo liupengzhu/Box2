@@ -174,7 +174,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 String content = response.body().string();
                 if (Util.isGoodJson(content)) {
                     final EditUserInfo userInfo = Util.handleEditUserInfo(content);
-                    if (userInfo != null && userInfo.error == null) {
+                    if (userInfo != null) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

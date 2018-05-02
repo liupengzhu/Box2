@@ -141,8 +141,8 @@ public class AddUserActivity extends BaseActivity implements View.OnClickListene
         levelButton.setOnClickListener(this);
         levelDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
             @Override
-            public void OnClick(View v, int positon) {
-                levelText.setText(levelData.get(positon));
+            public void OnClick(View v, int position) {
+                levelText.setText(levelData.get(position));
                 levelDialog.cancel();
             }
         });
@@ -185,7 +185,6 @@ public class AddUserActivity extends BaseActivity implements View.OnClickListene
         nameText = findViewById(R.id.add_user_name);
         telText = findViewById(R.id.add_user_tel);
         emailText = findViewById(R.id.add_user_email);
-        /*fingerprintText = findViewById(R.id.add_user_fingerprint);*/
         passwordText = findViewById(R.id.add_user_password);
         repasswordText = findViewById(R.id.add_user_repassword);
 

@@ -221,35 +221,6 @@
             android:layout_height="1dp"
             android:background="@color/line" />
 
-        <LinearLayout
-            android:id="@+id/setting_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:text="用户权限管理"
-                android:textColor="@color/menu_t_color"
-                android:textSize="20dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/right_icon" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line" />
-
     </LinearLayout>
 
     <LinearLayout

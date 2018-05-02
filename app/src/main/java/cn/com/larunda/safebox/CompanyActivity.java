@@ -40,7 +40,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
-    private String[] titles = {"数据总览", "箱体管理", "系统日志", "系统设置"};
+    private String[] titles = {"数据总览", "箱体管理", "系统日志"/*, "系统设置"*/};
     private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.rz1, R.drawable.setting1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
@@ -49,6 +49,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
     private DrawerLayout drawerLayout;
     private RelativeLayout backButton;
+    private RelativeLayout settingButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
      */
     private void initEvent() {
         backButton.setOnClickListener(this);
+        settingButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -89,7 +91,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         fragments.add(new AdminHomeFragment());
         fragments.add(new BoxListFragment());
         fragments.add(new SystemLogFragment());
-        fragments.add(new SettingFragment());
+        //fragments.add(new SettingFragment());
 
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
@@ -97,6 +99,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
         drawerLayout = findViewById(R.id.company_drawer_layout);
         backButton = findViewById(R.id.menu_back_button);
+        settingButton = findViewById(R.id.menu_set_button);
     }
 
     //初始化Tab；
@@ -333,6 +336,12 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
                 ActivityCollector.finishAllActivity();
+                break;
+            case R.id.menu_set_button:
+                Intent settingIntent = new Intent(this, PersonalSettingActivity.class);
+                startActivity(settingIntent);
+                break;
+            default:
                 break;
         }
     }

@@ -58,6 +58,19 @@ public class HttpUtil {
 
     }
 
+    public static void sendPostRequestHttp(String url, String token, String json, Callback callback) {
+
+        RequestBody requestBody = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .addHeader("X-CSRF-TOKEN", token)
+                .build();
+        client.newCall(request).enqueue(callback);
+
+    }
+
     public static void sendPutRequestWithHttp(String url, String json, Callback callback) {
 
         RequestBody requestBody = RequestBody.create(JSON, json);

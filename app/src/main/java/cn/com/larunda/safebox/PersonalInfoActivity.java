@@ -178,7 +178,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                initUserInfo(userInfo);
+                               /* initUserInfo(userInfo);*/
                                 refreshLayout.setRefreshing(false);
                                 layout.setVisibility(View.VISIBLE);
                                 loodingErrorLayout.setVisibility(View.GONE);
@@ -208,7 +208,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
      *
      * @param userInfo
      */
-    private void initUserInfo(EditUserInfo userInfo) {
+    /*private void initUserInfo(EditUserInfo userInfo) {
         String imgUrl = null;
         companyData.clear();
         companyId.clear();
@@ -332,7 +332,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             departmentText.setText("");
         }
 
-    }
+    }*/
 
     /**
      * 请求部门信息

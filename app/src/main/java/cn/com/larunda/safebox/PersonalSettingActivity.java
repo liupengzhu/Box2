@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
@@ -27,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.util.ActivityCollector;
@@ -45,19 +47,18 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
     private Switch changePic;
     private Switch changePhone;
     private Switch changeEmail;
-    private Switch changeCompany;
-    private Switch changeDepartment;
+    private Switch changeFingerprint;
     public static final String CONFIG_URL = Util.URL + "config" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
 
     public SwipeRefreshLayout swipeRefreshLayout;
-    private RelativeLayout loodingErrorLayout;
-    private ImageView loodingLayout;
+    private RelativeLayout loadingErrorLayout;
+    private ImageView loadingLayout;
     private LinearLayout layout;
 
     private Button postButton;
-    private String fingerprintText;
+    private LoadingDailog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +74,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
         initView();
         initEvent();
         //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loodingLayout.setVisibility(View.VISIBLE);
-        loodingErrorLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
+        loadingErrorLayout.setVisibility(View.GONE);
         layout.setVisibility(View.GONE);
         sendRequest();
     }
@@ -83,7 +84,7 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
      * 初始化点击事件
      */
     private void initEvent() {
-        loodingErrorLayout.setOnClickListener(this);
+        loadingErrorLayout.setOnClickListener(this);
         postButton.setOnClickListener(this);
     }
 
@@ -99,8 +100,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
                     @Override
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
-                        loodingErrorLayout.setVisibility(View.VISIBLE);
-                        loodingLayout.setVisibility(View.GONE);
+                        loadingErrorLayout.setVisibility(View.VISIBLE);
+                        loadingLayout.setVisibility(View.GONE);
                         layout.setVisibility(View.GONE);
                     }
                 });
@@ -108,33 +109,41 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (code == 200) {
                     final Config config = Util.handleConfig(content);
-                    if (config != null && config.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initData(config);
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
-                                loodingErrorLayout.setVisibility(View.GONE);
-                                loodingLayout.setVisibility(View.GONE);
-                            }
-                        });
-
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initData(config);
+                            swipeRefreshLayout.setRefreshing(false);
+                            loadingLayout.setVisibility(View.GONE);
+                            loadingErrorLayout.setVisibility(View.GONE);
+                            layout.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 401 || code == 412) {
                                 Intent intent = new Intent(PersonalSettingActivity.this, LoginActivity.class);
                                 intent.putExtra("token_timeout", "登录超时");
                                 preferences.edit().putString("token", null).commit();
                                 startActivity(intent);
                                 ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(PersonalSettingActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        });
-                    }
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
@@ -146,8 +155,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
      * @param config
      */
     private void initData(Config config) {
-        if (config.user.change_user != null) {
-            if (config.user.change_user.equals("1")) {
+        if (config.getAllow_change_user() != null) {
+            if (config.getAllow_change_user().equals("true")) {
                 changeName.setChecked(true);
             } else {
                 changeName.setChecked(false);
@@ -156,8 +165,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
             changeName.setChecked(false);
         }
 
-        if (config.user.change_pwd != null) {
-            if (config.user.change_pwd.equals("1")) {
+        if (config.getAllow_change_pwd() != null) {
+            if (config.getAllow_change_pwd().equals("true")) {
                 changePwd.setChecked(true);
             } else {
                 changePwd.setChecked(false);
@@ -165,8 +174,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
         } else {
             changePwd.setChecked(false);
         }
-        if (config.user.upload_pic != null) {
-            if (config.user.upload_pic.equals("1")) {
+        if (config.getAllow_change_avatar() != null) {
+            if (config.getAllow_change_avatar().equals("true")) {
                 changePic.setChecked(true);
             } else {
                 changePic.setChecked(false);
@@ -175,8 +184,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
             changePic.setChecked(false);
         }
 
-        if (config.user.change_phone != null) {
-            if (config.user.change_phone.equals("1")) {
+        if (config.getAllow_change_tel() != null) {
+            if (config.getAllow_change_tel().equals("true")) {
                 changePhone.setChecked(true);
             } else {
                 changePhone.setChecked(false);
@@ -185,8 +194,8 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
             changePhone.setChecked(false);
         }
 
-        if (config.user.change_mail != null) {
-            if (config.user.change_mail.equals("1")) {
+        if (config.getAllow_change_email() != null) {
+            if (config.getAllow_change_email().equals("true")) {
                 changeEmail.setChecked(true);
             } else {
                 changeEmail.setChecked(false);
@@ -195,28 +204,15 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
             changeEmail.setChecked(false);
         }
 
-        if (config.user.change_company != null) {
-            if (config.user.change_company.equals("1")) {
-                changeCompany.setChecked(true);
+        if (config.getAllow_change_fingerprint() != null) {
+            if (config.getAllow_change_fingerprint().equals("true")) {
+                changeFingerprint.setChecked(true);
             } else {
-                changeCompany.setChecked(false);
+                changeFingerprint.setChecked(false);
             }
         } else {
-            changeCompany.setChecked(false);
+            changeFingerprint.setChecked(false);
         }
-
-        if (config.user.change_department != null) {
-            if (config.user.change_department.equals("1")) {
-                changeDepartment.setChecked(true);
-            } else {
-                changeDepartment.setChecked(false);
-            }
-        } else {
-            changeDepartment.setChecked(false);
-        }
-
-        fingerprintText = config.user.upload_fingerprint;
-
 
     }
 
@@ -233,11 +229,10 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
         changePic = findViewById(R.id.personal_setting_pic);
         changePhone = findViewById(R.id.personal_setting_phone);
         changeEmail = findViewById(R.id.personal_setting_email);
-        changeCompany = findViewById(R.id.personal_setting_company);
-        changeDepartment = findViewById(R.id.personal_setting_department);
+        changeFingerprint = findViewById(R.id.personal_setting_fingerprint);
 
-        loodingErrorLayout = findViewById(R.id.personal_setting_loading_error_layout);
-        loodingLayout = findViewById(R.id.personal_setting_loading_layout);
+        loadingErrorLayout = findViewById(R.id.personal_setting_loading_error_layout);
+        loadingLayout = findViewById(R.id.personal_setting_loading_layout);
         layout = findViewById(R.id.personal_setting_layout);
         swipeRefreshLayout = findViewById(R.id.personal_setting_swipe);
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
@@ -265,6 +260,12 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
 
             }
         });
+
+        LoadingDailog.Builder loadBuilder = new LoadingDailog.Builder(this)
+                .setMessage("上传中...")
+                .setCancelable(false)
+                .setCancelOutside(false);
+        dialog = loadBuilder.create();
     }
 
     /**
@@ -290,82 +291,87 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
      * 发送post请求
      */
     private void sendPostRequest() {
-        JSONObject userJson = new JSONObject();
-        JSONObject alarmJson = new JSONObject();
-        JSONObject dataJson = new JSONObject();
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
 
         try {
             if (changeName.isChecked()) {
-                userJson.put("change_user", 1);
+                jsonObject.put("allow_change_user", "true");
             } else {
-                userJson.put("change_user", 0);
+                jsonObject.put("allow_change_user", "false");
             }
             if (changePwd.isChecked()) {
-                userJson.put("change_pwd", 1);
+                jsonObject.put("allow_change_pwd", "true");
             } else {
-                userJson.put("change_pwd", 0);
+                jsonObject.put("allow_change_pwd", "false");
             }
             if (changePic.isChecked()) {
-                userJson.put("upload_pic", 1);
+                jsonObject.put("allow_change_avatar", "true");
             } else {
-                userJson.put("upload_pic", 0);
+                jsonObject.put("allow_change_avatar", "false");
             }
             if (changePhone.isChecked()) {
-                userJson.put("change_phone", 1);
+                jsonObject.put("allow_change_tel", "true");
             } else {
-                userJson.put("change_phone", 0);
+                jsonObject.put("allow_change_tel", "false");
             }
             if (changeEmail.isChecked()) {
-                userJson.put("change_mail", 1);
+                jsonObject.put("allow_change_email", "true");
             } else {
-                userJson.put("change_mail", 0);
+                jsonObject.put("allow_change_email", "false");
             }
-            if (changeCompany.isChecked()) {
-                userJson.put("change_company", 1);
+            if (changeFingerprint.isChecked()) {
+                jsonObject.put("allow_change_fingerprint", "true");
             } else {
-                userJson.put("change_company", 0);
-            }
-            if (changeDepartment.isChecked()) {
-                userJson.put("change_department", 1);
-            } else {
-                userJson.put("change_department", 0);
+                jsonObject.put("allow_change_fingerprint", "false");
             }
 
-            userJson.put("upload_fingerprint", fingerprintText);
-
-            userJson.put("face_identification", null);
-            alarmJson.put("sound", null);
-            alarmJson.put("use_default_sound", null);
-            alarmJson.put("sound_path", null);
-            dataJson.put("user", userJson);
-            dataJson.put("alarm", alarmJson);
-            jsonObject.put("f_data", dataJson);
-            swipeRefreshLayout.setRefreshing(true);
-            HttpUtil.sendPostRequestWithHttp(CONFIG_URL + token, jsonObject.toString(), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            swipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(PersonalSettingActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+        dialog.show();
+        HttpUtil.sendPostRequestHttp(Util.URL + "config", token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
                         }
-                    });
-                }
+                        Toast.makeText(PersonalSettingActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    final String content = response.body().string();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseMessage(content);
-                            swipeRefreshLayout.setRefreshing(false);
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.cancel();
                         }
-                    });
-                }
-            });
+                        if (code == 200) {
+                            finish();
+                        } else if (code == 401 || code == 412) {
+                            Intent intent = new Intent(PersonalSettingActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        } else if (code == 422) {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(PersonalSettingActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(PersonalSettingActivity.this, "修改失败！", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
 
 
         } catch (JSONException e) {
@@ -374,30 +380,5 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
 
     }
 
-    /**
-     * 解析数据
-     *
-     * @param content
-     */
-    private void parseMessage(String content) {
-        if (content.equals("true")) {
-            finish();
-        } else if (content.equals("false")) {
-            Toast.makeText(this, "设置失败", Toast.LENGTH_SHORT).show();
-        } else {
-            cn.com.larunda.safebox.gson.Message message = Util.handleMessage(content);
-            if (message != null && message.error == null) {
-                if (message.message != null) {
-                    Toast.makeText(this, message.message, Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.putExtra("token_timeout", "登录超时");
-                preferences.edit().putString("token", null).commit();
-                startActivity(intent);
-                ActivityCollector.finishAllActivity();
-            }
 
-        }
-    }
 }

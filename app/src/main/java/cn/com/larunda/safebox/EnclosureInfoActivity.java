@@ -34,15 +34,21 @@ import com.baidu.mapapi.map.PolygonOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.gson.CoordinateInfo;
+import cn.com.larunda.safebox.gson.EnclosureInfo;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 import cn.com.larunda.safebox.util.HttpUtil;
@@ -58,8 +64,8 @@ public class EnclosureInfoActivity extends BaseActivity {
     private MapView mapView;
     private BaiduMap baiduMap;
     private MyLocationListener myListener = new MyLocationListener();
-    private String id;
-    public static final String ENCLOSURE_INFO_URL = Util.URL + "area/";
+    private int id;
+    public static final String ENCLOSURE_INFO_URL = Util.URL + "fence/";
     private List<LatLng> points = new ArrayList<>();
     private TextView textView;
 
@@ -82,7 +88,7 @@ public class EnclosureInfoActivity extends BaseActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        id = getIntent().getStringExtra("id");
+        id = getIntent().getIntExtra("id", 0);
         initView();
 
 
@@ -129,33 +135,47 @@ public class EnclosureInfoActivity extends BaseActivity {
         HttpUtil.sendGetRequestWithHttp(ENCLOSURE_INFO_URL + id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
+                        Toast.makeText(EnclosureInfoActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final CoordinateInfo coordinateInfo = Util.handleCoordinateInfo(content);
-                    if (coordinateInfo != null && coordinateInfo.getError() == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showInfo(coordinateInfo);
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final CoordinateInfo info = Util.handleCoordinateInfo(content);
+                    showInfo(info);
+
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(EnclosureInfoActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
+
+                        }
+                    });
                 }
             }
         });
@@ -168,51 +188,45 @@ public class EnclosureInfoActivity extends BaseActivity {
         mLocationClient.start();
     }
 
-    private void showInfo(CoordinateInfo coordinateInfo) {
+    private void showInfo(final CoordinateInfo coordinateInfo) {
         //LatLng position = null;
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        if (coordinateInfo.getF_name() != null) {
-            textView.setText(coordinateInfo.getF_name());
-        } else {
-            textView.setText("");
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (coordinateInfo.getF_name() != null) {
+                    textView.setText(coordinateInfo.getF_name());
+                } else {
+                    textView.setText("");
+                }
+            }
+        });
+
         if (coordinateInfo.getF_data() != null) {
-            for (int i = 0; i < coordinateInfo.getF_data().size(); i++) {
-                List<CoordinateInfo.FDataBean> fDataBeanList = coordinateInfo.getF_data().get(i);
-                if (fDataBeanList != null) {
+            try {
+                JSONArray outJsonArray = new JSONArray(coordinateInfo.getF_data());
+                for (int i = 0; i < outJsonArray.length(); i++) {
                     points.clear();
-                    for (int j = 0; j < fDataBeanList.size(); j++) {
-                        CoordinateInfo.FDataBean fDataBean = fDataBeanList.get(j);
-                        if (fDataBean.getLat() != null && fDataBean.getLng() != null) {
-
-                            LatLng latLng = new LatLng(Float.parseFloat(fDataBean.getLat()), Float.parseFloat(fDataBean.getLng()));
-                            /*if (i == 0 && j == 0) {
-                                position = latLng;
-
-                            }*/
+                    JSONArray innerJsonArray = outJsonArray.getJSONArray(i);
+                    for (int j = 0; j < innerJsonArray.length(); j++) {
+                        JSONObject jsonObject = innerJsonArray.getJSONObject(j);
+                        if (jsonObject.getString("lat") != null && jsonObject.getString("lng") != null) {
+                            LatLng latLng = new LatLng(Float.parseFloat(jsonObject.getString("lat")),
+                                    Float.parseFloat(jsonObject.getString("lng")));
                             points.add(latLng);
                             builder.include(latLng);
                         }
                     }
-                    drawOverlay(points);
-                    baiduMap.setMapStatus(MapStatusUpdateFactory
-                            .newLatLngBounds(builder.build()));
+                    if (points.size() >= 3) {
+                        drawOverlay(points);
+                    }
                 }
+                baiduMap.setMapStatus(MapStatusUpdateFactory
+                        .newLatLngBounds(builder.build()));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            /*MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(position);//移动到我的经纬度
-            baiduMap.animateMapStatus(update);*/
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(EnclosureInfoActivity.this, LoginActivity.class);
-                    intent.putExtra("token_timeout", "登录超时");
-                    preferences.edit().putString("token", null).commit();
-                    startActivity(intent);
-                    ActivityCollector.finishAllActivity();
-                }
-            });
         }
     }
 

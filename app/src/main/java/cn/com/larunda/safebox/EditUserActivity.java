@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.tu.loadingdialog.LoadingDailog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -108,6 +109,7 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     private String path;
     private String url = null;
     private int id;
+    private LoadingDailog dialog;
 
 
     @Override
@@ -356,6 +358,12 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        LoadingDailog.Builder loadBuilder = new LoadingDailog.Builder(this)
+                .setMessage("上传中...")
+                .setCancelable(false)
+                .setCancelOutside(false);
+        dialog = loadBuilder.create();
+
     }
 
     /**
@@ -403,33 +411,35 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                 jsonObject.put("f_tel", tel);
                 jsonObject.put("f_email", email);
                 if (level.equals("管理员")) {
-                    jsonObject.put("f_level", 1);
+                    jsonObject.put("f_level", 7);
                 } else {
-                    jsonObject.put("f_level", 2);
+                    jsonObject.put("f_level", 5);
                 }
 
-                jsonObject.put("department_id", id);
                 jsonObject.put("f_pic", url);
-                jsonObject.put("f_fingerencode", null);
-                if (password != null && repassword != null) {
+                if (password != null && !password.isEmpty() && repassword != null && !password.isEmpty()) {
                     if (password.equals(repassword)) {
-                        jsonObject.put("f_password", password);
-                        jsonObject.put("re_password", repassword);
+                        if (password.length() >= 6) {
+                            jsonObject.put("f_password", password);
+                            jsonObject.put("f_password_confirmation", repassword);
+                        } else {
+                            Toast.makeText(this, "密码必须大于6位", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(this, "密码于确认密码不一致", Toast.LENGTH_SHORT).show();
                     }
                 }
-                swipeRefreshLayout.setRefreshing(true);
+                dialog.show();
                 HttpUtil.sendPutRequestWithHttp(EDIT_USER_URL + userId + Util.TOKEN + token, jsonObject.toString(), new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                swipeRefreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.GONE);
-                                loadingErrorLayout.setVisibility(View.VISIBLE);
-                                loadingLayout.setVisibility(View.GONE);
+                                if (dialog != null && dialog.isShowing()) {
+                                    dialog.cancel();
+                                }
+                                Toast.makeText(EditUserActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -437,16 +447,42 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
-                        if (Util.isGoodJson(content)) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    parseUpdata(content);
-                                    swipeRefreshLayout.setRefreshing(false);
+                        final int code = response.code();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (dialog != null && dialog.isShowing()) {
+                                    dialog.cancel();
                                 }
-                            });
-
-                        }
+                                if (code == 200) {
+                                    String name = nameText.getText().toString().trim();
+                                    String user = userText.getText().toString().trim();
+                                    String level = levelText.getText().toString().trim();
+                                    Intent intent = new Intent();
+                                    intent.putExtra("name", name);
+                                    intent.putExtra("user", user);
+                                    intent.putExtra("level", level);
+                                    intent.putExtra("url", url);
+                                    setResult(RESULT_OK, intent);
+                                    finish();
+                                } else if (code == 401 || code == 412) {
+                                    Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                    intent.putExtra("token_timeout", "登录超时");
+                                    preferences.edit().putString("token", null).commit();
+                                    startActivity(intent);
+                                    ActivityCollector.finishAllActivity();
+                                } else if (code == 422) {
+                                    try {
+                                        JSONObject js = new JSONObject(content);
+                                        Toast.makeText(EditUserActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    Toast.makeText(EditUserActivity.this, "添加失败！", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -460,40 +496,6 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 解析更新信息
-     *
-     * @param content
-     */
-    private void parseUpdata(String content) {
-        if (content != null && content.equals("true")) {
-            String name = nameText.getText().toString().trim();
-            String user = userText.getText().toString().trim();
-            String level = levelText.getText().toString().trim();
-            Intent intent = new Intent();
-            intent.putExtra("name", name);
-            intent.putExtra("user", user);
-            intent.putExtra("level", level);
-            intent.putExtra("url", "/api/file?" + url);
-            setResult(RESULT_OK, intent);
-            finish();
-        } else if (content != null && content.equals("false")) {
-            swipeRefreshLayout.setRefreshing(false);
-            Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show();
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                    intent.putExtra("token_timeout", "登录超时");
-                    preferences.edit().putString("token", null).commit();
-                    startActivity(intent);
-                    ActivityCollector.finishAllActivity();
-                }
-            });
-        }
-    }
-
-    /**
      * 判断是否为空
      *
      * @param name
@@ -501,6 +503,7 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
      * @param tel
      * @param email
      * @param level
+     * @return
      */
     private boolean isEmpty(String name, String user, String tel, String email, String level) {
         if (url == null) {
@@ -518,11 +521,16 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
         } else if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "邮箱不能为空", Toast.LENGTH_SHORT).show();
             return true;
+        } else if (!Util.isValidEmail(email)) {
+            Toast.makeText(this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
+            return true;
         } else if (TextUtils.isEmpty(level) || level.equals("请选择权限等级")) {
             Toast.makeText(this, "权限等级不能为空", Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;
+
+
     }
 
     /**
@@ -540,14 +548,16 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                     try {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         path = "/sdcard/Android/data/com.example.box//cache/output_image.jpg";
-                        swipeRefreshLayout.setRefreshing(true);
+                        dialog.show();
                         HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", path, new Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        swipeRefreshLayout.setRefreshing(false);
+                                        if (dialog != null && dialog.isShowing()) {
+                                            dialog.cancel();
+                                        }
                                         Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -556,13 +566,28 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
                                 final String content = response.body().string();
+                                final int code = response.code();
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        parseContent(content);
-                                        swipeRefreshLayout.setRefreshing(false);
+                                        //parseContent(content);
+                                        if (dialog != null && dialog.isShowing()) {
+                                            dialog.cancel();
+                                        }
+                                        if (code == 200) {
+                                            parseContent(content);
+                                        } else if (code == 401 || code == 412) {
+                                            Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                            intent.putExtra("token_timeout", "登录超时");
+                                            preferences.edit().putString("token", null).commit();
+                                            startActivity(intent);
+                                            ActivityCollector.finishAllActivity();
+                                        } else {
+                                            Toast.makeText(EditUserActivity.this, "头像上传失败", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 });
+
                             }
                         });
                         photoDialog.cancel();
@@ -629,14 +654,16 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
     private void displayImage(String imagePath) {
         if (imagePath != null) {
             path = imagePath;
-            swipeRefreshLayout.setRefreshing(true);
+            dialog.show();
             HttpUtil.sendPostImageWithHttp(UPLOAD + token + "&folder_type=" + "user", imagePath, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            swipeRefreshLayout.setRefreshing(false);
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
                             Toast.makeText(EditUserActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -645,12 +672,25 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String content = response.body().string();
-
+                    final int code = response.code();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            parseContent(content);
-                            swipeRefreshLayout.setRefreshing(false);
+                            //parseContent(content);
+                            if (dialog != null && dialog.isShowing()) {
+                                dialog.cancel();
+                            }
+                            if (code == 200) {
+                                parseContent(content);
+                            } else if (code == 401 || code == 412) {
+                                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else {
+                                Toast.makeText(EditUserActivity.this, "头像上传失败", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
 
@@ -667,36 +707,16 @@ public class EditUserActivity extends BaseActivity implements View.OnClickListen
      *
      * @param content
      */
+
     private void parseContent(String content) {
-        if (Util.isGoodJson(content)) {
-            PhotoUrl photoUrl = Util.handlePhotoUrl(content);
-            if (photoUrl != null && photoUrl.getError() == null) {
-                if (photoUrl.getMessage() != null) {
-                    Toast.makeText(this, photoUrl.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Intent intent = new Intent(EditUserActivity.this, LoginActivity.class);
-                intent.putExtra("token_timeout", "登录超时");
-                preferences.edit().putString("token", null).commit();
-                startActivity(intent);
-                ActivityCollector.finishAllActivity();
-            }
-
-
-        } else {
-
-            if (content != null) {
-                url = content;
-                Glide.with(this).load(path)
-                        .skipMemoryCache(true) // 不使用内存缓存
-                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
-                        .error(R.mipmap.user_img).into(photo);
-                Toast.makeText(this, "头像上传成功", Toast.LENGTH_SHORT).show();
-
-            }
-
-        }
+        url = content;
+        Glide.with(this).load(Util.PATH + url)
+                .skipMemoryCache(true) // 不使用内存缓存
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                .error(R.mipmap.user_img).into(photo);
+        Toast.makeText(this, "图片上传成功", Toast.LENGTH_SHORT).show();
     }
+
 
 
     private String getImagePath(Uri externalContentUri, String selection) {

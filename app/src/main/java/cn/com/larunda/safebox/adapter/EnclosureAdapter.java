@@ -72,9 +72,9 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
             public void onClick(View v) {
                 if (enclosureOnClickListener != null) {
                     Enclosure enclosure = enclosureList.get(viewHolder.getAdapterPosition());
-                    if (enclosure.getId() != null) {
-                        enclosureOnClickListener.onClick(v, enclosure.getId());
-                    }
+
+                    enclosureOnClickListener.onClick(v, enclosure.getId());
+
                 }
             }
         });
@@ -138,7 +138,7 @@ public class EnclosureAdapter extends RecyclerView.Adapter<EnclosureAdapter.View
     }
 
     public interface EnclosureOnClickListener {
-        void onClick(View v, String id);
+        void onClick(View v, int id);
     }
 
     public boolean isCheckedLayout() {

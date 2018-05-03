@@ -52,6 +52,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     private RelativeLayout backButton;
     private RelativeLayout settingButton;
     private LinearLayout userButton;
+    private LinearLayout enclosureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         backButton.setOnClickListener(this);
         settingButton.setOnClickListener(this);
         userButton.setOnClickListener(this);
+        enclosureButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -104,6 +106,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         backButton = findViewById(R.id.menu_back_button);
         settingButton = findViewById(R.id.menu_set_button);
         userButton = findViewById(R.id.user_info_layout);
+        enclosureButton = findViewById(R.id.enclosure_layout);
     }
 
     //初始化Tab；
@@ -348,6 +351,10 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
             case R.id.user_info_layout:
                 Intent userIntent = new Intent(this, UserInfoActivity.class);
                 startActivity(userIntent);
+                break;
+            case R.id.enclosure_layout:
+                Intent enclosureIntent = new Intent(this, EnclosureActivity.class);
+                startActivity(enclosureIntent);
                 break;
             default:
                 break;

@@ -6,7 +6,7 @@ package cn.com.larunda.safebox.recycler;
 
 public class Enclosure {
 
-    private String id;
+    private int id;
     private String name;
     private boolean imgIsChecked = false;
 
@@ -26,11 +26,11 @@ public class Enclosure {
 
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -123,9 +123,7 @@ public class TaskListActivity extends BaseActivity {
 
             @Override
             public void onRightButtonClickListener(View v) {
-                if (status == null || !status.equals("1")) {
-                    Toast.makeText(TaskListActivity.this, "当前递送箱状态不可添加新任务!", Toast.LENGTH_SHORT).show();
-                } else if (!isCompleted) {
+                if (!isCompleted) {
                     Toast.makeText(TaskListActivity.this, "当前任务未完成!", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(TaskListActivity.this, AddTaskActivity.class);

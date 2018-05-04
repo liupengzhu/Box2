@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.HomeAdapter;
-import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.CollectorFragment;
-import cn.com.larunda.safebox.fragment.CompanyListFragment;
-import cn.com.larunda.safebox.fragment.ExpresserFragment;
+import cn.com.larunda.safebox.fragment.CourierFragment;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 
@@ -39,7 +36,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
     private String[] titles = {"快递员", "收件员"};
-    private int[] icons = {R.drawable.sy1, R.drawable.dsx1};
+    private int[] icons = {R.drawable.courier1, R.drawable.collector1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
     private String token;
@@ -84,7 +81,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
         tabLayout = findViewById(R.id.normal_user_tab_layout);
         titleBar = findViewById(R.id.normal_user_title_bar);
 
-        fragments.add(new ExpresserFragment());
+        fragments.add(new CourierFragment());
         fragments.add(new CollectorFragment());
 
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
@@ -106,11 +103,11 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
                 switch (tab.getPosition()) {
                     case 0:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy2);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.courier2);
                         setTitleInfo(0);
                         break;
                     case 1:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx2);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.collector2);
                         setTitleInfo(1);
                         break;
                     default:
@@ -126,10 +123,10 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
                 switch (tab.getPosition()) {
                     case 0:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy1);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.courier1);
                         break;
                     case 1:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx1);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.collector1);
                         break;
                     default:
                         break;
@@ -217,7 +214,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
         imageView.setBackgroundResource(icons[position]);
         textView.setText(titles[position]);
         if (position == 0) {
-            imageView.setBackgroundResource(R.drawable.sy2);
+            imageView.setBackgroundResource(R.drawable.courier2);
             textView.setTextColor(getResources().getColor(R.color.normal));
             //初始化tab时同时初始化title
             titleBar.setRightButtonSrc(R.drawable.menu);

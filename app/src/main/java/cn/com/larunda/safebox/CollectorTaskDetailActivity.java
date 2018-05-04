@@ -106,7 +106,10 @@ public class CollectorTaskDetailActivity extends BaseActivity {
         adapter.setItemButtonOnclickListener(new CollectorTaskDestinationAdapter.ItemButtonOnclickListener() {
             @Override
             public void onClick(View v, int processId) {
-
+                Intent intent = new Intent(CollectorTaskDetailActivity.this, DynamicPasswordActivity.class);
+                intent.putExtra("taskId", id);
+                intent.putExtra("processId", processId);
+                startActivity(intent);
             }
         });
 

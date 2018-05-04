@@ -5,7 +5,28 @@ package cn.com.larunda.safebox.gson;
  */
 
 public class DynamicPassword {
-    public String password;
-    public String error;
-    public int time;
+
+    /**
+     * code : 90173799
+     * expiration : 2018-05-04 16:20:59
+     */
+
+    private String code;
+    private int left;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
 }

@@ -20,14 +20,19 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.larunda.horizontalprogressbar.HorizontalProgressBarWithNunber;
 import com.larunda.safebox.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 
+import cn.com.larunda.safebox.gson.CollectorTaskDetailInfo;
 import cn.com.larunda.safebox.gson.DynamicPassword;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
@@ -40,11 +45,9 @@ import okhttp3.Response;
 
 public class DynamicPasswordActivity extends BaseActivity implements View.OnClickListener {
 
-    public final String PASSWORD_URL = Util.URL + "box/show_dynamic_password" + Util.TOKEN;
     static HorizontalProgressBarWithNunber progressBar;
     private RelativeLayout layout;
     Button backButton;
-    private String id;
     private SharedPreferences.Editor editor;
     public final int MSG_PROGRESS_UPDATE = 0x110;
     private Handler mHandler = new Handler() {
@@ -56,7 +59,7 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
                     progressBar.setProgress(0);
                     sendRequest();
                 } else {
-                    mHandler.sendEmptyMessageDelayed(MSG_PROGRESS_UPDATE, 60);
+                    mHandler.sendEmptyMessageDelayed(MSG_PROGRESS_UPDATE, 120);
                 }
             }
         }
@@ -71,7 +74,11 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
     private TextView textView4;
     private TextView textView5;
     private TextView textView6;
-    private long last_time;
+    private TextView textView7;
+    private TextView textView8;
+
+    private int taskId;
+    private int processId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,42 +91,18 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        id = getIntent().getStringExtra("id");
+        taskId = getIntent().getIntExtra("taskId", 0);
+        processId = getIntent().getIntExtra("processId", 0);
         initView();
-        /*last_time = preferences.getLong(id + "time", 0);
-        if (last_time != 0) {
-            long time = System.currentTimeMillis() - last_time;
-            if (time < 60000) {
-                progressBar.setProgress((int) (time / 60));
-                String passwordString = preferences.getString(id + "password", null);
-                if (passwordString != null) {
-                    char[] password = passwordString.toCharArray();
-                    if (password != null && password.length == 6) {
-                        textView1.setText(password[0] + "");
-                        textView2.setText(password[1] + "");
-                        textView3.setText(password[2] + "");
-                        textView4.setText(password[3] + "");
-                        textView5.setText(password[4] + "");
-                        textView6.setText(password[5] + "");
-                        mHandler.sendEmptyMessage(MSG_PROGRESS_UPDATE);
-                    }
-                }
-
-            } else {
-                sendRequest();
-            }
-        } else {*/
         sendRequest();
-        //}
-
-
     }
 
     /**
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(PASSWORD_URL + token + "&box_id=" + id, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "user/task/" + taskId + "/process/" + processId + "/dynamic" + Util.TOKEN
+                + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -131,6 +114,8 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
                         textView4.setText("0");
                         textView5.setText("0");
                         textView6.setText("0");
+                        textView7.setText("0");
+                        textView8.setText("0");
                     }
                 });
 
@@ -138,28 +123,40 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String content = response.body().string();
-                if (Util.isGoodJson(content)) {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
                     final DynamicPassword dynamicPassword = Util.handleDynamicPassword(content);
-                    if (dynamicPassword != null && dynamicPassword.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                initPassword(dynamicPassword);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initPassword(dynamicPassword);
+                        }
+                    });
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(DynamicPasswordActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(DynamicPasswordActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(DynamicPasswordActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-                            }
-                        });
-                    }
+                        }
+                    });
+
                 }
             }
         });
@@ -171,22 +168,20 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
      * @param dynamicPassword
      */
     private void initPassword(DynamicPassword dynamicPassword) {
-        if (dynamicPassword.password != null) {
-            char[] password = dynamicPassword.password.toCharArray();
-            if (password != null && password.length == 6) {
+        if (dynamicPassword.getCode() != null) {
+            char[] password = dynamicPassword.getCode().toCharArray();
+            if (password != null && password.length == 8) {
                 textView1.setText(password[0] + "");
                 textView2.setText(password[1] + "");
                 textView3.setText(password[2] + "");
                 textView4.setText(password[3] + "");
                 textView5.setText(password[4] + "");
                 textView6.setText(password[5] + "");
-                progressBar.setProgress((int) ((60 - (float) dynamicPassword.time) / 60 * 1000));
+                textView7.setText(password[6] + "");
+                textView8.setText(password[7] + "");
+                progressBar.setProgress((int) ((120 - (float) dynamicPassword.getLeft()) / 120 * 1000));
                 mHandler.sendEmptyMessage(MSG_PROGRESS_UPDATE);
-                /*long time = System.currentTimeMillis();
-                editor = preferences.edit();
-                editor.putLong(id + "time", time);
-                editor.putString(id + "password", dynamicPassword.password);
-                editor.apply();*/
+
             }
 
         }
@@ -211,6 +206,8 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
         textView4 = findViewById(R.id.password_text_4);
         textView5 = findViewById(R.id.password_text_5);
         textView6 = findViewById(R.id.password_text_6);
+        textView7 = findViewById(R.id.password_text_7);
+        textView8 = findViewById(R.id.password_text_8);
     }
 
     /**

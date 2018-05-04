@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +40,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CollectorTaskDetailActivity extends BaseActivity {
+public class CollectorTaskDetailActivity extends BaseActivity implements View.OnClickListener {
 
     private int id;
     private TitleBar titleBar;
@@ -55,6 +56,8 @@ public class CollectorTaskDetailActivity extends BaseActivity {
     private LinearLayoutManager manager;
     private CollectorTaskDestinationAdapter adapter;
     private List<Destination> destinationList = new ArrayList<>();
+
+    private RelativeLayout trackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +99,16 @@ public class CollectorTaskDetailActivity extends BaseActivity {
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+
+        trackButton = findViewById(R.id.collector_task_detail_track);
     }
 
     /**
      * 初始化点击事件
      */
     private void initEvent() {
+
+        trackButton.setOnClickListener(this);
 
         adapter.setItemButtonOnclickListener(new CollectorTaskDestinationAdapter.ItemButtonOnclickListener() {
             @Override
@@ -228,5 +235,19 @@ public class CollectorTaskDetailActivity extends BaseActivity {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.collector_task_detail_track:
+                Intent intent = new Intent(this, TrackActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("type", "user/");
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
     }
 }

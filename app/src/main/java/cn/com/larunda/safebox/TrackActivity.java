@@ -69,7 +69,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
     private MapView mapView;
     private BaiduMap baiduMap;
     private MyLocationListener myListener = new MyLocationListener();
-    private String id;
+    private int id;
 
     public static final String PATH_URL = Util.URL + "task/location" + Util.TOKEN;
     private SharedPreferences preferences;
@@ -82,6 +82,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
     private CoordinateConverter converter;
     private CoordinateConverter converter2;
     private LoadingDailog dialog;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +100,8 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        id = getIntent().getStringExtra("id");
+        id = getIntent().getIntExtra("id", 0);
+        type = getIntent().getStringExtra("type") != null ? getIntent().getStringExtra("type") : "";
         initView();
 
         mapView = findViewById(R.id.map_view);
@@ -146,7 +148,7 @@ public class TrackActivity extends BaseActivity implements View.OnClickListener 
      */
     private void sendRequest() {
         refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/track" + Util.TOKEN + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + type + "task/" + id + "/track" + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 isRefresh = false;

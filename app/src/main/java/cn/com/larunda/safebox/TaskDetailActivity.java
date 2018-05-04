@@ -166,7 +166,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.task_detail_track:
                 Intent trackIntent = new Intent(this, TrackActivity.class);
-                trackIntent.putExtra("id", id + "");
+                trackIntent.putExtra("id", id);
                 startActivity(trackIntent);
                 break;
             case R.id.task_detail_log_button:

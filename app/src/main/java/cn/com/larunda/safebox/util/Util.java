@@ -12,6 +12,7 @@ import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.CollectorTaskInfo;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CompanyData;
 import cn.com.larunda.safebox.gson.CompanyInfo;
@@ -412,6 +413,12 @@ public class Util {
     public static FingerInfo handleFingerInfo(String response) {
         Gson gson = new Gson();
         FingerInfo info = gson.fromJson(response, FingerInfo.class);
+        return info;
+    }
+
+    public static CollectorTaskInfo handleCollectorTaskInfo(String response) {
+        Gson gson = new Gson();
+        CollectorTaskInfo info = gson.fromJson(response, CollectorTaskInfo.class);
         return info;
     }
 }

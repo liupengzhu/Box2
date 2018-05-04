@@ -18,6 +18,7 @@ import cn.com.larunda.safebox.recycler.CollectorTask;
 public class CollectorTaskAdapter extends RecyclerView.Adapter<CollectorTaskAdapter.ViewHolder> {
     private Context context;
     private List<CollectorTask> collectorTaskList = new ArrayList<>();
+    private OnItemClick onItemClick;
 
     public CollectorTaskAdapter(Context context, List<CollectorTask> collectorTaskList) {
         this.context = context;
@@ -53,7 +54,7 @@ public class CollectorTaskAdapter extends RecyclerView.Adapter<CollectorTaskAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        CollectorTask collectorTask = collectorTaskList.get(position);
+        final CollectorTask collectorTask = collectorTaskList.get(position);
         if (collectorTask.getCreatedTime() != null) {
             holder.time.setText(collectorTask.getCreatedTime());
         } else {
@@ -86,10 +87,26 @@ public class CollectorTaskAdapter extends RecyclerView.Adapter<CollectorTaskAdap
         } else {
             holder.name.setText("");
         }
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClick != null) {
+                    onItemClick.onClick(v, collectorTask.getId());
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return collectorTaskList.size();
+    }
+
+    public interface OnItemClick {
+        void onClick(View v, int id);
+    }
+
+    public void setOnItemClick(OnItemClick onItemClick) {
+        this.onItemClick = onItemClick;
     }
 }

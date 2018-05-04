@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.CollectorTaskDetailActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.adapter.CollectorTaskAdapter;
 import cn.com.larunda.safebox.gson.BoxInfo;
@@ -74,6 +75,14 @@ public class CollectorFragment extends Fragment {
      * 初始化点击事件
      */
     private void initEvent() {
+        adapter.setOnItemClick(new CollectorTaskAdapter.OnItemClick() {
+            @Override
+            public void onClick(View v, int id) {
+                Intent intent = new Intent(getContext(), CollectorTaskDetailActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

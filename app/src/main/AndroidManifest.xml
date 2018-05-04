@@ -128,6 +128,7 @@
         <activity android:name="cn.com.larunda.safebox.TaskWarningActivity" />
         <activity android:name="cn.com.larunda.safebox.TaskFingerActivity" />
         <activity android:name="cn.com.larunda.safebox.AddFingerprintActivity" />
+        <activity android:name="cn.com.larunda.safebox.CollectorTaskDetailActivity"></activity>
     </application>
 
 </manifest>

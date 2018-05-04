@@ -7,11 +7,13 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import cn.com.larunda.safebox.CollectorTaskDetailActivity;
 import cn.com.larunda.safebox.gson.AddPerson;
 import cn.com.larunda.safebox.gson.AreaInfo;
 import cn.com.larunda.safebox.gson.BindAreaInfo;
 import cn.com.larunda.safebox.gson.BoxInfo;
 import cn.com.larunda.safebox.gson.BoxMessage;
+import cn.com.larunda.safebox.gson.CollectorTaskDetailInfo;
 import cn.com.larunda.safebox.gson.CollectorTaskInfo;
 import cn.com.larunda.safebox.gson.Company;
 import cn.com.larunda.safebox.gson.CompanyData;
@@ -419,6 +421,12 @@ public class Util {
     public static CollectorTaskInfo handleCollectorTaskInfo(String response) {
         Gson gson = new Gson();
         CollectorTaskInfo info = gson.fromJson(response, CollectorTaskInfo.class);
+        return info;
+    }
+
+    public static CollectorTaskDetailInfo handleCollectorTaskDetailInfo(String response) {
+        Gson gson = new Gson();
+        CollectorTaskDetailInfo info = gson.fromJson(response, CollectorTaskDetailInfo.class);
         return info;
     }
 }

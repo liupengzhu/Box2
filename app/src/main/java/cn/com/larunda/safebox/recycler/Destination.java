@@ -7,6 +7,15 @@ public class Destination {
     private String person;
     private String startTime;
     private String endTime;
+    private String dynamic;
+
+    public String getDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(String dynamic) {
+        this.dynamic = dynamic;
+    }
 
     public Destination() {
         super();

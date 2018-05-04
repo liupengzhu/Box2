@@ -15,19 +15,17 @@ import java.util.List;
 
 import cn.com.larunda.safebox.recycler.Destination;
 
-public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.ViewHolder> {
+public class CollectorTaskDestinationAdapter extends RecyclerView.Adapter<CollectorTaskDestinationAdapter.ViewHolder> {
     private Context context;
     private List<Destination> destinationList = new ArrayList<>();
     private ItemButtonOnclickListener itemButtonOnclickListener;
 
-    public DestinationAdapter(Context context, List<Destination> destinationList) {
+    public CollectorTaskDestinationAdapter(Context context, List<Destination> destinationList) {
         this.context = context;
         this.destinationList = destinationList;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView rankText;
-        private TextView statusText;
         private TextView originText;
         private TextView destinationText;
         private TextView personText;
@@ -36,26 +34,23 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
 
         public ViewHolder(View itemView) {
             super(itemView);
-            rankText = itemView.findViewById(R.id.destination_rank);
-            statusText = itemView.findViewById(R.id.destination_status);
-            originText = itemView.findViewById(R.id.destination_origin_city);
-            destinationText = itemView.findViewById(R.id.destination_destination_city);
-            personText = itemView.findViewById(R.id.destination_person);
-            timeText = itemView.findViewById(R.id.destination_time);
-            button = itemView.findViewById(R.id.destination_button);
+            originText = itemView.findViewById(R.id.collector_task_destination_origin_city);
+            destinationText = itemView.findViewById(R.id.collector_task_destination_destination_city);
+            personText = itemView.findViewById(R.id.collector_task_destination_person);
+            timeText = itemView.findViewById(R.id.collector_task_destination_time);
+            button = itemView.findViewById(R.id.collector_task_destination_button);
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_destination, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_collector_task_destination, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Destination destination = destinationList.get(position);
-        holder.rankText.setText("任务" + (position + 1));
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,14 +79,10 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         } else {
             holder.timeText.setText("");
         }
-        if (destination.getEndTime() != null) {
-            holder.statusText.setText("已完成");
-            holder.button.setVisibility(View.GONE);
-            holder.statusText.setBackground(context.getResources().getDrawable(R.drawable.text_gray));
-        } else {
-            holder.statusText.setText("运送中");
+        if (destination.getDynamic() != null && destination.getDynamic().equals("1")) {
             holder.button.setVisibility(View.VISIBLE);
-            holder.statusText.setBackground(context.getResources().getDrawable(R.drawable.text_green));
+        } else {
+            holder.button.setVisibility(View.GONE);
         }
     }
 

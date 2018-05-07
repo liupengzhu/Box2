@@ -41,8 +41,8 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
     public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
-    private String[] titles = {"数据总览", "箱体管理", "系统日志"/*, "系统设置"*/};
-    private int[] icons = {R.drawable.sy1, R.drawable.dsx1, R.drawable.rz1, R.drawable.setting1};
+    private String[] titles = {"箱体管理", "系统日志"};
+    private int[] icons = {R.drawable.dsx1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
     private String token;
@@ -93,7 +93,6 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         tabLayout = findViewById(R.id.company_tab_layout);
         titleBar = findViewById(R.id.company_title_bar);
 
-        fragments.add(new AdminHomeFragment());
         fragments.add(new BoxListFragment());
         fragments.add(new SystemLogFragment());
         //fragments.add(new SettingFragment());
@@ -121,16 +120,12 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
                 switch (tab.getPosition()) {
                     case 0:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy2);
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx2);
                         setTitleInfo(0);
                         break;
                     case 1:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx2);
-                        setTitleInfo(1);
-                        break;
-                    case 2:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz2);
-                        setTitleInfo(2);
+                        setTitleInfo(1);
                         break;
                     case 3:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.setting2);
@@ -148,13 +143,11 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
 
                 switch (tab.getPosition()) {
+
                     case 0:
-                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.sy1);
-                        break;
-                    case 1:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.dsx1);
                         break;
-                    case 2:
+                    case 1:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz1);
                         break;
                     case 3:
@@ -184,30 +177,8 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
      */
     private void setTitleInfo(int i) {
         switch (i) {
+
             case 0:
-                titleBar.setRightButtonSrc(R.drawable.menu);
-                titleBar.setTextViewText("");
-                titleBar.setRightButtonSrc(0);
-                titleBar.setOnClickListener(new TitleListener() {
-
-                    @Override
-                    public void onLeftButtonClickListener(View v) {
-                        drawerLayout.openDrawer(Gravity.START);
-
-                    }
-
-                    @Override
-                    public void onLeftBackButtonClickListener(View v) {
-
-                    }
-
-                    @Override
-                    public void onRightButtonClickListener(View v) {
-
-                    }
-                });
-                break;
-            case 1:
 
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("箱体列表");
@@ -231,7 +202,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
                     }
                 });
                 break;
-            case 2:
+            case 1:
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("系统日志");
                 titleBar.setRightButtonSrc(0);
@@ -293,12 +264,12 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         imageView.setBackgroundResource(icons[position]);
         textView.setText(titles[position]);
         if (position == 0) {
-            imageView.setBackgroundResource(R.drawable.sy2);
+            imageView.setBackgroundResource(R.drawable.dsx2);
             textView.setTextColor(getResources().getColor(R.color.normal));
             //初始化tab时同时初始化title
             titleBar.setRightButtonSrc(R.drawable.menu);
-            titleBar.setTextViewText("");
-            titleBar.setRightButtonSrc(0);
+            titleBar.setTextViewText("箱体列表");
+            titleBar.setRightButtonSrc(R.drawable.add);
             titleBar.setOnClickListener(new TitleListener() {
                 @Override
                 public void onLeftButtonClickListener(View v) {
@@ -313,7 +284,8 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
 
                 @Override
                 public void onRightButtonClickListener(View v) {
-
+                    Intent intent = new Intent(CompanyActivity.this, AddBoxActivity.class);
+                    startActivityForResult(intent, ADD_REQUEST);
                 }
             });
 

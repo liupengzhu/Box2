@@ -241,7 +241,7 @@ public class PersonalSettingActivity extends BaseActivity implements View.OnClic
         postButton = findViewById(R.id.personal_setting_button);
 
         titleBar = findViewById(R.id.personal_setting_title_bar);
-        titleBar.setTextViewText("用户权限管理");
+        titleBar.setTextViewText("系统设置");
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setRightButtonSrc(0);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);

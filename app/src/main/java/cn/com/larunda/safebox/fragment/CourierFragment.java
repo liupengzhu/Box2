@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import java.util.List;
 
 import cn.com.larunda.safebox.CollectorTaskDetailActivity;
 import cn.com.larunda.safebox.LoginActivity;
+import cn.com.larunda.safebox.TrackActivity;
 import cn.com.larunda.safebox.UserInfoActivity;
 import cn.com.larunda.safebox.adapter.CourierDestinationAdapter;
 import cn.com.larunda.safebox.gson.CollectorTaskDetailInfo;
@@ -39,7 +41,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CourierFragment extends Fragment {
+public class CourierFragment extends Fragment implements View.OnClickListener {
     private final String URL = Util.URL + "user/delivery" + Util.TOKEN;
     private SharedPreferences preferences;
     private String token;
@@ -52,6 +54,9 @@ public class CourierFragment extends Fragment {
     private CourierDestinationAdapter adapter;
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
+
+    private RelativeLayout trackButton;
+    private int id;
 
     @Nullable
     @Override
@@ -81,12 +86,15 @@ public class CourierFragment extends Fragment {
         adapter = new CourierDestinationAdapter(getContext(), destinationList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
+
+        trackButton = view.findViewById(R.id.courier_track);
     }
 
     /**
      * 初始化点击事件
      */
     private void initEvent() {
+        trackButton.setOnClickListener(this);
     }
 
     /**
@@ -160,7 +168,7 @@ public class CourierFragment extends Fragment {
             name.setText(info.getF_name() != null ? info.getF_name() : "");
             startTime.setText(info.getCreated_at() != null ? info.getCreated_at() : "");
             endTime.setText(info.getCompleted_at() != null ? info.getCompleted_at() : "");
-
+            id = info.getId();
             if (info.getProcesses() != null) {
                 for (CourierInfo.ProcessesBean processesBean : info.getProcesses()) {
                     Destination destination = new Destination();
@@ -190,5 +198,17 @@ public class CourierFragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.courier_track:
+                Intent intent = new Intent(getContext(), TrackActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("type", "user/");
+                startActivity(intent);
+                break;
+        }
     }
 }

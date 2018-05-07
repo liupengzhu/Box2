@@ -44,6 +44,7 @@ import cn.com.larunda.safebox.gson.SqLsInfo;
 import cn.com.larunda.safebox.gson.SystemLogInfo;
 import cn.com.larunda.safebox.gson.TaskInfo;
 import cn.com.larunda.safebox.gson.TaskLogInfo;
+import cn.com.larunda.safebox.gson.TaskSoundInfo;
 import cn.com.larunda.safebox.gson.TaskWarningInfo;
 import cn.com.larunda.safebox.gson.TotalLogInfo;
 import cn.com.larunda.safebox.gson.UserInfo;
@@ -418,6 +419,12 @@ public class Util {
     public static TaskLogInfo handleTaskLogInfo(String content) {
         Gson gson = new Gson();
         TaskLogInfo info = gson.fromJson(content, TaskLogInfo.class);
+        return info;
+    }
+
+    public static TaskSoundInfo handleTaskSoundInfo(String content) {
+        Gson gson = new Gson();
+        TaskSoundInfo info = gson.fromJson(content, TaskSoundInfo.class);
         return info;
     }
 

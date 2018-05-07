@@ -27,6 +27,7 @@ import java.util.List;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.CollectorFragment;
 import cn.com.larunda.safebox.fragment.CourierFragment;
+import cn.com.larunda.safebox.fragment.SystemLogFragment;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 
@@ -35,8 +36,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
     public static ViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
-    private String[] titles = {"快递员", "收件员"};
-    private int[] icons = {R.drawable.courier1, R.drawable.collector1};
+    private String[] titles = {"快递员", "收件员", "系统日志"};
+    private int[] icons = {R.drawable.courier1, R.drawable.collector1, R.drawable.rz1};
     private List<Fragment> fragments = new ArrayList<>();
     private SharedPreferences preferences;
     private String token;
@@ -83,6 +84,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
         fragments.add(new CourierFragment());
         fragments.add(new CollectorFragment());
+        fragments.add(new SystemLogFragment());
 
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
@@ -110,6 +112,10 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.collector2);
                         setTitleInfo(1);
                         break;
+                    case 2:
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz2);
+                        setTitleInfo(2);
+                        break;
                     default:
                         break;
                 }
@@ -127,6 +133,9 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                         break;
                     case 1:
                         tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.collector1);
+                        break;
+                    case 2:
+                        tab.getCustomView().findViewById(R.id.tab_image_view).setBackgroundResource(R.drawable.rz1);
                         break;
                     default:
                         break;
@@ -176,6 +185,29 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                 });
                 break;
             case 1:
+
+                titleBar.setRightButtonSrc(R.drawable.menu);
+                titleBar.setTextViewText("");
+                titleBar.setRightButtonSrc(0);
+                titleBar.setOnClickListener(new TitleListener() {
+                    @Override
+                    public void onLeftButtonClickListener(View v) {
+                        //drawerLayout.openDrawer(Gravity.START);
+
+                    }
+
+                    @Override
+                    public void onLeftBackButtonClickListener(View v) {
+
+                    }
+
+                    @Override
+                    public void onRightButtonClickListener(View v) {
+
+                    }
+                });
+                break;
+            case 2:
 
                 titleBar.setRightButtonSrc(R.drawable.menu);
                 titleBar.setTextViewText("");

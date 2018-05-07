@@ -3,6 +3,7 @@ package cn.com.larunda.safebox.util;
 
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -254,6 +255,25 @@ public class Util {
                 flag = true;
             }
             result.append(string);
+        }
+        return result.toString();
+    }
+
+    public static String arrayToString(String[] stringArray) {
+        if (stringArray == null) {
+            return null;
+        }
+        StringBuilder result = new StringBuilder();
+        boolean flag = false;
+        for (String string : stringArray) {
+            if (string != null && !TextUtils.isEmpty(string)) {
+                if (flag) {
+                    result.append(" ");
+                } else {
+                    flag = true;
+                }
+                result.append(string);
+            }
         }
         return result.toString();
     }

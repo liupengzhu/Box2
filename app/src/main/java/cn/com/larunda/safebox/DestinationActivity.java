@@ -282,7 +282,7 @@ public class DestinationActivity extends BaseActivity {
                 Destination destination = new Destination();
                 name.setLength(0);
                 destination.setId(info.getId());
-                destination.setOriginCity(info.getF_origin_city());
+                destination.setOriginCity(Util.arrayToString(info.getF_origin_city()));
                 destination.setDestinationCity(info.getF_destination());
                 destination.setEndTime(info.getCompleted_at());
                 destination.setStartTime(info.getCreated_at());

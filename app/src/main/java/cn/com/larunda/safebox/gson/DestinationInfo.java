@@ -29,8 +29,8 @@ public class DestinationInfo {
     private String f_origin;
     private String f_release_time;
     private String f_upload_interval;
-    private String f_origin_city;
-    private String f_destination_city;
+    private String[] f_origin_city;
+    private String[] f_destination_city;
     private String f_sort;
     private List<AddresseeBean> addressee;
 
@@ -106,19 +106,19 @@ public class DestinationInfo {
         this.f_upload_interval = f_upload_interval;
     }
 
-    public String getF_origin_city() {
+    public String[] getF_origin_city() {
         return f_origin_city;
     }
 
-    public void setF_origin_city(String f_origin_city) {
+    public void setF_origin_city(String[] f_origin_city) {
         this.f_origin_city = f_origin_city;
     }
 
-    public String getF_destination_city() {
+    public String[] getF_destination_city() {
         return f_destination_city;
     }
 
-    public void setF_destination_city(String f_destination_city) {
+    public void setF_destination_city(String[] f_destination_city) {
         this.f_destination_city = f_destination_city;
     }
 

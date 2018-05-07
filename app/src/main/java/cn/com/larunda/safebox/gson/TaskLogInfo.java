@@ -166,8 +166,8 @@ public class TaskLogInfo {
              */
 
             private int id;
-            private String f_origin_city;
-            private String f_destination_city;
+            private String[] f_origin_city;
+            private String[] f_destination_city;
 
             public int getId() {
                 return id;
@@ -177,19 +177,19 @@ public class TaskLogInfo {
                 this.id = id;
             }
 
-            public String getF_origin_city() {
+            public String[] getF_origin_city() {
                 return f_origin_city;
             }
 
-            public void setF_origin_city(String f_origin_city) {
+            public void setF_origin_city(String[] f_origin_city) {
                 this.f_origin_city = f_origin_city;
             }
 
-            public String getF_destination_city() {
+            public String[] getF_destination_city() {
                 return f_destination_city;
             }
 
-            public void setF_destination_city(String f_destination_city) {
+            public void setF_destination_city(String[] f_destination_city) {
                 this.f_destination_city = f_destination_city;
             }
         }

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
@@ -26,9 +27,10 @@ import java.util.List;
 import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.AdminHomeFragment;
 import cn.com.larunda.safebox.fragment.CompanyListFragment;
+import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 
-public class SuperAdminActivity extends BaseActivity {
+public class SuperAdminActivity extends BaseActivity implements View.OnClickListener {
 
     public static ViewPager viewPager;
     public static TabLayout tabLayout;
@@ -39,6 +41,7 @@ public class SuperAdminActivity extends BaseActivity {
     private SharedPreferences preferences;
     private String token;
     private HomeAdapter adapter;
+    private RelativeLayout backButton;
 
 
     @Override
@@ -57,6 +60,14 @@ public class SuperAdminActivity extends BaseActivity {
 
         initView();
         initTabs();
+        initEvent();
+    }
+
+    /**
+     * 初始化点击事件
+     */
+    private void initEvent() {
+        backButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -76,6 +87,8 @@ public class SuperAdminActivity extends BaseActivity {
         adapter = new HomeAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        backButton = findViewById(R.id.admin_menu_back_button);
     }
 
     //初始化Tab；
@@ -229,5 +242,19 @@ public class SuperAdminActivity extends BaseActivity {
         }
         return view;
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.admin_menu_back_button:
+                Intent intent = new Intent(this, LoginActivity.class);
+                preferences.edit().putString("token", null).commit();
+                startActivity(intent);
+                ActivityCollector.finishAllActivity();
+                break;
+            default:
+                break;
+        }
     }
 }

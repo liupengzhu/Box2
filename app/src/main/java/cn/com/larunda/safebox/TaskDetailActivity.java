@@ -54,6 +54,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
     private RelativeLayout logButton;
     private RelativeLayout warningButton;
     private RelativeLayout fingerButton;
+    private RelativeLayout soundButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
         trackButton = findViewById(R.id.task_detail_track);
         logButton = findViewById(R.id.task_detail_log_button);
         fingerButton = findViewById(R.id.task_detail_finger_button);
+        soundButton = findViewById(R.id.task_detail_sound_button);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -128,6 +130,7 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
         logButton.setOnClickListener(this);
         trackButton.setOnClickListener(this);
         destinationButton.setOnClickListener(this);
+        soundButton.setOnClickListener(this);
 
         endButton.setOnClickListener(this);
 
@@ -183,6 +186,11 @@ public class TaskDetailActivity extends BaseActivity implements View.OnClickList
                 Intent fingerIntent = new Intent(this, TaskFingerActivity.class);
                 fingerIntent.putExtra("id", id);
                 startActivity(fingerIntent);
+                break;
+            case R.id.task_detail_sound_button:
+                Intent soundIntent = new Intent(this, TaskSoundActivity.class);
+                soundIntent.putExtra("id", id);
+                startActivity(soundIntent);
                 break;
             default:
                 break;

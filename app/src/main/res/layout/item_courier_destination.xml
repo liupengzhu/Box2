@@ -29,7 +29,7 @@
                     android:textColor="@color/list_text_n" />
 
                 <TextView
-                    android:id="@+id/collector_task_destination_origin_city"
+                    android:id="@+id/courier_destination_origin_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/list_text_h" />
@@ -48,7 +48,7 @@
                     android:textColor="@color/list_text_n" />
 
                 <TextView
-                    android:id="@+id/collector_task_destination_destination_city"
+                    android:id="@+id/courier_destination_destination_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/list_text_h" />
@@ -67,7 +67,7 @@
                     android:textColor="@color/list_text_n" />
 
                 <TextView
-                    android:id="@+id/collector_task_destination_person"
+                    android:id="@+id/courier_destination_person"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/list_text_h" />
@@ -86,28 +86,15 @@
                     android:textColor="@color/list_text_n" />
 
                 <TextView
-                    android:id="@+id/collector_task_destination_time"
+                    android:id="@+id/courier_destination_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/list_text_h" />
             </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/collector_task_destination_button"
-            android:layout_width="70dp"
-            android:layout_height="25dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/re_pwd_button"
-            android:gravity="center"
-            android:text="动态口令"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            android:visibility="gone" />
-
         <TextView
-            android:id="@+id/collector_task_destination_status"
+            android:id="@+id/courier_destination_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

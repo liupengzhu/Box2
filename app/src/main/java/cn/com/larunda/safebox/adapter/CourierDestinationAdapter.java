@@ -16,12 +16,11 @@ import java.util.List;
 
 import cn.com.larunda.safebox.recycler.Destination;
 
-public class CollectorTaskDestinationAdapter extends RecyclerView.Adapter<CollectorTaskDestinationAdapter.ViewHolder> {
+public class CourierDestinationAdapter extends RecyclerView.Adapter<CourierDestinationAdapter.ViewHolder> {
     private Context context;
     private List<Destination> destinationList = new ArrayList<>();
-    private ItemButtonOnclickListener itemButtonOnclickListener;
 
-    public CollectorTaskDestinationAdapter(Context context, List<Destination> destinationList) {
+    public CourierDestinationAdapter(Context context, List<Destination> destinationList) {
         this.context = context;
         this.destinationList = destinationList;
     }
@@ -31,37 +30,27 @@ public class CollectorTaskDestinationAdapter extends RecyclerView.Adapter<Collec
         private TextView destinationText;
         private TextView personText;
         private TextView timeText;
-        private Button button;
         private TextView status;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            originText = itemView.findViewById(R.id.collector_task_destination_origin_city);
-            destinationText = itemView.findViewById(R.id.collector_task_destination_destination_city);
-            personText = itemView.findViewById(R.id.collector_task_destination_person);
-            timeText = itemView.findViewById(R.id.collector_task_destination_time);
-            button = itemView.findViewById(R.id.collector_task_destination_button);
-            status = itemView.findViewById(R.id.collector_task_destination_status);
+            originText = itemView.findViewById(R.id.courier_destination_origin_city);
+            destinationText = itemView.findViewById(R.id.courier_destination_destination_city);
+            personText = itemView.findViewById(R.id.courier_destination_person);
+            timeText = itemView.findViewById(R.id.courier_destination_time);
+            status = itemView.findViewById(R.id.courier_destination_status);
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_collector_task_destination, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_courier_destination, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Destination destination = destinationList.get(position);
-        holder.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (itemButtonOnclickListener != null) {
-                    itemButtonOnclickListener.onClick(v, destination.getId());
-                }
-            }
-        });
         if (destination.getOriginCity() != null) {
             holder.originText.setText(destination.getOriginCity());
         } else {
@@ -82,15 +71,6 @@ public class CollectorTaskDestinationAdapter extends RecyclerView.Adapter<Collec
         } else {
             holder.timeText.setText("");
         }
-        if (destination.getDynamic() != null && destination.getDynamic().equals("1")) {
-            if (destination.getEndTime() != null && !TextUtils.isEmpty(destination.getEndTime())) {
-                holder.button.setVisibility(View.GONE);
-            } else {
-                holder.button.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.button.setVisibility(View.GONE);
-        }
         if (destination.getEndTime() != null && !TextUtils.isEmpty(destination.getEndTime())) {
             holder.status.setText("已完成");
             holder.status.setBackground(context.getResources().getDrawable(R.drawable.text_gray));
@@ -105,13 +85,6 @@ public class CollectorTaskDestinationAdapter extends RecyclerView.Adapter<Collec
         return destinationList.size();
     }
 
-    public interface ItemButtonOnclickListener {
-        void onClick(View v, int id);
-    }
-
-    public void setItemButtonOnclickListener(ItemButtonOnclickListener itemButtonOnclickListener) {
-        this.itemButtonOnclickListener = itemButtonOnclickListener;
-    }
 
     public List<Destination> getDestinationList() {
         return destinationList;

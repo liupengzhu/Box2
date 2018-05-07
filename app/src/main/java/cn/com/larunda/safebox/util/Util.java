@@ -22,6 +22,7 @@ import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.gson.CompanyList;
 import cn.com.larunda.safebox.gson.Config;
 import cn.com.larunda.safebox.gson.CoordinateInfo;
+import cn.com.larunda.safebox.gson.CourierInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
 import cn.com.larunda.safebox.gson.DestinationInfo;
@@ -447,6 +448,12 @@ public class Util {
     public static CollectorTaskDetailInfo handleCollectorTaskDetailInfo(String response) {
         Gson gson = new Gson();
         CollectorTaskDetailInfo info = gson.fromJson(response, CollectorTaskDetailInfo.class);
+        return info;
+    }
+
+    public static CourierInfo handleCourierInfo(String response) {
+        Gson gson = new Gson();
+        CourierInfo info = gson.fromJson(response, CourierInfo.class);
         return info;
     }
 }

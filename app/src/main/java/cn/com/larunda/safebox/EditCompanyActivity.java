@@ -235,12 +235,12 @@ public class EditCompanyActivity extends BaseActivity implements View.OnClickLis
      * @param companyData
      */
     private void parseCompanyData(CompanyData companyData) {
-        Glide.with(this).load(Util.PATH + companyData.getF_pic_origin())
+        Glide.with(this).load(Util.PATH + companyData.getF_pic())
                 .placeholder(R.drawable.company_bull)
                 .error(R.drawable.company_bull)
                 .dontAnimate()
                 .into(pic);
-        src = companyData.getF_pic_origin();
+        src = companyData.getF_pic();
         if (companyData.getF_name() != null) {
             nameText.setText(companyData.getF_name());
         }

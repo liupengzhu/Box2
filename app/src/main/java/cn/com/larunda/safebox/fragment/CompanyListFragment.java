@@ -16,12 +16,18 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.larunda.recycler.OnLoadListener;
 import com.larunda.recycler.PTLLinearLayoutManager;
 import com.larunda.recycler.PullToLoadRecyclerView;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ConfirmDialog;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +37,7 @@ import cn.com.larunda.safebox.AdminRepasswordActivity;
 import cn.com.larunda.safebox.EditCompanyActivity;
 import cn.com.larunda.safebox.LoginActivity;
 import cn.com.larunda.safebox.SuperAdminActivity;
+import cn.com.larunda.safebox.UserInfoActivity;
 import cn.com.larunda.safebox.adapter.CompanyAdapter;
 import cn.com.larunda.safebox.gson.CompanyInfo;
 import cn.com.larunda.safebox.recycler.Company;
@@ -56,6 +63,7 @@ public class CompanyListFragment extends Fragment {
     private String search = "";
     private int page;
     private int maxPage;
+    private ConfirmDialog dialog;
 
     @Nullable
     @Override
@@ -121,6 +129,13 @@ public class CompanyListFragment extends Fragment {
                 Intent intent = new Intent(getContext(), AdminRepasswordActivity.class);
                 intent.putExtra("id", id);
                 startActivity(intent);
+            }
+        });
+
+        adapter.setDeleteButtonOnclick(new CompanyAdapter.CompanyDeleteButtonOnclick() {
+            @Override
+            public void onclick(View v, int id, String name) {
+                showDialog(id, name);
             }
         });
 
@@ -282,5 +297,94 @@ public class CompanyListFragment extends Fragment {
         }
         recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 显示弹窗
+     *
+     * @param id
+     * @param name
+     */
+    private void showDialog(final int id, String name) {
+        dialog = new ConfirmDialog(getContext());
+        dialog.setContentText("此操作将永久删除企业：" + name);
+        dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                sendDeleteRequest(id);
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+    /**
+     * 发送删除请求
+     *
+     * @param id
+     */
+    private void sendDeleteRequest(int id) {
+        refreshLayout.setRefreshing(true);
+        JsonObject jsonObject = new JsonObject();
+        HttpUtil.sendDeleteWithHttp(Util.URL + "company/" + id
+                + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            Toast.makeText(getContext(), "网络异常!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 200) {
+                                if (content.equals("false")) {
+                                    refreshLayout.setRefreshing(false);
+                                    Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    sendRequest();
+                                }
+
+                            } else if (code == 401 || code == 412) {
+                                Intent intent = new Intent(getContext(), LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(getContext(), js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                refreshLayout.setRefreshing(false);
+                            } else {
+                                Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
+                                refreshLayout.setRefreshing(false);
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 }

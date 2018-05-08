@@ -23,6 +23,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     private List<Company> companyList = new ArrayList<>();
     private CompanyLayoutOnclick layoutOnclick;
     private CompanyButtonOnclick buttonOnclick;
+    private CompanyDeleteButtonOnclick deleteButtonOnclick;
 
     public CompanyAdapter(Context context, List<Company> companyList) {
         this.context = context;
@@ -40,7 +41,8 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         TextView email;
         TextView contacts;
         LinearLayout layout;
-        Button button;
+        TextView button;
+        TextView deleteButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -55,6 +57,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
             contacts = itemView.findViewById(R.id.item_company_contacts);
             layout = itemView.findViewById(R.id.item_company_layout);
             button = itemView.findViewById(R.id.item_company_button);
+            deleteButton = itemView.findViewById(R.id.item_company_delete_button);
         }
     }
 
@@ -68,7 +71,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Company company = companyList.get(position);
+        final Company company = companyList.get(position);
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +87,16 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                 if (buttonOnclick != null) {
                     int id = companyList.get(position).getId();
                     buttonOnclick.onclick(v, id);
+                }
+            }
+        });
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (deleteButtonOnclick != null) {
+                    int id = companyList.get(position).getId();
+                    String name = companyList.get(position).getName();
+                    deleteButtonOnclick.onclick(v, id, name);
                 }
             }
         });
@@ -147,11 +160,19 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         void onclick(View v, int id);
     }
 
+    public interface CompanyDeleteButtonOnclick {
+        void onclick(View v, int id, String name);
+    }
+
     public void setLayoutOnclick(CompanyLayoutOnclick layoutOnclick) {
         this.layoutOnclick = layoutOnclick;
     }
 
     public void setButtonOnclick(CompanyButtonOnclick buttonOnclick) {
         this.buttonOnclick = buttonOnclick;
+    }
+
+    public void setDeleteButtonOnclick(CompanyDeleteButtonOnclick deleteButtonOnclick) {
+        this.deleteButtonOnclick = deleteButtonOnclick;
     }
 }

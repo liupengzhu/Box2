@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ public class DestinationActivity extends BaseActivity {
     private List<Destination> destinationList = new ArrayList<>();
     private static final int ADD_DESTINATION = 1;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +133,7 @@ public class DestinationActivity extends BaseActivity {
     /**
      * 初始化点击事件
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void initEvent() {
 
         adapter.setItemButtonOnclickListener(new DestinationAdapter.ItemButtonOnclickListener() {
@@ -149,17 +152,22 @@ public class DestinationActivity extends BaseActivity {
                 //首先回调的方法 返回int表示是否监听该方向
                 int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;//拖拽
                 int swipeFlags = 0;//ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;//侧滑删除
+                refreshLayout.setEnabled(false);
                 return makeMovementFlags(dragFlags, swipeFlags);
             }
 
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 //滑动事件
-                Collections.swap(destinationList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                List<Destination> list = adapter.getDestinationList();
-                sendPostRequest(list);
-                return false;
+                if (viewHolder.getAdapterPosition() < destinationList.size() && target.getAdapterPosition() < destinationList.size()) {
+                    Collections.swap(destinationList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                    adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                    List<Destination> list = adapter.getDestinationList();
+                    sendPostRequest(list);
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
             @Override

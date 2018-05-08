@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,12 +15,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +46,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class DestinationActivity extends BaseActivity {
 
     private TitleBar titleBar;
@@ -50,7 +56,9 @@ public class DestinationActivity extends BaseActivity {
     private SharedPreferences preferences;
     private String token;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private DestinationAdapter adapter;
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
@@ -92,11 +100,32 @@ public class DestinationActivity extends BaseActivity {
             titleBar.setRightButtonSrc(0);
         }
 
+        refreshLayout = findViewById(R.id.destination_swipe);
+        errorLayout = findViewById(R.id.destination_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.destination_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         adapter = new DestinationAdapter(this, destinationList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                //sendLoadRequest();
+            }
+        });
     }
 
     /**
@@ -220,10 +249,17 @@ public class DestinationActivity extends BaseActivity {
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/processes" + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -235,6 +271,8 @@ public class DestinationActivity extends BaseActivity {
                         @Override
                         public void run() {
                             parseInfo(content);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -258,6 +296,7 @@ public class DestinationActivity extends BaseActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            refreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -297,9 +336,11 @@ public class DestinationActivity extends BaseActivity {
                 destination.setPerson(name.toString());
                 destinationList.add(destination);
             }
+            recyclerView.loadMoreFinish(jsonArray.length() == 0, false);
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {
+
             adapter.notifyDataSetChanged();
         }
     }

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,8 @@ import com.larunda.safebox.R;
 import com.larunda.selfdialog.DateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +48,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class TaskLogActivity extends BaseActivity implements View.OnClickListener {
     private final String URL = Util.URL + "box/log" + Util.TOKEN;
     private TitleBar titleBar;
@@ -51,7 +57,9 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
     private SharedPreferences preferences;
     private String token;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private LinearLayoutManager manager;
     private TaskLogAdapter adapter;
     private List<TaskLog> taskLogList = new ArrayList<>();
@@ -94,11 +102,33 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        refreshLayout = findViewById(R.id.task_log_swipe);
+        errorLayout = findViewById(R.id.task_log_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                search = "";
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.task_log_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         manager = new LinearLayoutManager(this);
         adapter = new TaskLogAdapter(this, taskLogList);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
 
         searchText = findViewById(R.id.log_search_edit);
         cancelButton = findViewById(R.id.log_cancel_button);
@@ -209,11 +239,18 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/logs"
-                + Util.TOKEN + token + "&time=" + search, new Callback() {
+                + Util.TOKEN + token + "&time=" + search + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -226,6 +263,92 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TaskLogActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskLogActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析服务器返回数据
+     *
+     * @param info
+     */
+    private void parseInfo(TaskLogInfo info) {
+        page = info.getCurrent_page() + 1;
+        maxPage = info.getLast_page();
+        taskLogList.clear();
+        if (info.getData() != null) {
+            for (TaskLogInfo.DataBean dataBean : info.getData()) {
+                TaskLog taskLog = new TaskLog();
+                taskLog.setContent(dataBean.getF_info());
+                if (dataBean.getProcess() != null) {
+                    taskLog.setProcess(Util.arrayToString(dataBean.getProcess().getF_origin_city()) + " - - "
+                            + Util.arrayToString(dataBean.getProcess().getF_destination_city()));
+                }
+                taskLog.setTime(dataBean.getCreated_at());
+                taskLog.setTitle(dataBean.getF_title());
+                taskLogList.add(taskLog);
+            }
+        }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/logs"
+                + Util.TOKEN + token + "&time=" + search + "&page=" + page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final TaskLogInfo info = Util.handleTaskLogInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseLoadInfo(info);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -262,10 +385,9 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
      *
      * @param info
      */
-    private void parseInfo(TaskLogInfo info) {
+    private void parseLoadInfo(TaskLogInfo info) {
         page = info.getCurrent_page() + 1;
         maxPage = info.getLast_page();
-        taskLogList.clear();
         if (info.getData() != null) {
             for (TaskLogInfo.DataBean dataBean : info.getData()) {
                 TaskLog taskLog = new TaskLog();
@@ -279,6 +401,7 @@ public class TaskLogActivity extends BaseActivity implements View.OnClickListene
                 taskLogList.add(taskLog);
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
     }
 }

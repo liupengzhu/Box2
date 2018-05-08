@@ -18,9 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.ConfirmDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
@@ -57,6 +64,7 @@ public class TaskFingerActivity extends AppCompatActivity {
     private FingerAdapter adapter;
     private LinearLayoutManager manager;
     private List<Finger> fingerList = new ArrayList<>();
+    private ConfirmDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +87,7 @@ public class TaskFingerActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
-
+        dialog = new ConfirmDialog(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
@@ -105,14 +113,37 @@ public class TaskFingerActivity extends AppCompatActivity {
         adapter = new FingerAdapter(this, fingerList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
+        // 创建菜单：
+        SwipeMenuCreator mSwipeMenuCreator = new SwipeMenuCreator() {
+            @Override
+            public void onCreateMenu(SwipeMenu leftMenu, SwipeMenu rightMenu, int viewType) {
+                SwipeMenuItem deleteItem = new SwipeMenuItem(TaskFingerActivity.this); // 各种文字和图标属性设置。
+                deleteItem.setBackground(R.color.log_wdu);
+                deleteItem.setText("删除");
+                deleteItem.setWidth(250);
+                deleteItem.setTextColor(Color.WHITE);
+                deleteItem.setHeight(MATCH_PARENT);
+                rightMenu.addMenuItem(deleteItem); // 在Item右侧添加一个菜单。
+            }
+        };
+        // 设置监听器。
+        recyclerView.setSwipeMenuCreator(mSwipeMenuCreator);
+
+        // 菜单点击监听。
+        recyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
+            @Override
+            public void onItemClick(SwipeMenuBridge menuBridge) {
+                // 任何操作必须先关闭菜单，否则可能出现Item菜单打开状态错乱。
+                menuBridge.closeMenu();
+                int adapterPosition = menuBridge.getAdapterPosition(); // RecyclerView的Item的position。
+                int id = fingerList.get(adapterPosition).getId();
+                String name = fingerList.get(adapterPosition).getName();
+                showDialog(id, name);
+            }
+        });
+
         recyclerView.setAdapter(adapter);
         recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-        /*recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                sendLoadRequest();
-            }
-        });*/
     }
 
     /**
@@ -220,6 +251,91 @@ public class TaskFingerActivity extends AppCompatActivity {
         }
         recyclerView.loadMoreFinish(info.getData().size() == 0, false);
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 显示弹窗
+     *
+     * @param id
+     * @param name
+     */
+    private void showDialog(final int id, String name) {
+        dialog.setContentText("此操作将永久删除" + name + "的指纹");
+        dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                sendDeleteRequest(id);
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+    /**
+     * 发送删除请求
+     *
+     * @param fingerId
+     */
+    private void sendDeleteRequest(int fingerId) {
+        refreshLayout.setRefreshing(true);
+        JsonObject jsonObject = new JsonObject();
+        HttpUtil.sendDeleteWithHttp(Util.URL + "task/" + id + "/fingerprint/" + fingerId
+                + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        Toast.makeText(TaskFingerActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (code == 200) {
+                            if (content.equals("false")) {
+                                refreshLayout.setRefreshing(false);
+                                Toast.makeText(TaskFingerActivity.this, "删除失败！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                sendRequest();
+                            }
+
+                        } else if (code == 401 || code == 412) {
+                            Intent intent = new Intent(TaskFingerActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        } else if (code == 422) {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskFingerActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        } else {
+                            Toast.makeText(TaskFingerActivity.this, "删除失败！", Toast.LENGTH_SHORT).show();
+                            refreshLayout.setRefreshing(false);
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
 }

@@ -334,6 +334,7 @@ public class BoxListFragment extends Fragment {
      */
     private void sendDeleteRequest(int id) {
         JsonObject jsonObject = new JsonObject();
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendDeleteWithHttp(Util.URL + "box/" + id + Util.TOKEN + token, jsonObject.toString(), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -341,6 +342,7 @@ public class BoxListFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            refreshLayout.setRefreshing(false);
                             Toast.makeText(getContext(), "网络异常!", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -357,6 +359,7 @@ public class BoxListFragment extends Fragment {
                         public void run() {
                             if (code == 200) {
                                 if (content.equals("false")) {
+                                    refreshLayout.setRefreshing(false);
                                     Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
                                 } else {
                                     sendRequest();
@@ -375,8 +378,10 @@ public class BoxListFragment extends Fragment {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                refreshLayout.setRefreshing(false);
                             } else {
                                 Toast.makeText(getContext(), "删除失败！", Toast.LENGTH_SHORT).show();
+                                refreshLayout.setRefreshing(false);
                             }
                         }
                     });

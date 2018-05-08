@@ -40,6 +40,8 @@ import okhttp3.Response;
 
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,16 +50,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class EnclosureActivity extends BaseActivity implements View.OnClickListener {
 
     TitleBar titleBar;
-    EnclosureAdapter adapter;
-    RecyclerView recyclerView;
 
     SwipeRefreshLayout refreshLayout;
-    private RelativeLayout loadingErrorLayout;
-    private ImageView loadingLayout;
-
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
+    EnclosureAdapter adapter;
     LinearLayoutManager manager;
     List<Enclosure> enclosureList = new ArrayList<>();
 
@@ -70,11 +72,10 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
     private SharedPreferences preferences;
     private String token;
 
-    private ArrayList<String> idList = new ArrayList<>();
-
     private String search;
 
     private int page;
+    private int maxPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,11 +101,6 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
 
             }
         });
-
-        //每次fragment创建时还没有网络数据 设置载入背景为可见
-        loadingLayout.setVisibility(View.VISIBLE);
-        loadingErrorLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
         search = null;
         sendRequest();
 
@@ -172,100 +168,6 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
 
 
     /**
-     * 发送网络请求
-     */
-    private void sendRequest() {
-        String searchText;
-        if (search != null) {
-            searchText = "&search=" + search;
-        } else {
-            searchText = "";
-        }
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = 1" + Util.TYPE, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loadingErrorLayout.setVisibility(View.VISIBLE);
-                        loadingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                int code = response.code();
-                if (code == 200 && Util.isGoodJson(content)) {
-                    final EnclosureInfo info = Util.handleEnclosureInfo(content);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initEnclosureInfo(info);
-                            refreshLayout.setRefreshing(false);
-                            loadingErrorLayout.setVisibility(View.GONE);
-                            loadingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                } else if (code == 401 || code == 412) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            ActivityCollector.finishAllActivity();
-                        }
-                    });
-                } else if (code == 422) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setRefreshing(false);
-                            loadingErrorLayout.setVisibility(View.VISIBLE);
-                            loadingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.GONE);
-                            try {
-                                JSONObject js = new JSONObject(content);
-                                Toast.makeText(EnclosureActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    /**
-     * 解析地理围栏信息
-     */
-    private void initEnclosureInfo(EnclosureInfo enclosureInfo) {
-        enclosureList.clear();
-        for (EnclosureInfo.DataBean dataBean : enclosureInfo.getData()) {
-            Enclosure enclosure = new Enclosure();
-            if (dataBean.getF_name() != null) {
-                enclosure.setName(dataBean.getF_name());
-            } else {
-                enclosure.setName("");
-            }
-            enclosure.setId(dataBean.getId());
-            enclosureList.add(enclosure);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-
-    /**
      * 初始化View
      */
     private void initView() {
@@ -284,18 +186,26 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
         cancelButton = findViewById(R.id.enclosure_cancel_button);
         ensureButton = findViewById(R.id.enclosure_ensure_button);
 
+        errorLayout = findViewById(R.id.enclosure_error_layout);
+
         adapter = new EnclosureAdapter(enclosureList);
         recyclerView = findViewById(R.id.enclosure_recycler);
-        refreshLayout = findViewById(R.id.enclosure_swiper);
-        loadingErrorLayout = findViewById(R.id.enclosure_loading_error_layout);
-        loadingLayout = findViewById(R.id.enclosure_loading_layout);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
+        refreshLayout = findViewById(R.id.enclosure_swipe);
 
         manager = new LinearLayoutManager(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         setAdapterClick(adapter);
 
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
     }
 
     /**
@@ -344,6 +254,177 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
     }
 
 
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = 1" + Util.TYPE, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final EnclosureInfo info = Util.handleEnclosureInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initEnclosureInfo(info);
+                            refreshLayout.setRefreshing(false);
+                            errorLayout.setVisibility(View.GONE);
+                        }
+                    });
+
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshLayout.setRefreshing(false);
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(EnclosureActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析地理围栏信息
+     */
+    private void initEnclosureInfo(EnclosureInfo enclosureInfo) {
+        page = enclosureInfo.getCurrent_page() + 1;
+        maxPage = enclosureInfo.getLast_page();
+        enclosureList.clear();
+        for (EnclosureInfo.DataBean dataBean : enclosureInfo.getData()) {
+            Enclosure enclosure = new Enclosure();
+            if (dataBean.getF_name() != null) {
+                enclosure.setName(dataBean.getF_name());
+            } else {
+                enclosure.setName("");
+            }
+            enclosure.setId(dataBean.getId());
+            enclosureList.add(enclosure);
+        }
+        recyclerView.loadMoreFinish(enclosureInfo.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+        HttpUtil.sendGetRequestWithHttp(ENCLOSURE_URL + token + searchText + "&page = " + page + Util.TYPE, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final EnclosureInfo info = Util.handleEnclosureInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initLoadEnclosureInfo(info);
+                        }
+                    });
+
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(EnclosureActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析地理围栏信息
+     */
+    private void initLoadEnclosureInfo(EnclosureInfo enclosureInfo) {
+        page = enclosureInfo.getCurrent_page() + 1;
+        maxPage = enclosureInfo.getLast_page();
+        for (EnclosureInfo.DataBean dataBean : enclosureInfo.getData()) {
+            Enclosure enclosure = new Enclosure();
+            if (dataBean.getF_name() != null) {
+                enclosure.setName(dataBean.getF_name());
+            } else {
+                enclosure.setName("");
+            }
+            enclosure.setId(dataBean.getId());
+            enclosureList.add(enclosure);
+        }
+        recyclerView.loadMoreFinish(enclosureInfo.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
 }
 
 

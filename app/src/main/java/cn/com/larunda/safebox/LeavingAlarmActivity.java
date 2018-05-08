@@ -29,7 +29,7 @@ import com.larunda.titlebar.TitleListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeavingAlarmActivity extends AppCompatActivity implements View.OnClickListener {
+public class LeavingAlarmActivity extends AppCompatActivity{
 
     private TitleBar titleBar;
     LeavingAlarmAdapter adapter;
@@ -123,8 +123,7 @@ public class LeavingAlarmActivity extends AppCompatActivity implements View.OnCl
 
         allCheckedImage = findViewById(R.id.leaving_alarm_all_checked_image);
         allCheckedText = findViewById(R.id.leaving_alarm_all_checked_text);
-        allCheckedImage.setOnClickListener(this);
-        allCheckedText.setOnClickListener(this);
+
     }
 
     /**
@@ -153,22 +152,6 @@ public class LeavingAlarmActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    /**
-     * 点击事件监听
-     *
-     * @param v
-     */
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.leaving_alarm_all_checked_image:
-            case R.id.enclosure_all_checked_text:
-                allCheckedClick();
-                break;
-
-        }
-    }
 
     /**
      * 取消多选状态

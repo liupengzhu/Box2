@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/login_error"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <com.larunda.titlebar.TitleBar
@@ -70,32 +70,28 @@
     </RelativeLayout>
 
 
-    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/user_info_swiper"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/user_info_swipe"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
+            <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
                 android:id="@+id/user_info_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </android.support.v7.widget.RecyclerView>
-
+                android:layout_height="match_parent"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>
 
             <RelativeLayout
-                android:id="@+id/user_info_loading_error_layout"
+                android:id="@+id/user_info_error_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/login_error"
-                android:visibility="invisible">
+                android:clickable="true"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -113,62 +109,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="网络链接异常"
+                        android:text="网络链接异常,下拉刷新"
                         android:textSize="20sp" />
                 </LinearLayout>
 
             </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/user_info_loading_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/login_error"
-                android:visibility="invisible" />
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <LinearLayout
-        android:id="@+id/user_info_bottom_layout"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/user_info_all_checked_image"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
-            android:src="@mipmap/unchecked" />
-
-        <TextView
-            android:id="@+id/user_info_all_checked_text"
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:layout_marginRight="20dp"
-            android:gravity="center"
-            android:text="全选"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-
-        <Button
-            android:id="@+id/user_info_delete_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/log_wdu"
-            android:gravity="center"
-            android:text="删除"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-
 
 </LinearLayout>

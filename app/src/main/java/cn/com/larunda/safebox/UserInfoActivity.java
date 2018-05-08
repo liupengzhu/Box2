@@ -41,6 +41,8 @@ import cn.com.larunda.safebox.util.HttpUtil;
 
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +56,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class UserInfoActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String USER_INFO_URL = Util.URL + "user" + Util.TOKEN;
@@ -63,11 +67,11 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
     private List<MyUserInfo> myUserInfoList = new ArrayList<>();
     private LinearLayoutManager manager;
-    private RecyclerView recyclerView;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private UserInfoAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
-    private RelativeLayout loadingErrorLayout;
-    private ImageView loadingLayout;
+
     private SharedPreferences preferences;
     private String token;
 
@@ -85,7 +89,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     private int lastPosition;
     private MyUserInfo lastUser;
     private static final int REQUEST_USERINFO = 1;
-
 
 
     @Override
@@ -113,11 +116,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
 
             }
         });
-
-        //每次创建时还没有网络数据 设置载入背景为可见
-        loadingLayout.setVisibility(View.VISIBLE);
-        loadingErrorLayout.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
         search = null;
         sendRequest();
 
@@ -197,124 +195,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 发送网络请求
-     */
-    private void sendRequest() {
-        String searchText;
-        if (search != null) {
-            searchText = "&search=" + search;
-        } else {
-            searchText = "";
-        }
-
-        refreshLayout.setRefreshing(true);
-        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshLayout.setRefreshing(false);
-                        loadingErrorLayout.setVisibility(View.VISIBLE);
-                        loadingLayout.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String content = response.body().string();
-                int code = response.code();
-                if (code == 200 && Util.isGoodJson(content)) {
-                    final UserInfo info = Util.handleUserInfo(content);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initUserInfo(info);
-                            refreshLayout.setRefreshing(false);
-                            loadingErrorLayout.setVisibility(View.GONE);
-                            loadingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    });
-
-                } else if (code == 401 || code == 412) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                            intent.putExtra("token_timeout", "登录超时");
-                            preferences.edit().putString("token", null).commit();
-                            startActivity(intent);
-                            ActivityCollector.finishAllActivity();
-                        }
-                    });
-                } else if (code == 422) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setRefreshing(false);
-                            loadingErrorLayout.setVisibility(View.VISIBLE);
-                            loadingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.GONE);
-                            try {
-                                JSONObject js = new JSONObject(content);
-                                Toast.makeText(UserInfoActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-
-                }
-            }
-        });
-
-
-    }
-
-    /**
-     * 解析用户数据
-     *
-     * @param userInfo
-     */
-    private void initUserInfo(UserInfo userInfo) {
-        page = userInfo.getCurrent_page() + 1;
-        maxPage = userInfo.getLast_page();
-
-        myUserInfoList.clear();
-        if (userInfo.getData() != null) {
-            for (UserInfo.DataBean userData : userInfo.getData()) {
-                MyUserInfo myUserInfo = new MyUserInfo();
-                String imgUrl = null;
-
-                imgUrl = userData.getF_pic();
-                myUserInfo.setUserImg(IMG_URL + imgUrl);
-
-                myUserInfo.setUserId(userData.getId());
-
-                if (userData.getF_level() != null) {
-                    if (userData.getF_level().equals("7")) {
-                        myUserInfo.setUserQx("管理员");
-                    } else {
-                        myUserInfo.setUserQx("一般用户");
-                    }
-                }
-                if (userData.getF_name() != null) {
-                    myUserInfo.setUserName(userData.getF_name());
-                }
-                if (userData.getF_user() != null) {
-                    myUserInfo.setUser(userData.getF_user());
-                }
-                myUserInfoList.add(myUserInfo);
-            }
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    /**
      * 初始化View
      */
     private void initView() {
@@ -330,18 +210,26 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         manager = new LinearLayoutManager(this);
         adapter = new UserInfoAdapter(myUserInfoList);
 
-        refreshLayout = findViewById(R.id.user_info_swiper);
-        loadingErrorLayout = findViewById(R.id.user_info_loading_error_layout);
-        loadingLayout = findViewById(R.id.user_info_loading_layout);
+        refreshLayout = findViewById(R.id.user_info_swipe);
+        errorLayout = findViewById(R.id.user_info_error_layout);
 
         searchText = findViewById(R.id.user_info_serch_edit);
         cancelButton = findViewById(R.id.user_info_cancel_button);
         ensureButton = findViewById(R.id.user_info_ensure_button);
 
         recyclerView = findViewById(R.id.user_info_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
 
     }
 
@@ -371,71 +259,6 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
-    /**
-     * 发送删除请求
-     */
-    private void sendDeleteRequest() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("id", Util.listToString(idList));
-            refreshLayout.setRefreshing(true);
-            HttpUtil.sendDeleteWithHttp(USER_INFO_URL + token, jsonObject.toString(), new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setRefreshing(false);
-                            loadingErrorLayout.setVisibility(View.VISIBLE);
-                            loadingLayout.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.GONE);
-                        }
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    final String content = response.body().string();
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            parseResponse(content);
-                        }
-                    });
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * 解析删除请求返回信息
-     *
-     * @param content
-     */
-    private void parseResponse(String content) {
-        if (content != null && content.equals("true")) {
-            sendRequest();
-            Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
-        } else if (content != null && content.equals("false")) {
-            refreshLayout.setRefreshing(false);
-            Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show();
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
-                    intent.putExtra("token_timeout", "登录超时");
-                    preferences.edit().putString("token", null).commit();
-                    startActivity(intent);
-                    ActivityCollector.finishAllActivity();
-                }
-            });
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -466,4 +289,218 @@ public class UserInfoActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+
+    /**
+     * 发送网络请求
+     */
+    private void sendRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=1" + Util.TYPE, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final UserInfo info = Util.handleUserInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initUserInfo(info);
+                            refreshLayout.setRefreshing(false);
+                            errorLayout.setVisibility(View.GONE);
+                        }
+                    });
+
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(UserInfoActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+    }
+
+    /**
+     * 解析用户数据
+     *
+     * @param userInfo
+     */
+    private void initUserInfo(UserInfo userInfo) {
+        page = userInfo.getCurrent_page() + 1;
+        maxPage = userInfo.getLast_page();
+        myUserInfoList.clear();
+        if (userInfo.getData() != null) {
+            for (UserInfo.DataBean userData : userInfo.getData()) {
+                MyUserInfo myUserInfo = new MyUserInfo();
+                String imgUrl = null;
+
+                imgUrl = userData.getF_pic();
+                myUserInfo.setUserImg(IMG_URL + imgUrl);
+
+                myUserInfo.setUserId(userData.getId());
+
+                if (userData.getF_level() != null) {
+                    if (userData.getF_level().equals("7")) {
+                        myUserInfo.setUserQx("管理员");
+                    } else {
+                        myUserInfo.setUserQx("一般用户");
+                    }
+                }
+                if (userData.getF_name() != null) {
+                    myUserInfo.setUserName(userData.getF_name());
+                }
+                if (userData.getF_user() != null) {
+                    myUserInfo.setUser(userData.getF_user());
+                }
+                myUserInfoList.add(myUserInfo);
+            }
+        }
+        recyclerView.loadMoreFinish(userInfo.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        String searchText;
+        if (search != null) {
+            searchText = "&search=" + search;
+        } else {
+            searchText = "";
+        }
+
+        HttpUtil.sendGetRequestWithHttp(USER_INFO_URL + token + searchText + "&page=" + page + Util.TYPE, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final UserInfo info = Util.handleUserInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initLoadUserInfo(info);
+                        }
+                    });
+
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(UserInfoActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(UserInfoActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+
+
+    }
+
+    /**
+     * 解析用户数据
+     *
+     * @param userInfo
+     */
+    private void initLoadUserInfo(UserInfo userInfo) {
+        page = userInfo.getCurrent_page() + 1;
+        maxPage = userInfo.getLast_page();
+        if (userInfo.getData() != null) {
+            for (UserInfo.DataBean userData : userInfo.getData()) {
+                MyUserInfo myUserInfo = new MyUserInfo();
+                String imgUrl = null;
+
+                imgUrl = userData.getF_pic();
+                myUserInfo.setUserImg(IMG_URL + imgUrl);
+
+                myUserInfo.setUserId(userData.getId());
+
+                if (userData.getF_level() != null) {
+                    if (userData.getF_level().equals("7")) {
+                        myUserInfo.setUserQx("管理员");
+                    } else {
+                        myUserInfo.setUserQx("一般用户");
+                    }
+                }
+                if (userData.getF_name() != null) {
+                    myUserInfo.setUserName(userData.getF_name());
+                }
+                if (userData.getF_user() != null) {
+                    myUserInfo.setUser(userData.getF_user());
+                }
+                myUserInfoList.add(myUserInfo);
+            }
+        }
+        recyclerView.loadMoreFinish(userInfo.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
 }

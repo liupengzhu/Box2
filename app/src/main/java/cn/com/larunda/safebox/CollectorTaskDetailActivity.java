@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +44,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class CollectorTaskDetailActivity extends BaseActivity implements View.OnClickListener {
 
     private int id;
@@ -52,12 +58,15 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
     private TextView startTime;
     private TextView endTime;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private LinearLayoutManager manager;
     private CollectorTaskDestinationAdapter adapter;
     private List<Destination> destinationList = new ArrayList<>();
 
     private RelativeLayout trackButton;
+    private View headView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,9 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
      * 初始化view
      */
     private void initView() {
+
+        headView = LayoutInflater.from(this).inflate(R.layout.head_collector, null);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
@@ -89,18 +101,33 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
-        name = findViewById(R.id.collector_task_detail_name);
-        status = findViewById(R.id.collector_task_detail_task_status);
-        startTime = findViewById(R.id.collector_task_detail_start_time);
-        endTime = findViewById(R.id.collector_task_detail_end_time);
+        name = headView.findViewById(R.id.collector_task_detail_name);
+        status = headView.findViewById(R.id.collector_task_detail_task_status);
+        startTime = headView.findViewById(R.id.collector_task_detail_start_time);
+        endTime = headView.findViewById(R.id.collector_task_detail_end_time);
+        trackButton = headView.findViewById(R.id.collector_task_detail_track);
+
+        refreshLayout = findViewById(R.id.collector_task_detail_swipe);
+        errorLayout = findViewById(R.id.collector_task_detail_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
 
         recyclerView = findViewById(R.id.collector_task_detail_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources().getColor(R.color.line), MATCH_PARENT, 2));
         adapter = new CollectorTaskDestinationAdapter(this, destinationList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        trackButton = findViewById(R.id.collector_task_detail_track);
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.addHeaderView(headView);
+
     }
 
     /**
@@ -141,10 +168,17 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "user/task/" + id + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -157,6 +191,8 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -180,6 +216,7 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            refreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -234,6 +271,7 @@ public class CollectorTaskDetailActivity extends BaseActivity implements View.On
                 }
             }
         }
+        recyclerView.loadMoreFinish(info.getProcesses().size() == 0, false);
         adapter.notifyDataSetChanged();
     }
 

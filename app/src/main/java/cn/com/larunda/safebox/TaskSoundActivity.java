@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,8 @@ import com.larunda.safebox.R;
 import com.larunda.selfdialog.DateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +49,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class TaskSoundActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TitleBar titleBar;
@@ -60,7 +66,9 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
     private int maxPage;
     private int page;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private LinearLayoutManager manager;
     private List<TaskSound> taskSoundList = new ArrayList<>();
     private TaskSoundAdapter adapter;
@@ -102,11 +110,34 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
         ensureButton = findViewById(R.id.sound_ensure_button);
         dateDialog = new DateDialog(this);
 
+        refreshLayout = findViewById(R.id.task_sound_swipe);
+        errorLayout = findViewById(R.id.task_sound_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                search = "";
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.task_sound_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         adapter = new TaskSoundAdapter(this, taskSoundList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
     }
 
     /**
@@ -212,11 +243,18 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/recordings" + Util.TOKEN
-                + token + "&time=" + search, new Callback() {
+                + token + "&time=" + search + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -229,6 +267,91 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TaskSoundActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskSoundActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析服务器返回数据
+     *
+     * @param info
+     */
+    private void parseInfo(TaskSoundInfo info) {
+        taskSoundList.clear();
+        page = info.getCurrent_page() + 1;
+        maxPage = info.getLast_page();
+        if (info != null) {
+            if (info.getData() != null) {
+                for (TaskSoundInfo.DataBean dataBean : info.getData()) {
+                    TaskSound taskSound = new TaskSound();
+                    taskSound.setId(dataBean.getId());
+                    taskSound.setCreateTime(dataBean.getCreated_at() != null ? dataBean.getCreated_at() : "");
+                    taskSound.setPath(dataBean.getF_path() != null ? dataBean.getF_path() : "");
+                    taskSound.setUpdateTime(dataBean.getUpdated_at() != null ? dataBean.getUpdated_at() : "");
+                    taskSoundList.add(taskSound);
+                }
+            }
+        }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/recordings" + Util.TOKEN
+                + token + "&time=" + search + "&page=" + page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final TaskSoundInfo info = Util.handleTaskSoundInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseLoadInfo(info);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -265,8 +388,9 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
      *
      * @param info
      */
-    private void parseInfo(TaskSoundInfo info) {
-        taskSoundList.clear();
+    private void parseLoadInfo(TaskSoundInfo info) {
+        page = info.getCurrent_page() + 1;
+        maxPage = info.getLast_page();
         if (info != null) {
             if (info.getData() != null) {
                 for (TaskSoundInfo.DataBean dataBean : info.getData()) {
@@ -279,6 +403,7 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
     }
 }

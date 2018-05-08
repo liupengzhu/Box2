@@ -9,6 +9,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -45,6 +47,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
     private RelativeLayout backButton;
 
+    private DrawerLayout drawerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +77,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
     //初始化控件
     private void initView() {
+
+        drawerLayout = findViewById(R.id.normal_user_drawer_layout);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
@@ -169,7 +175,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -192,7 +198,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -215,7 +221,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -255,7 +261,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
             titleBar.setOnClickListener(new TitleListener() {
                 @Override
                 public void onLeftButtonClickListener(View v) {
-                    //drawerLayout.openDrawer(Gravity.START);
+                    drawerLayout.openDrawer(Gravity.START);
 
                 }
 

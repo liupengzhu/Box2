@@ -9,6 +9,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -45,6 +47,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
     private HomeAdapter adapter;
     private RelativeLayout backButton;
 
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
+        drawerLayout = findViewById(R.id.admin_drawer_layout);
 
         viewPager = findViewById(R.id.super_view_pager);
         tabLayout = findViewById(R.id.super_tab_layout);
@@ -170,7 +174,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -193,7 +197,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
                 titleBar.setOnClickListener(new TitleListener() {
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -217,7 +221,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
 
                     @Override
                     public void onLeftButtonClickListener(View v) {
-                        //drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(Gravity.START);
 
                     }
 
@@ -256,7 +260,7 @@ public class SuperAdminActivity extends BaseActivity implements View.OnClickList
             titleBar.setOnClickListener(new TitleListener() {
                 @Override
                 public void onLeftButtonClickListener(View v) {
-                    //drawerLayout.openDrawer(Gravity.START);
+                    drawerLayout.openDrawer(Gravity.START);
 
                 }
 

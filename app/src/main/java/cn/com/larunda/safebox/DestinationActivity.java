@@ -64,6 +64,7 @@ public class DestinationActivity extends BaseActivity {
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
     private static final int ADD_DESTINATION = 1;
+    private int total;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -153,6 +154,7 @@ public class DestinationActivity extends BaseActivity {
                 int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;//拖拽
                 int swipeFlags = 0;//ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;//侧滑删除
                 refreshLayout.setEnabled(false);
+                total = 0;
                 return makeMovementFlags(dragFlags, swipeFlags);
             }
 
@@ -181,6 +183,15 @@ public class DestinationActivity extends BaseActivity {
             public boolean isLongPressDragEnabled() {
                 //是否可拖拽
                 return true;
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                total++;
+                if (total == 2) {
+                    refreshLayout.setEnabled(true);
+                }
             }
         });
         helper.attachToRecyclerView(recyclerView);

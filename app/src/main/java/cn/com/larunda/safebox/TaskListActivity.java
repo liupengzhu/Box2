@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,12 +14,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.tu.loadingdialog.LoadingDailog;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +43,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class TaskListActivity extends BaseActivity {
     private int id;
     private TitleBar titleBar;
@@ -48,7 +54,9 @@ public class TaskListActivity extends BaseActivity {
     private boolean isCompleted = true;
     private String status;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private LinearLayoutManager manager;
     private TaskAdapter adapter;
     private List<Task> taskList = new ArrayList<>();
@@ -87,11 +95,31 @@ public class TaskListActivity extends BaseActivity {
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        refreshLayout = findViewById(R.id.task_list_swipe);
+        errorLayout = findViewById(R.id.task_list_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.task_list_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources().getColor(R.color.line), MATCH_PARENT, 2));
         adapter = new TaskAdapter(this, taskList);
         manager = new LinearLayoutManager(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
     }
 
     /**
@@ -138,10 +166,17 @@ public class TaskListActivity extends BaseActivity {
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(Util.URL + "box/" + id + "/tasks" + Util.TOKEN + token, new Callback() {
+        refreshLayout.setRefreshing(true);
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "box/" + id + "/tasks" + Util.TOKEN + token+"&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -154,6 +189,98 @@ public class TaskListActivity extends BaseActivity {
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TaskListActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskListActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    /**
+     * 解析服务器返回数据
+     *
+     * @param info
+     */
+    private void parseInfo(TaskInfo info) {
+        page = info.getCurrent_page() + 1;
+        maxPage = info.getLast_page();
+        taskList.clear();
+        if (info.getData() != null) {
+            for (TaskInfo.DataBean dataBean : info.getData()) {
+                if (dataBean.getCompleted_at() == null) {
+                    isCompleted = false;
+                    break;
+                }
+            }
+            for (TaskInfo.DataBean dataBean : info.getData()) {
+                Task task = new Task();
+                task.setId(dataBean.getId());
+                task.setCreatedTime(dataBean.getCreated_at());
+                task.setCompletedTime(dataBean.getCompleted_at());
+                task.setOriginCity(dataBean.getF_origin_city());
+                task.setDestinationCity(dataBean.getF_destination_city());
+                task.setName(dataBean.getF_name());
+                taskList.add(task);
+            }
+        }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
+
+
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "box/" + id + "/tasks" + Util.TOKEN + token+"&page=1", new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final TaskInfo info = Util.handleTaskInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseLoadInfo(info);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -191,10 +318,9 @@ public class TaskListActivity extends BaseActivity {
      *
      * @param info
      */
-    private void parseInfo(TaskInfo info) {
+    private void parseLoadInfo(TaskInfo info) {
         page = info.getCurrent_page() + 1;
         maxPage = info.getLast_page();
-        taskList.clear();
         if (info.getData() != null) {
             for (TaskInfo.DataBean dataBean : info.getData()) {
                 if (dataBean.getCompleted_at() == null) {
@@ -213,6 +339,7 @@ public class TaskListActivity extends BaseActivity {
                 taskList.add(task);
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
     }
 

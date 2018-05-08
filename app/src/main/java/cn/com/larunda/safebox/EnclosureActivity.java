@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.larunda.safebox.R;
 
 import cn.com.larunda.safebox.adapter.EnclosureAdapter;
@@ -38,8 +39,14 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import com.larunda.selfdialog.ConfirmDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
@@ -76,6 +83,7 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
 
     private int page;
     private int maxPage;
+    private ConfirmDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,8 +203,39 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
         refreshLayout = findViewById(R.id.enclosure_swipe);
 
         manager = new LinearLayoutManager(this);
-        recyclerView.setAdapter(adapter);
+
         recyclerView.setLayoutManager(manager);
+
+        // 创建菜单：
+        SwipeMenuCreator mSwipeMenuCreator = new SwipeMenuCreator() {
+            @Override
+            public void onCreateMenu(SwipeMenu leftMenu, SwipeMenu rightMenu, int viewType) {
+                SwipeMenuItem deleteItem = new SwipeMenuItem(EnclosureActivity.this); // 各种文字和图标属性设置。
+                deleteItem.setBackground(R.color.log_wdu);
+                deleteItem.setText("删除");
+                deleteItem.setWidth(250);
+                deleteItem.setTextColor(Color.WHITE);
+                deleteItem.setHeight(MATCH_PARENT);
+                rightMenu.addMenuItem(deleteItem); // 在Item右侧添加一个菜单。
+            }
+        };
+        // 设置监听器。
+        recyclerView.setSwipeMenuCreator(mSwipeMenuCreator);
+
+        // 菜单点击监听。
+        recyclerView.setSwipeMenuItemClickListener(new SwipeMenuItemClickListener() {
+            @Override
+            public void onItemClick(SwipeMenuBridge menuBridge) {
+                // 任何操作必须先关闭菜单，否则可能出现Item菜单打开状态错乱。
+                menuBridge.closeMenu();
+                int adapterPosition = menuBridge.getAdapterPosition(); // RecyclerView的Item的position。
+                int id = enclosureList.get(adapterPosition).getId();
+                String name = enclosureList.get(adapterPosition).getName();
+                showDialog(id, name);
+            }
+        });
+
+        recyclerView.setAdapter(adapter);
         setAdapterClick(adapter);
 
         recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
@@ -424,6 +463,92 @@ public class EnclosureActivity extends BaseActivity implements View.OnClickListe
         }
         recyclerView.loadMoreFinish(enclosureInfo.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 显示弹窗
+     *
+     * @param id
+     * @param name
+     */
+    private void showDialog(final int id, String name) {
+        dialog = new ConfirmDialog(this);
+        dialog.setContentText("此操作将永久删除地理围栏：" + name);
+        dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.setYesOnclickListener(new ConfirmDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                sendDeleteRequest(id);
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+    /**
+     * 发送删除请求
+     *
+     * @param id
+     */
+    private void sendDeleteRequest(int id) {
+        refreshLayout.setRefreshing(true);
+        JsonObject jsonObject = new JsonObject();
+        HttpUtil.sendDeleteWithHttp(Util.URL + "fence/" + id
+                + Util.TOKEN + token, jsonObject.toString(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        Toast.makeText(EnclosureActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (code == 200) {
+                            if (content.equals("false")) {
+                                refreshLayout.setRefreshing(false);
+                                Toast.makeText(EnclosureActivity.this, "删除失败！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                sendRequest();
+                            }
+
+                        } else if (code == 401 || code == 412) {
+                            Intent intent = new Intent(EnclosureActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        } else if (code == 422) {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(EnclosureActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            refreshLayout.setRefreshing(false);
+                        } else {
+                            Toast.makeText(EnclosureActivity.this, "删除失败！", Toast.LENGTH_SHORT).show();
+                            refreshLayout.setRefreshing(false);
+                        }
+                    }
+                });
+
+            }
+        });
     }
 }
 

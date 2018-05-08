@@ -95,8 +95,6 @@ public class BoxListFragment extends Fragment {
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", null);
 
-        dialog = new ConfirmDialog(getContext());
-
         refreshLayout = view.findViewById(R.id.fragment_box_list_swipe);
         errorLayout = view.findViewById(R.id.fragment_box_list_error_layout);
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
@@ -397,6 +395,7 @@ public class BoxListFragment extends Fragment {
      * @param name
      */
     private void showDialog(final int id, String name) {
+        dialog = new ConfirmDialog(getContext());
         dialog.setContentText("此操作将永久删除递送箱：" + name);
         dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
             @Override

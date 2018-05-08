@@ -87,7 +87,6 @@ public class TaskFingerActivity extends AppCompatActivity {
      * 初始化View
      */
     private void initView() {
-        dialog = new ConfirmDialog(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         token = preferences.getString("token", null);
 
@@ -260,6 +259,7 @@ public class TaskFingerActivity extends AppCompatActivity {
      * @param name
      */
     private void showDialog(final int id, String name) {
+        dialog = new ConfirmDialog(this);
         dialog.setContentText("此操作将永久删除" + name + "的指纹");
         dialog.setNoOnclickListener(new ConfirmDialog.onNoOnclickListener() {
             @Override

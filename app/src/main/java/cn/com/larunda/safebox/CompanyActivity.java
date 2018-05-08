@@ -299,7 +299,7 @@ public class CompanyActivity extends BaseActivity implements View.OnClickListene
         switch (requestCode) {
             case ADD_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    adapter.getItem(1).onActivityResult(requestCode, resultCode, data);
+                    adapter.getItem(0).onActivityResult(requestCode, resultCode, data);
                 }
                 break;
             default:

@@ -21,6 +21,7 @@ import com.larunda.recycler.OnLoadListener;
 import com.larunda.recycler.PTLLinearLayoutManager;
 import com.larunda.recycler.PullToLoadRecyclerView;
 import com.larunda.safebox.R;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,12 +44,11 @@ import okhttp3.Response;
 public class CompanyListFragment extends Fragment {
 
     private final String URL = Util.URL + "company" + Util.TOKEN;
-    private PullToLoadRecyclerView recyclerView;
-    private PTLLinearLayoutManager manager;
+    private SwipeMenuRecyclerView recyclerView;
+    private LinearLayoutManager manager;
     private CompanyAdapter adapter;
     private List<Company> companyList = new ArrayList<>();
     private SwipeRefreshLayout refreshLayout;
-    private FrameLayout layout;
     private RelativeLayout errorLayout;
 
     private SharedPreferences preferences;
@@ -64,8 +64,6 @@ public class CompanyListFragment extends Fragment {
         initView(view);
         initEvent();
         sendRequest();
-        layout.setVisibility(View.GONE);
-        errorLayout.setVisibility(View.GONE);
         return view;
     }
 
@@ -79,12 +77,11 @@ public class CompanyListFragment extends Fragment {
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", null);
 
-        recyclerView = view.findViewById(R.id.company_list_recycler_view);
-        manager = new PTLLinearLayoutManager();
+        recyclerView = view.findViewById(R.id.company_list_recycler);
+        manager = new LinearLayoutManager(getContext());
         adapter = new CompanyAdapter(getContext(), companyList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setRefreshEnable(false);
 
         refreshLayout = view.findViewById(R.id.company_list_swipe);
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
@@ -95,8 +92,15 @@ public class CompanyListFragment extends Fragment {
                 sendRequest();
             }
         });
-        layout = view.findViewById(R.id.company_list_fragment_layout);
-        errorLayout = view.findViewById(R.id.company_list_loading_error_layout);
+        errorLayout = view.findViewById(R.id.company_list_error_layout);
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendAddRequest();
+            }
+        });
     }
 
     /**
@@ -120,18 +124,6 @@ public class CompanyListFragment extends Fragment {
             }
         });
 
-        recyclerView.setOnLoadListener(new OnLoadListener() {
-            @Override
-            public void onStartLoading(int skip) {
-                sendAddRequest();
-            }
-        });
-        errorLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRequest();
-            }
-        });
     }
 
     /**
@@ -147,7 +139,6 @@ public class CompanyListFragment extends Fragment {
                         @Override
                         public void run() {
                             refreshLayout.setRefreshing(false);
-                            layout.setVisibility(View.GONE);
                             errorLayout.setVisibility(View.VISIBLE);
                         }
                     });
@@ -166,7 +157,6 @@ public class CompanyListFragment extends Fragment {
                             public void run() {
                                 parseInfo(info);
                                 refreshLayout.setRefreshing(false);
-                                layout.setVisibility(View.VISIBLE);
                                 errorLayout.setVisibility(View.GONE);
                             }
                         });
@@ -196,11 +186,6 @@ public class CompanyListFragment extends Fragment {
     private void parseInfo(CompanyInfo info) {
         page = info.getCurrent_page() + 1;
         maxPage = info.getLast_page();
-        if (page > maxPage) {
-            recyclerView.setNoMore(true);
-        } else {
-            recyclerView.setNoMore(false);
-        }
         companyList.clear();
         if (info.getData() != null) {
             for (CompanyInfo.DataBean dataBean : info.getData()) {
@@ -218,6 +203,7 @@ public class CompanyListFragment extends Fragment {
                 companyList.add(company);
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -232,7 +218,6 @@ public class CompanyListFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            layout.setVisibility(View.GONE);
                             errorLayout.setVisibility(View.VISIBLE);
                         }
                     });
@@ -250,8 +235,7 @@ public class CompanyListFragment extends Fragment {
                             @Override
                             public void run() {
                                 parseAddInfo(info);
-                                layout.setVisibility(View.VISIBLE);
-                                errorLayout.setVisibility(View.GONE);
+
                             }
                         });
                     } else if (code == 401) {
@@ -280,11 +264,6 @@ public class CompanyListFragment extends Fragment {
     private void parseAddInfo(CompanyInfo info) {
         page = info.getCurrent_page() + 1;
         maxPage = info.getLast_page();
-        if (page > maxPage) {
-            recyclerView.setNoMore(true);
-        } else {
-            recyclerView.setNoMore(false);
-        }
         if (info.getData() != null) {
             for (CompanyInfo.DataBean dataBean : info.getData()) {
                 Company company = new Company();
@@ -301,6 +280,7 @@ public class CompanyListFragment extends Fragment {
                 companyList.add(company);
             }
         }
-        recyclerView.completeLoad(0);
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
     }
 }

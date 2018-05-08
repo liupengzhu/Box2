@@ -30,10 +30,11 @@ import cn.com.larunda.safebox.fragment.CompanyListFragment;
 import cn.com.larunda.safebox.fragment.SystemLogFragment;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
+import cn.com.larunda.safebox.util.CustomViewPager;
 
 public class SuperAdminActivity extends BaseActivity implements View.OnClickListener {
 
-    public static ViewPager viewPager;
+    public static CustomViewPager viewPager;
     public static TabLayout tabLayout;
     public static TitleBar titleBar;
     private String[] titles = {"数据总览", "企业管理", "系统日志"};

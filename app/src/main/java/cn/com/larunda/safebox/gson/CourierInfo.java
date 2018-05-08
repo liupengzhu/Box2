@@ -4,6 +4,7 @@ import java.util.List;
 
 public class CourierInfo {
 
+
     /**
      * id : 44
      * box_id : 547
@@ -17,7 +18,7 @@ public class CourierInfo {
      * f_upload_interval : null
      * f_use_dislocation : null
      * f_use_defense : null
-     * processes : [{"id":51,"task_id":"44","f_destination":"beijing","created_at":"2018-05-02 14:12:00","updated_at":"2018-05-07 10:09:32","completed_at":null,"f_origin":"suzhou","f_release_time":"2018-10-10 00:00:00","f_upload_interval":"30","f_origin_city":["jiangsu","suzhou","xiangchen"],"f_destination_city":["wuxi"],"f_sort":"0","fence_id":null,"f_use_dislocation":"0","f_use_defense":"0","addressee":[]},{"id":50,"task_id":"44","f_destination":"哈哈哈","created_at":"2018-05-02 14:09:34","updated_at":"2018-05-07 10:09:32","completed_at":"2018-05-04 15:50:54","f_origin":"哇哈哈","f_release_time":"2018-05-02 14:09:22","f_upload_interval":"300","f_origin_city":["天津市","市辖区","和平区"],"f_destination_city":["北京市","市辖区","东城区"],"f_sort":"3","fence_id":"442","f_use_dislocation":"0","f_use_defense":"0","addressee":[{"id":708,"user_id":"442","process_id":"50","created_at":"2018-05-02 14:09:34","updated_at":"2018-05-02 14:09:34","task_id":"44","f_is_dynamic":"1","f_is_password":1}]},{"id":71,"task_id":"44","f_destination":"瞎胡闹","created_at":"2018-05-03 18:02:03","updated_at":"2018-05-07 10:09:32","completed_at":null,"f_origin":"不知道","f_release_time":"2018-05-03 18:01:50","f_upload_interval":"300","f_origin_city":["山西省","太原市","迎泽区"],"f_destination_city":["北京市","市辖区","西城区"],"f_sort":"2","fence_id":"422","f_use_dislocation":"0","f_use_defense":"0","addressee":[{"id":730,"user_id":"442","process_id":"71","created_at":"2018-05-03 18:02:03","updated_at":"2018-05-03 18:02:03","task_id":"44","f_is_dynamic":"0","f_is_password":1},{"id":731,"user_id":"429","process_id":"71","created_at":"2018-05-03 18:02:03","updated_at":"2018-05-03 18:02:03","task_id":"44","f_is_dynamic":"1","f_is_password":0}]},{"id":49,"task_id":"44","f_destination":"我就要看你","created_at":"2018-05-02 14:07:52","updated_at":"2018-05-07 10:09:32","completed_at":null,"f_origin":"你不要看我","f_release_time":"2018-05-02 14:07:38","f_upload_interval":"300","f_origin_city":["北京市","市辖区","东城区"],"f_destination_city":["北京市","市辖区","西城区"],"f_sort":"1","fence_id":"422","f_use_dislocation":"0","f_use_defense":"0","addressee":[{"id":707,"user_id":"442","process_id":"49","created_at":"2018-05-02 14:07:53","updated_at":"2018-05-02 17:03:34","task_id":"44","f_is_dynamic":"1","f_is_password":1},{"id":728,"user_id":"429","process_id":"49","created_at":"2018-05-03 08:25:09","updated_at":"2018-05-03 08:25:09","task_id":"44","f_is_dynamic":"1","f_is_password":0}]}]
+     * processes : [{"id":51,"task_id":"44","f_destination":"beijing","created_at":"2018-05-02 14:12:00","updated_at":"2018-05-08 15:33:05","completed_at":null,"f_origin":"suzhou","f_release_time":"2018-10-10 00:00:00","f_upload_interval":"30","f_origin_city":["jiangsu","suzhou","xiangchen"],"f_destination_city":["wuxi"],"f_sort":"1","fence_id":null,"f_use_dislocation":"0","f_use_defense":"0","addressee":[]},{"id":50,"task_id":"44","f_destination":"哈哈哈","created_at":"2018-05-02 14:09:34","updated_at":"2018-05-08 15:33:05","completed_at":"2018-05-04 15:50:54","f_origin":"哇哈哈","f_release_time":"2018-05-02 14:09:22","f_upload_interval":"300","f_origin_city":["天津市","市辖区","和平区"],"f_destination_city":["北京市","市辖区","东城区"],"f_sort":"0","fence_id":"442","f_use_dislocation":"0","f_use_defense":"0","addressee":[{"id":708,"user_id":"442","process_id":"50","created_at":"2018-05-02 14:09:34","updated_at":"2018-05-02 14:09:34","task_id":"44","f_is_dynamic":"1","f_is_password":1,"user":{"id":442,"f_user":"lijun@lrd","f_name":"李俊","f_tel":"18952554298","f_email":"123456@qq.com","f_level":"5","created_at":"2018-05-02 09:34:07","updated_at":"2018-05-02 09:34:52","company_id":"22","f_pic":"avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg","f_pic_render":"/api/file/image?avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg"}}]}]
      */
 
     private int id;
@@ -144,14 +145,14 @@ public class CourierInfo {
          * task_id : 44
          * f_destination : beijing
          * created_at : 2018-05-02 14:12:00
-         * updated_at : 2018-05-07 10:09:32
+         * updated_at : 2018-05-08 15:33:05
          * completed_at : null
          * f_origin : suzhou
          * f_release_time : 2018-10-10 00:00:00
          * f_upload_interval : 30
          * f_origin_city : ["jiangsu","suzhou","xiangchen"]
          * f_destination_city : ["wuxi"]
-         * f_sort : 0
+         * f_sort : 1
          * fence_id : null
          * f_use_dislocation : 0
          * f_use_defense : 0
@@ -173,8 +174,220 @@ public class CourierInfo {
         private String f_use_defense;
         private List<String> f_origin_city;
         private List<String> f_destination_city;
-        private List<?> addressee;
+        private List<AddresseeBean> addressee;
 
+        public class AddresseeBean{
+
+            /**
+             * id : 708
+             * user_id : 442
+             * process_id : 50
+             * created_at : 2018-05-02 14:09:34
+             * updated_at : 2018-05-02 14:09:34
+             * task_id : 44
+             * f_is_dynamic : 1
+             * f_is_password : 1
+             * user : {"id":442,"f_user":"lijun@lrd","f_name":"李俊","f_tel":"18952554298","f_email":"123456@qq.com","f_level":"5","created_at":"2018-05-02 09:34:07","updated_at":"2018-05-02 09:34:52","company_id":"22","f_pic":"avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg","f_pic_render":"/api/file/image?avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg"}
+             */
+
+            private int id;
+            private String user_id;
+            private String process_id;
+            private String created_at;
+            private String updated_at;
+            private String task_id;
+            private String f_is_dynamic;
+            private int f_is_password;
+            private UserBean user;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getUser_id() {
+                return user_id;
+            }
+
+            public void setUser_id(String user_id) {
+                this.user_id = user_id;
+            }
+
+            public String getProcess_id() {
+                return process_id;
+            }
+
+            public void setProcess_id(String process_id) {
+                this.process_id = process_id;
+            }
+
+            public String getCreated_at() {
+                return created_at;
+            }
+
+            public void setCreated_at(String created_at) {
+                this.created_at = created_at;
+            }
+
+            public String getUpdated_at() {
+                return updated_at;
+            }
+
+            public void setUpdated_at(String updated_at) {
+                this.updated_at = updated_at;
+            }
+
+            public String getTask_id() {
+                return task_id;
+            }
+
+            public void setTask_id(String task_id) {
+                this.task_id = task_id;
+            }
+
+            public String getF_is_dynamic() {
+                return f_is_dynamic;
+            }
+
+            public void setF_is_dynamic(String f_is_dynamic) {
+                this.f_is_dynamic = f_is_dynamic;
+            }
+
+            public int getF_is_password() {
+                return f_is_password;
+            }
+
+            public void setF_is_password(int f_is_password) {
+                this.f_is_password = f_is_password;
+            }
+
+            public UserBean getUser() {
+                return user;
+            }
+
+            public void setUser(UserBean user) {
+                this.user = user;
+            }
+
+            public  class UserBean {
+                /**
+                 * id : 442
+                 * f_user : lijun@lrd
+                 * f_name : 李俊
+                 * f_tel : 18952554298
+                 * f_email : 123456@qq.com
+                 * f_level : 5
+                 * created_at : 2018-05-02 09:34:07
+                 * updated_at : 2018-05-02 09:34:52
+                 * company_id : 22
+                 * f_pic : avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg
+                 * f_pic_render : /api/file/image?avatars/JKgHLRVAecsEShb6bvvlsH1qImfdYQNWALVXUez8.jpeg
+                 */
+
+                private int id;
+                private String f_user;
+                private String f_name;
+                private String f_tel;
+                private String f_email;
+                private String f_level;
+                private String created_at;
+                private String updated_at;
+                private String company_id;
+                private String f_pic;
+                private String f_pic_render;
+
+                public int getId() {
+                    return id;
+                }
+
+                public void setId(int id) {
+                    this.id = id;
+                }
+
+                public String getF_user() {
+                    return f_user;
+                }
+
+                public void setF_user(String f_user) {
+                    this.f_user = f_user;
+                }
+
+                public String getF_name() {
+                    return f_name;
+                }
+
+                public void setF_name(String f_name) {
+                    this.f_name = f_name;
+                }
+
+                public String getF_tel() {
+                    return f_tel;
+                }
+
+                public void setF_tel(String f_tel) {
+                    this.f_tel = f_tel;
+                }
+
+                public String getF_email() {
+                    return f_email;
+                }
+
+                public void setF_email(String f_email) {
+                    this.f_email = f_email;
+                }
+
+                public String getF_level() {
+                    return f_level;
+                }
+
+                public void setF_level(String f_level) {
+                    this.f_level = f_level;
+                }
+
+                public String getCreated_at() {
+                    return created_at;
+                }
+
+                public void setCreated_at(String created_at) {
+                    this.created_at = created_at;
+                }
+
+                public String getUpdated_at() {
+                    return updated_at;
+                }
+
+                public void setUpdated_at(String updated_at) {
+                    this.updated_at = updated_at;
+                }
+
+                public String getCompany_id() {
+                    return company_id;
+                }
+
+                public void setCompany_id(String company_id) {
+                    this.company_id = company_id;
+                }
+
+                public String getF_pic() {
+                    return f_pic;
+                }
+
+                public void setF_pic(String f_pic) {
+                    this.f_pic = f_pic;
+                }
+
+                public String getF_pic_render() {
+                    return f_pic_render;
+                }
+
+                public void setF_pic_render(String f_pic_render) {
+                    this.f_pic_render = f_pic_render;
+                }
+            }
+        }
         public int getId() {
             return id;
         }
@@ -295,11 +508,11 @@ public class CourierInfo {
             this.f_destination_city = f_destination_city;
         }
 
-        public List<?> getAddressee() {
+        public List<AddresseeBean> getAddressee() {
             return addressee;
         }
 
-        public void setAddressee(List<?> addressee) {
+        public void setAddressee(List<AddresseeBean> addressee) {
             this.addressee = addressee;
         }
     }

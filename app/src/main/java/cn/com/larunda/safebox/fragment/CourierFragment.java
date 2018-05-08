@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +44,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class CourierFragment extends Fragment implements View.OnClickListener {
     private final String URL = Util.URL + "user/delivery" + Util.TOKEN;
     private SharedPreferences preferences;
@@ -50,13 +55,16 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
     private TextView startTime;
     private TextView endTime;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private CourierDestinationAdapter adapter;
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
 
     private RelativeLayout trackButton;
     private int id;
+    private View headView;
 
     @Nullable
     @Override
@@ -74,20 +82,37 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
      * @param view
      */
     private void initView(View view) {
+
+        headView = LayoutInflater.from(getContext()).inflate(R.layout.head_courier, null);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = preferences.getString("token", null);
 
-        name = view.findViewById(R.id.courier_name);
-        startTime = view.findViewById(R.id.courier_start_time);
-        endTime = view.findViewById(R.id.courier_end_time);
+        name = headView.findViewById(R.id.courier_name);
+        startTime = headView.findViewById(R.id.courier_start_time);
+        endTime = headView.findViewById(R.id.courier_end_time);
+        trackButton = headView.findViewById(R.id.courier_track);
+
+        refreshLayout = view.findViewById(R.id.courier_swipe);
+        errorLayout = view.findViewById(R.id.courier_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
 
         recyclerView = view.findViewById(R.id.courier_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources().getColor(R.color.line), MATCH_PARENT, 2));
         manager = new LinearLayoutManager(getContext());
         adapter = new CourierDestinationAdapter(getContext(), destinationList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
 
-        trackButton = view.findViewById(R.id.courier_track);
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.addHeaderView(headView);
     }
 
     /**
@@ -101,10 +126,19 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(URL + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            errorLayout.setVisibility(View.VISIBLE);
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
             }
 
             @Override
@@ -118,6 +152,8 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void run() {
                                 parseInfo(info);
+                                errorLayout.setVisibility(View.GONE);
+                                refreshLayout.setRefreshing(false);
                             }
                         });
                     }
@@ -145,6 +181,7 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                refreshLayout.setRefreshing(false);
                             }
                         });
                     }
@@ -175,10 +212,10 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
                     users.setLength(0);
                     destinationCity.setLength(0);
                     originCity.setLength(0);
-                    /*for (int i = 0; i < processesBean.getAddressee().size(); i++) {
+                    for (int i = 0; i < processesBean.getAddressee().size(); i++) {
                         users.append(processesBean.getAddressee().get(i).getUser() != null ?
                                 processesBean.getAddressee().get(i).getUser().getF_name() + " " : "");
-                    }*/
+                    }
                     for (int i = 0; i < processesBean.getF_origin_city().size(); i++) {
                         originCity.append(processesBean.getF_origin_city().get(i) + " ");
                     }
@@ -197,6 +234,7 @@ public class CourierFragment extends Fragment implements View.OnClickListener {
                 }
             }
         }
+        recyclerView.loadMoreFinish(info.getProcesses().size() == 0, false);
         adapter.notifyDataSetChanged();
     }
 

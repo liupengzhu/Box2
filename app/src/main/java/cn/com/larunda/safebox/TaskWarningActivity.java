@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,8 @@ import com.larunda.safebox.R;
 import com.larunda.selfdialog.DateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +54,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class TaskWarningActivity extends BaseActivity implements View.OnClickListener {
 
     private final String URL = Util.URL + "box/alarm" + Util.TOKEN;
@@ -58,7 +64,9 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
     private SharedPreferences preferences;
     private String token;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private LinearLayoutManager manager;
     private TaskWarningAdapter adapter;
     private List<TaskWarning> taskWarningList = new ArrayList<>();
@@ -101,11 +109,33 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        refreshLayout = findViewById(R.id.task_warning_swipe);
+        errorLayout = findViewById(R.id.task_warning_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                search = "";
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.task_warning_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         manager = new LinearLayoutManager(this);
         adapter = new TaskWarningAdapter(this, taskWarningList);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });
 
         searchText = findViewById(R.id.warning_search_edit);
         cancelButton = findViewById(R.id.warning_cancel_button);
@@ -216,11 +246,18 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/alarms" + Util.TOKEN + token
-                + "&time=" + search, new Callback() {
+                + "&time=" + search + "&page=1", new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -233,6 +270,8 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -256,6 +295,7 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            refreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -292,7 +332,94 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
                 taskWarningList.add(taskWarning);
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
     }
+    /**
+     * 发送网络请求
+     */
+    private void sendLoadRequest() {
+        HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/alarms" + Util.TOKEN + token
+                + "&time=" + search + "&page="+page, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                int code = response.code();
+                if (code == 200 && Util.isGoodJson(content)) {
+                    final TaskWarningInfo info = Util.handleTaskWarningInfo(content);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseLoadInfo(info);
+                        }
+                    });
+                } else if (code == 401 || code == 412) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent(TaskWarningActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
+                    });
+                } else if (code == 422) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject js = new JSONObject(content);
+                                Toast.makeText(TaskWarningActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+
+    /**
+     * 解析服务器返回信息
+     *
+     * @param info
+     */
+    private void parseLoadInfo(TaskWarningInfo info) {
+
+        page = info.getCurrent_page() + 1;
+        maxPage = info.getLast_page();
+        if (info.getData() != null) {
+            for (TaskWarningInfo.DataBean dataBean : info.getData()) {
+                TaskWarning taskWarning = new TaskWarning();
+                taskWarning.setContent(dataBean.getF_content());
+                taskWarning.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
+                        + dataBean.getProcess().getF_destination_city());
+                taskWarning.setTime(dataBean.getCreated_at());
+                taskWarning.setTitle(AlarmType.getName(dataBean.getF_type()));
+                if (dataBean.getF_is_fixed() != null) {
+                    if (dataBean.getF_is_fixed().equals("1")) {
+                        taskWarning.setStatus("是");
+                    } else {
+                        taskWarning.setStatus("否");
+                    }
+                }
+                taskWarningList.add(taskWarning);
+            }
+        }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
+        adapter.notifyDataSetChanged();
+    }
 }

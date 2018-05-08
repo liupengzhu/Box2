@@ -10,8 +10,50 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/task_finger_recycler"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/task_finger_swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
+                android:id="@+id/task_finger_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/task_finger_error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/login_error"
+                android:clickable="true"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:src="@mipmap/loading_error" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="网络链接异常,下拉刷新"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,11 +15,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
+import com.yanzhenjie.recyclerview.swipe.widget.DefaultItemDecoration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +42,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class TaskFingerActivity extends AppCompatActivity {
 
     private TitleBar titleBar;
@@ -45,7 +51,9 @@ public class TaskFingerActivity extends AppCompatActivity {
     private String token;
     private int id;
 
-    private RecyclerView recyclerView;
+    private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout errorLayout;
+    private SwipeMenuRecyclerView recyclerView;
     private FingerAdapter adapter;
     private LinearLayoutManager manager;
     private List<Finger> fingerList = new ArrayList<>();
@@ -80,11 +88,31 @@ public class TaskFingerActivity extends AppCompatActivity {
         titleBar.setLeftButtonVisible(View.GONE);
         titleBar.setLeftBackButtonVisible(View.VISIBLE);
 
+        refreshLayout = findViewById(R.id.task_finger_swipe);
+        errorLayout = findViewById(R.id.task_finger_error_layout);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+
+            }
+        });
+
         recyclerView = findViewById(R.id.task_finger_recycler);
+        recyclerView.addItemDecoration(new DefaultItemDecoration(getResources()
+                .getColor(R.color.line), MATCH_PARENT, 2));
         adapter = new FingerAdapter(this, fingerList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        recyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        /*recyclerView.setLoadMoreListener(new SwipeMenuRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                sendLoadRequest();
+            }
+        });*/
     }
 
     /**
@@ -114,11 +142,18 @@ public class TaskFingerActivity extends AppCompatActivity {
      * 发送网络请求
      */
     private void sendRequest() {
+        refreshLayout.setRefreshing(true);
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/fingerprints"
                 + Util.TOKEN + token, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        errorLayout.setVisibility(View.VISIBLE);
+                        refreshLayout.setRefreshing(false);
+                    }
+                });
             }
 
             @Override
@@ -131,6 +166,8 @@ public class TaskFingerActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             parseInfo(info);
+                            errorLayout.setVisibility(View.GONE);
+                            refreshLayout.setRefreshing(false);
                         }
                     });
                 } else if (code == 401 || code == 412) {
@@ -154,6 +191,7 @@ public class TaskFingerActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            refreshLayout.setRefreshing(false);
                         }
                     });
 
@@ -180,6 +218,7 @@ public class TaskFingerActivity extends AppCompatActivity {
                 fingerList.add(finger);
             }
         }
+        recyclerView.loadMoreFinish(info.getData().size() == 0, false);
         adapter.notifyDataSetChanged();
     }
 

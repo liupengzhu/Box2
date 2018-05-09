@@ -40,8 +40,9 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
 
         private TextView intervalText;
         private TextView areaText;
-        private RadioGroup leavingGroup;
-        private RadioGroup defenceGroup;
+
+        private TextView leavingText;
+        private TextView defenceText;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -57,8 +58,8 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
 
             intervalText = itemView.findViewById(R.id.destination_interval);
             areaText = itemView.findViewById(R.id.destination_area);
-            leavingGroup = itemView.findViewById(R.id.destination_leaving_group);
-            defenceGroup = itemView.findViewById(R.id.destination_defence_group);
+            leavingText = itemView.findViewById(R.id.destination_leaving);
+            defenceText = itemView.findViewById(R.id.destination_defence);
         }
     }
 
@@ -111,13 +112,13 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         }
         holder.intervalText.setText(destination.getInterval() != null ? destination.getInterval() : "");
         holder.areaText.setText(destination.getArea() != null ? destination.getArea() : "");
-        holder.leavingGroup.check(destination.getUseLeaving()==null?R.id.destination_leaving_normal_button
-                : (destination.getUseLeaving().equals("0")?R.id.destination_leaving_close_button
-                        :R.id.destination_leaving_open_button));
+        holder.leavingText.setText(destination.getUseLeaving() == null ? "继承任务配置"
+                : (destination.getUseLeaving().equals("0") ? "关"
+                : "开"));
 
-        holder.defenceGroup.check(destination.getUseDefence()==null?R.id.destination_defence_normal_button
-                : (destination.getUseDefence().equals("0")?R.id.destination_defence_close_button
-                :R.id.destination_defence_open_button));
+        holder.defenceText.setText(destination.getUseDefence() == null ? "继承任务配置"
+                : (destination.getUseDefence().equals("0") ? "关"
+                : "开"));
     }
 
     @Override

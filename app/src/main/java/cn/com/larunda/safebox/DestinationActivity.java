@@ -152,6 +152,16 @@ public class DestinationActivity extends BaseActivity {
             }
         });
 
+        adapter.setItemBoxButtonOnclickListener(new DestinationAdapter.ItemBoxButtonOnclickListener() {
+            @Override
+            public void onClick(View v, int processId) {
+                Intent intent = new Intent(DestinationActivity.this, BoxManagerActivity.class);
+                intent.putExtra("processId", processId);
+                intent.putExtra("taskId", id);
+                startActivityForResult(intent, PERSON_MANAGER);
+            }
+        });
+
         //为RecycleView绑定触摸事件
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override

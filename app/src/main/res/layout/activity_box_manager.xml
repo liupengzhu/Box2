@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <com.larunda.titlebar.TitleBar
+        android:id="@+id/box_manager_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"></com.larunda.titlebar.TitleBar>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/box_manager_interval_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="通讯间隔："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/box_manager_interval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/box_manager_interval_text"
+                    android:background="@drawable/text_edit"
+                    android:gravity="center_vertical"
+                    android:hint="请输入30-1800的整数"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/list_text_n"
+                    android:textCursorDrawable="@drawable/color_cursor"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/box_manager_leaving_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="离位警报："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <RadioGroup
+                    android:id="@+id/box_manager_leaving_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/box_manager_leaving_text"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/box_manager_leaving_close_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="关"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/box_manager_leaving_open_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="开"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/box_manager_leaving_normal_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button3"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="继承任务配置"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                </RadioGroup>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/box_manager_defence_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="布防警报："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <RadioGroup
+                    android:id="@+id/box_manager_defence_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/box_manager_defence_text"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/box_manager_defence_close_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="关"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/box_manager_defence_open_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="开"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/box_manager_defence_normal_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button3"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="继承任务配置"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                </RadioGroup>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
+            <RelativeLayout
+                android:id="@+id/box_manager_time_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/box_manager_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="锁定截止："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/box_manager_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/box_manager_time_text"
+                    android:hint="请选择时间"
+                    android:textColor="@color/list_text_n"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/right_icon" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
+            <RelativeLayout
+                android:id="@+id/box_manager_area_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/box_manager_area_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="地理围栏："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/box_manager_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/box_manager_area_text"
+                    android:hint="请选择区域"
+                    android:textColor="@color/list_text_n"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/right_icon" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/box_manager_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/save_button"
+        android:text="保存"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+</LinearLayout>

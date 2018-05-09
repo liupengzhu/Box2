@@ -21,6 +21,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     private Context context;
     private List<Destination> destinationList = new ArrayList<>();
     private ItemButtonOnclickListener itemButtonOnclickListener;
+    private ItemBoxButtonOnclickListener itemBoxButtonOnclickListener;
 
     public DestinationAdapter(Context context, List<Destination> destinationList) {
         this.context = context;
@@ -81,6 +82,14 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
                 }
             }
         });
+        holder.boxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemBoxButtonOnclickListener != null) {
+                    itemBoxButtonOnclickListener.onClick(v, destination.getId());
+                }
+            }
+        });
         if (destination.getOriginCity() != null) {
             holder.originText.setText(destination.getOriginCity());
         } else {
@@ -130,11 +139,19 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         void onClick(View v, int id);
     }
 
+    public interface ItemBoxButtonOnclickListener {
+        void onClick(View v, int id);
+    }
+
     public void setItemButtonOnclickListener(ItemButtonOnclickListener itemButtonOnclickListener) {
         this.itemButtonOnclickListener = itemButtonOnclickListener;
     }
 
     public List<Destination> getDestinationList() {
         return destinationList;
+    }
+
+    public void setItemBoxButtonOnclickListener(ItemBoxButtonOnclickListener itemBoxButtonOnclickListener) {
+        this.itemBoxButtonOnclickListener = itemBoxButtonOnclickListener;
     }
 }

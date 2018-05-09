@@ -347,9 +347,13 @@ public class DestinationActivity extends BaseActivity {
                 for (int j = 0; j < info.getAddressee().size(); j++) {
                     DestinationInfo.AddresseeBean bean = info.getAddressee().get(j);
                     if (j == info.getAddressee().size() - 1) {
-                        name.append(bean.getUser().getF_name() + "");
+                        if(bean.getUser()!=null) {
+                            name.append(bean.getUser().getF_name() + "");
+                        }
                     } else {
-                        name.append(bean.getUser().getF_name() + "，");
+                        if(bean.getUser()!=null) {
+                            name.append(bean.getUser().getF_name() + "，");
+                        }
                     }
                 }
                 destination.setPerson(name.toString());

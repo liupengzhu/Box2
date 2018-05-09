@@ -289,6 +289,173 @@
                     android:src="@drawable/right_icon" />
 
             </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/add_destination_leaving_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="离位警报："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <RadioGroup
+                    android:id="@+id/add_destination_leaving_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/add_destination_leaving_text"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/add_destination_leaving_close_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="关"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/add_destination_leaving_open_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="开"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/add_destination_leaving_normal_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button3"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="继承任务配置"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                </RadioGroup>
+
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/line" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/add_destination_defence_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="布防警报："
+                    android:textColor="@color/list_text_h"
+                    android:textSize="15sp" />
+
+                <RadioGroup
+                    android:id="@+id/add_destination_defence_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@id/add_destination_defence_text"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/add_destination_defence_close_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button2"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="关"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/add_destination_defence_open_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="开"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/add_destination_defence_normal_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="-1dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/radio_button3"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="继承任务配置"
+                        android:textColor="@color/radio_text_color"
+                        android:textSize="13sp" />
+
+                </RadioGroup>
+
+            </RelativeLayout>
 
             <!--<RelativeLayout
                 android:layout_width="match_parent"

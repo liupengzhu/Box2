@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +66,7 @@ import okhttp3.Response;
 public class AddDestinationActivity extends BaseActivity implements View.OnClickListener {
 
     private final String URL = Util.URL + "fence/map" + Util.TOKEN;
+    private final String USER_URL = Util.URL + "user/map" + Util.TOKEN;
 
     private static final int ADD_ENCLOSURE = 1;
     private OptionsPickerView pvOptions;//地址选择器
@@ -95,7 +97,16 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     private ChooseDialog enclosureDialog;
     private List<String> enclosureData = new ArrayList<>();
     private List<Integer> enclosureId = new ArrayList<>();
+    private String key;
+    private String value;
     private int areaId;
+
+    private ChooseDialog userDialog;
+    private List<String> userData = new ArrayList<>();
+    private List<Integer> userId = new ArrayList<>();
+    private String userKey;
+    private String userValue;
+    private int personId;
 
     private EditText originText;
     private EditText destinationText;
@@ -108,8 +119,11 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
     private LinearLayoutManager personManager;
     private List<Person> personList = new ArrayList<>();
     private LoadingDailog dialog;
-    private String key;
-    private String value;
+
+    private RadioGroup leavingGroup;
+    private RadioGroup defenceGroup;
+    private int leavingType;
+    private int defenceType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,9 +155,6 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        /*if (dialog != null && dialog.isShowing()) {
-                            dialog.cancel();
-                        }*/
                         Toast.makeText(AddDestinationActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -164,6 +175,59 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                             value = jsonObject.getString(key);
                             enclosureData.add(value);
                             enclosureId.add(Integer.valueOf(key));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 401 || code == 412) {
+                                Intent intent = new Intent(AddDestinationActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(AddDestinationActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        HttpUtil.sendGetRequestWithHttp(USER_URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(AddDestinationActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (code == 200) {
+                    userData.clear();
+                    userId.clear();
+                    try {
+                        JSONObject jsonObject = new JSONObject(content);
+                        Iterator iterator = jsonObject.keys();
+                        while (iterator.hasNext()) {
+                            userKey = (String) iterator.next();
+                            userValue = jsonObject.getString(userKey);
+                            userData.add(userValue);
+                            userId.add(Integer.valueOf(userKey));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -235,6 +299,9 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                 .setCancelable(false)
                 .setCancelOutside(false);
         dialog = loadBuilder.create();
+
+        leavingGroup = findViewById(R.id.add_destination_leaving_group);
+        defenceGroup = findViewById(R.id.add_destination_defence_group);
     }
 
     /**
@@ -247,8 +314,19 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
 
         personAdapter.setItemOnclickListener(new DestinationPersonAdapter.ItemOnclickListener() {
             @Override
-            public void nameOnclick(View v, int position) {
-
+            public void nameOnclick(View v, final int position) {
+                final Person person = personList.get(position);
+                userDialog = new ChooseDialog(AddDestinationActivity.this, userData);
+                userDialog.setOnClickListener(new ChooseDialog.OnClickListener() {
+                    @Override
+                    public void OnClick(View v, int position1) {
+                        person.setName(userData.get(position1));
+                        person.setUserId(userId.get(position1));
+                        personAdapter.notifyItemChanged(position);
+                        userDialog.cancel();
+                    }
+                });
+                userDialog.show();
             }
 
             @Override
@@ -394,6 +472,7 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
      * 发送网络请求
      */
     private void sendPostRequest() {
+        getRadioType();
         String originCity = originCityText.getText().toString();
         String origin = originText.getText().toString().trim();
         String destinationCity = destinationCityText.getText().toString();
@@ -403,16 +482,40 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
         String area = areaText.getText().toString().trim();
         if (!isEmpty(originCity, origin, destinationCity, destination, interval, time)) {
             final JSONObject jsonObject = new JSONObject();
+            JSONArray userJsonArray = new JSONArray();
+            JSONObject userJson;
             try {
                 jsonObject.put("f_origin", origin);
                 jsonObject.put("f_origin_city", new JSONArray(originCity.split(" ")));
                 jsonObject.put("f_destination", destination);
                 jsonObject.put("f_destination_city", new JSONArray(destinationCity.split(" ")));
                 jsonObject.put("f_release_time", time);
-                jsonObject.put("f_upload_interval", interval);
+                if (interval.isEmpty()) {
+                    jsonObject.put("f_upload_interval", -1);
+                } else {
+                    jsonObject.put("f_upload_interval", interval);
+                }
+                jsonObject.put("f_use_dislocation", leavingType);
+                jsonObject.put("f_use_defense", defenceType);
                 if (!area.isEmpty()) {
                     jsonObject.put("fence_id", areaId);
                 }
+                for (Person person : personList) {
+                    if (person.getUserId() > 0) {
+                        userJson = new JSONObject();
+                        userJson.put("user_id", person.getUserId());
+                        if (person.isUseDynamic()) {
+                            userJson.put("f_is_dynamic", 1);
+                        } else {
+                            userJson.put("f_is_dynamic", 0);
+                        }
+                        if (person.isUsePwd()) {
+                            userJson.put("f_password", person.getPwd());
+                        }
+                        userJsonArray.put(userJson);
+                    }
+                }
+                jsonObject.put("addressee", userJsonArray);
                 dialog.show();
                 HttpUtil.sendPostRequestWithHttp(Util.URL + "task/" + id + "/process" + Util.TOKEN
                         + token, jsonObject.toString(), new Callback() {
@@ -433,7 +536,6 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
                     public void onResponse(Call call, Response response) throws IOException {
                         final String content = response.body().string();
                         final int code = response.code();
-
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -494,35 +596,36 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
         } else if (destination.isEmpty()) {
             Toast.makeText(this, "目的地详细地址不能为空", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (interval.isEmpty()) {
-            Toast.makeText(this, "通讯间隔不能为空", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (Integer.parseInt(interval) > 1800 || Integer.parseInt(interval) < 30) {
+        } else if (!interval.isEmpty() && (Integer.parseInt(interval) > 1800 || Integer.parseInt(interval) < 30)) {
             Toast.makeText(this, "通讯间隔必须在30-1800之间", Toast.LENGTH_SHORT).show();
             return true;
         } else if (time.isEmpty()) {
             Toast.makeText(this, "截止时间不能为空", Toast.LENGTH_SHORT).show();
             return true;
+        } else {
+            int total = 0;
+            for (Person person : personList) {
+                if (person.getUserId() > 0 && person.isUsePwd()) {
+                    if (person.getPwd() == null) {
+                        Toast.makeText(this, "验证密码不能为空", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (person.getPwd().length() != 6) {
+                        Toast.makeText(this, "验证密码必须为6位", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                }
+                if (person.getUserId() > 0) {
+                    total++;
+                }
+            }
+            if (total == 0) {
+                Toast.makeText(this, "至少添加一个收件人", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         }
         return false;
     }
 
-
-    /* */
-
-    /**
-     * 添加view
-     *//*
-    private void addArea(String name, String type) {
-        Area area = new Area();
-        area.setName(name);
-        long m = System.currentTimeMillis();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        area.setTime(formatter.format(m));
-        area.setType(type);
-        areaList.add(area);
-        areaAdapter.notifyDataSetChanged();
-    }*/
     private void addPerson() {
         Person person = new Person();
         personList.add(person);
@@ -612,5 +715,23 @@ public class AddDestinationActivity extends BaseActivity implements View.OnClick
         pvOptions.setTitleText("选择城市");
         //设置默认选中的三级项
         pvOptions.setSelectOptions(0, 0, 0);
+    }
+
+    public void getRadioType() {
+        if (leavingGroup.getCheckedRadioButtonId() == R.id.add_destination_leaving_close_button) {
+            leavingType = 0;
+        } else if (leavingGroup.getCheckedRadioButtonId() == R.id.add_destination_leaving_open_button) {
+            leavingType = 1;
+        } else {
+            leavingType = -1;
+        }
+
+        if (defenceGroup.getCheckedRadioButtonId() == R.id.add_destination_defence_close_button) {
+            defenceType = 0;
+        } else if (defenceGroup.getCheckedRadioButtonId() == R.id.add_destination_defence_open_button) {
+            defenceType = 1;
+        } else {
+            defenceType = -1;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package cn.com.larunda.safebox.recycler;
 
 public class Person {
+    private int userId;
     private String name;
     private boolean useDynamic;
     private boolean useFingerprint;
@@ -9,6 +10,14 @@ public class Person {
 
     public Person() {
         super();
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {

@@ -12,6 +12,24 @@ public class Destination {
     private String useDefence;
     private String interval;
     private String area;
+    private String releaseTime;
+    private int areaId;
+
+    public int getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(int areaId) {
+        this.areaId = areaId;
+    }
+
+    public String getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(String releaseTime) {
+        this.releaseTime = releaseTime;
+    }
 
     public String getUseLeaving() {
         return useLeaving;

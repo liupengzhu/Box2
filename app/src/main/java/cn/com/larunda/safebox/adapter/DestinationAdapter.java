@@ -86,7 +86,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
             @Override
             public void onClick(View v) {
                 if (itemBoxButtonOnclickListener != null) {
-                    itemBoxButtonOnclickListener.onClick(v, destination.getId());
+                    itemBoxButtonOnclickListener.onClick(v, destination.getId(),position);
                 }
             }
         });
@@ -140,7 +140,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     }
 
     public interface ItemBoxButtonOnclickListener {
-        void onClick(View v, int id);
+        void onClick(View v, int id,int position);
     }
 
     public void setItemButtonOnclickListener(ItemButtonOnclickListener itemButtonOnclickListener) {

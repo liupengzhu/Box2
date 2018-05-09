@@ -69,6 +69,7 @@ public class DestinationActivity extends BaseActivity {
     private static final int PERSON_MANAGER = 2;
     private int total;
     private JSONObject areaObject;
+    private String areaString;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -154,10 +155,18 @@ public class DestinationActivity extends BaseActivity {
 
         adapter.setItemBoxButtonOnclickListener(new DestinationAdapter.ItemBoxButtonOnclickListener() {
             @Override
-            public void onClick(View v, int processId) {
+            public void onClick(View v, int processId, int position) {
+                Destination destination = destinationList.get(position);
                 Intent intent = new Intent(DestinationActivity.this, BoxManagerActivity.class);
                 intent.putExtra("processId", processId);
                 intent.putExtra("taskId", id);
+                intent.putExtra("interval", destination.getInterval());
+                intent.putExtra("isUseLeaving", destination.getUseLeaving());
+                intent.putExtra("isUseDefence", destination.getUseDefence());
+                intent.putExtra("releaseTime", destination.getReleaseTime());
+                intent.putExtra("area", destination.getArea());
+                intent.putExtra("areaString", areaString);
+                intent.putExtra("areaId",destination.getAreaId());
                 startActivityForResult(intent, PERSON_MANAGER);
             }
         });
@@ -299,6 +308,7 @@ public class DestinationActivity extends BaseActivity {
                 if (code == 200) {
                     try {
                         areaObject = new JSONObject(content);
+                        areaString = content;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -427,7 +437,9 @@ public class DestinationActivity extends BaseActivity {
                 }
                 if (areaObject != null) {
                     destination.setArea(info.getFence_id() != null ? areaObject.getString(info.getFence_id()) : null);
+                    destination.setAreaId(info.getFence_id() != null ? Integer.parseInt(info.getFence_id()) : 0);
                 }
+                destination.setReleaseTime(info.getF_release_time());
                 destination.setInterval(info.getF_upload_interval());
                 destination.setUseDefence(info.getF_use_defense());
                 destination.setUseLeaving(info.getF_use_dislocation());

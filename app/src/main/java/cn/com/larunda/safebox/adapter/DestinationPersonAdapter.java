@@ -97,9 +97,13 @@ public class DestinationPersonAdapter extends RecyclerView.Adapter<DestinationPe
             holder.img2.setImageDrawable(context.getResources().getDrawable(R.mipmap.unchecked));
         }
         if (person.getPwd() != null) {
-            holder.password.setText(person.getPwd());
+            if(person.getPwd().equals("******")){
+                holder.password.setHint("******");
+            }else {
+                holder.password.setText(person.getPwd());
+            }
         } else {
-            holder.password.setText("");
+            holder.password.setHint("请输入密码");
         }
         if (person.isUsePwd()) {
             holder.img3.setImageDrawable(context.getResources().getDrawable(R.mipmap.checked));

@@ -1,12 +1,21 @@
 package cn.com.larunda.safebox.recycler;
 
 public class Person {
+    private int id;
     private int userId;
     private String name;
     private boolean useDynamic;
     private boolean useFingerprint;
     private boolean usePwd;
     private String pwd;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Person() {
         super();

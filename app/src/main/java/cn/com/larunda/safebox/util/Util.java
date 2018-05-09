@@ -25,6 +25,7 @@ import cn.com.larunda.safebox.gson.CoordinateInfo;
 import cn.com.larunda.safebox.gson.CourierInfo;
 import cn.com.larunda.safebox.gson.Department;
 import cn.com.larunda.safebox.gson.DepartmentInfo;
+import cn.com.larunda.safebox.gson.DestinationData;
 import cn.com.larunda.safebox.gson.DestinationInfo;
 import cn.com.larunda.safebox.gson.DetailedSoundInfo;
 import cn.com.larunda.safebox.gson.DynamicPassword;
@@ -461,6 +462,12 @@ public class Util {
     public static CourierInfo handleCourierInfo(String response) {
         Gson gson = new Gson();
         CourierInfo info = gson.fromJson(response, CourierInfo.class);
+        return info;
+    }
+
+    public static DestinationData handleDestinationData(String response) {
+        Gson gson = new Gson();
+        DestinationData info = gson.fromJson(response, DestinationData.class);
         return info;
     }
 }

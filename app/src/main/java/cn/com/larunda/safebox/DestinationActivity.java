@@ -66,6 +66,7 @@ public class DestinationActivity extends BaseActivity {
     private LinearLayoutManager manager;
     private List<Destination> destinationList = new ArrayList<>();
     private static final int ADD_DESTINATION = 1;
+    private static final int PERSON_MANAGER = 2;
     private int total;
     private JSONObject areaObject;
 
@@ -143,10 +144,11 @@ public class DestinationActivity extends BaseActivity {
 
         adapter.setItemButtonOnclickListener(new DestinationAdapter.ItemButtonOnclickListener() {
             @Override
-            public void onClick(View v, int id) {
+            public void onClick(View v, int processId) {
                 Intent intent = new Intent(DestinationActivity.this, ManagerActivity.class);
-                intent.putExtra("id", id);
-                startActivity(intent);
+                intent.putExtra("processId", processId);
+                intent.putExtra("taskId", id);
+                startActivityForResult(intent, PERSON_MANAGER);
             }
         });
 
@@ -435,6 +437,11 @@ public class DestinationActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case ADD_DESTINATION:
+                if (resultCode == RESULT_OK) {
+                    sendRequest();
+                }
+                break;
+            case PERSON_MANAGER:
                 if (resultCode == RESULT_OK) {
                     sendRequest();
                 }

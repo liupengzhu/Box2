@@ -318,8 +318,8 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
             for (TaskWarningInfo.DataBean dataBean : info.getData()) {
                 TaskWarning taskWarning = new TaskWarning();
                 taskWarning.setContent(dataBean.getF_content());
-                taskWarning.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
-                        + dataBean.getProcess().getF_destination_city());
+                taskWarning.setProcess(Util.arrayToString(dataBean.getProcess().getF_origin_city()) + " - - "
+                        + Util.arrayToString(dataBean.getProcess().getF_destination_city()));
                 taskWarning.setTime(dataBean.getCreated_at());
                 taskWarning.setTitle(AlarmType.getName(dataBean.getF_type()));
                 if (dataBean.getF_is_fixed() != null) {
@@ -335,12 +335,13 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
         recyclerView.loadMoreFinish(info.getData().size() == 0, maxPage >= page);
         adapter.notifyDataSetChanged();
     }
+
     /**
      * 发送网络请求
      */
     private void sendLoadRequest() {
         HttpUtil.sendGetRequestWithHttp(Util.URL + "task/" + id + "/alarms" + Util.TOKEN + token
-                + "&time=" + search + "&page="+page, new Callback() {
+                + "&time=" + search + "&page=" + page, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
@@ -405,8 +406,8 @@ public class TaskWarningActivity extends BaseActivity implements View.OnClickLis
             for (TaskWarningInfo.DataBean dataBean : info.getData()) {
                 TaskWarning taskWarning = new TaskWarning();
                 taskWarning.setContent(dataBean.getF_content());
-                taskWarning.setProcess(dataBean.getProcess().getF_origin_city() + " - - "
-                        + dataBean.getProcess().getF_destination_city());
+                taskWarning.setProcess(Util.arrayToString(dataBean.getProcess().getF_origin_city()) + " - - "
+                        + Util.arrayToString(dataBean.getProcess().getF_destination_city()));
                 taskWarning.setTime(dataBean.getCreated_at());
                 taskWarning.setTitle(AlarmType.getName(dataBean.getF_type()));
                 if (dataBean.getF_is_fixed() != null) {

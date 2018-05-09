@@ -29,10 +29,37 @@ public class DestinationInfo {
     private String f_origin;
     private String f_release_time;
     private String f_upload_interval;
+    private String f_use_dislocation;
+    private String f_use_defense;
+    private String fence_id;
     private String[] f_origin_city;
     private String[] f_destination_city;
     private String f_sort;
     private List<AddresseeBean> addressee;
+
+    public String getF_use_dislocation() {
+        return f_use_dislocation;
+    }
+
+    public void setF_use_dislocation(String f_use_dislocation) {
+        this.f_use_dislocation = f_use_dislocation;
+    }
+
+    public String getF_use_defense() {
+        return f_use_defense;
+    }
+
+    public void setF_use_defense(String f_use_defense) {
+        this.f_use_defense = f_use_defense;
+    }
+
+    public String getFence_id() {
+        return fence_id;
+    }
+
+    public void setFence_id(String fence_id) {
+        this.fence_id = fence_id;
+    }
 
     public int getId() {
         return id;

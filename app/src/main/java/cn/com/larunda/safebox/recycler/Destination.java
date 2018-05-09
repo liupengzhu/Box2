@@ -8,6 +8,42 @@ public class Destination {
     private String startTime;
     private String endTime;
     private String dynamic;
+    private String useLeaving;
+    private String useDefence;
+    private String interval;
+    private String area;
+
+    public String getUseLeaving() {
+        return useLeaving;
+    }
+
+    public void setUseLeaving(String useLeaving) {
+        this.useLeaving = useLeaving;
+    }
+
+    public String getUseDefence() {
+        return useDefence;
+    }
+
+    public void setUseDefence(String useDefence) {
+        this.useDefence = useDefence;
+    }
+
+    public String getInterval() {
+        return interval;
+    }
+
+    public void setInterval(String interval) {
+        this.interval = interval;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
 
     public String getDynamic() {
         return dynamic;

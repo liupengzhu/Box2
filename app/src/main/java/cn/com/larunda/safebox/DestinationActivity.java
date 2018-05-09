@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import cn.com.larunda.safebox.adapter.DestinationAdapter;
@@ -51,6 +52,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class DestinationActivity extends BaseActivity {
 
+    private final String URL = Util.URL + "fence/map" + Util.TOKEN;
     private TitleBar titleBar;
     private int id;
     private String completedTime;
@@ -65,6 +67,7 @@ public class DestinationActivity extends BaseActivity {
     private List<Destination> destinationList = new ArrayList<>();
     private static final int ADD_DESTINATION = 1;
     private int total;
+    private JSONObject areaObject;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -82,7 +85,8 @@ public class DestinationActivity extends BaseActivity {
         completedTime = getIntent().getStringExtra("completedTime");
         initView();
         initEvent();
-        sendRequest();
+        send();
+
     }
 
     /**
@@ -264,6 +268,59 @@ public class DestinationActivity extends BaseActivity {
         }
     }
 
+    private void send() {
+        HttpUtil.sendGetRequestWithHttp(URL + token, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DestinationActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String content = response.body().string();
+                final int code = response.code();
+                if (code == 200) {
+                    try {
+                        areaObject = new JSONObject(content);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sendRequest();
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (code == 401 || code == 412) {
+                                Intent intent = new Intent(DestinationActivity.this, LoginActivity.class);
+                                intent.putExtra("token_timeout", "登录超时");
+                                preferences.edit().putString("token", null).commit();
+                                startActivity(intent);
+                                ActivityCollector.finishAllActivity();
+                            } else if (code == 422) {
+                                try {
+                                    JSONObject js = new JSONObject(content);
+                                    Toast.makeText(DestinationActivity.this, js.get("message") + "", Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     /**
      * 发送网络请求
      */
@@ -347,15 +404,21 @@ public class DestinationActivity extends BaseActivity {
                 for (int j = 0; j < info.getAddressee().size(); j++) {
                     DestinationInfo.AddresseeBean bean = info.getAddressee().get(j);
                     if (j == info.getAddressee().size() - 1) {
-                        if(bean.getUser()!=null) {
+                        if (bean.getUser() != null) {
                             name.append(bean.getUser().getF_name() + "");
                         }
                     } else {
-                        if(bean.getUser()!=null) {
+                        if (bean.getUser() != null) {
                             name.append(bean.getUser().getF_name() + "，");
                         }
                     }
                 }
+                if (areaObject != null) {
+                    destination.setArea(info.getFence_id() != null ? areaObject.getString(info.getFence_id()) : null);
+                }
+                destination.setInterval(info.getF_upload_interval());
+                destination.setUseDefence(info.getF_use_defense());
+                destination.setUseLeaving(info.getF_use_dislocation());
                 destination.setPerson(name.toString());
                 destinationList.add(destination);
             }

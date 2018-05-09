@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
@@ -32,7 +34,14 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
         private TextView destinationText;
         private TextView personText;
         private TextView timeText;
-        private Button button;
+        private TextView personButton;
+        private TextView boxButton;
+        private LinearLayout button;
+
+        private TextView intervalText;
+        private TextView areaText;
+        private RadioGroup leavingGroup;
+        private RadioGroup defenceGroup;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -42,7 +51,14 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
             destinationText = itemView.findViewById(R.id.destination_destination_city);
             personText = itemView.findViewById(R.id.destination_person);
             timeText = itemView.findViewById(R.id.destination_time);
+            personButton = itemView.findViewById(R.id.destination_person_button);
+            boxButton = itemView.findViewById(R.id.destination_box_button);
             button = itemView.findViewById(R.id.destination_button);
+
+            intervalText = itemView.findViewById(R.id.destination_interval);
+            areaText = itemView.findViewById(R.id.destination_area);
+            leavingGroup = itemView.findViewById(R.id.destination_leaving_group);
+            defenceGroup = itemView.findViewById(R.id.destination_defence_group);
         }
     }
 
@@ -56,7 +72,7 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Destination destination = destinationList.get(position);
         holder.rankText.setText("任务" + (position + 1));
-        holder.button.setOnClickListener(new View.OnClickListener() {
+        holder.personButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemButtonOnclickListener != null) {
@@ -93,6 +109,15 @@ public class DestinationAdapter extends RecyclerView.Adapter<DestinationAdapter.
             holder.button.setVisibility(View.VISIBLE);
             holder.statusText.setBackground(context.getResources().getDrawable(R.drawable.text_green));
         }
+        holder.intervalText.setText(destination.getInterval() != null ? destination.getInterval() : "");
+        holder.areaText.setText(destination.getArea() != null ? destination.getArea() : "");
+        holder.leavingGroup.check(destination.getUseLeaving()==null?R.id.destination_leaving_normal_button
+                : (destination.getUseLeaving().equals("0")?R.id.destination_leaving_close_button
+                        :R.id.destination_leaving_open_button));
+
+        holder.defenceGroup.check(destination.getUseDefence()==null?R.id.destination_defence_normal_button
+                : (destination.getUseDefence().equals("0")?R.id.destination_defence_close_button
+                :R.id.destination_defence_open_button));
     }
 
     @Override

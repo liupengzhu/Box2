@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +41,13 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
     private SharedPreferences preferences;
     private String token;
     private LoadingDailog dialog;
-    private TextView nameText;
+    private EditText nameText;
+    private EditText intervalText;
+    private RadioGroup leavingGroup;
+    private RadioGroup defenceGroup;
+    private int leavingType;
+    private int defenceType;
+
     private Button saveButton;
 
     @Override
@@ -78,6 +87,10 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
 
         nameText = findViewById(R.id.add_task_name);
         saveButton = findViewById(R.id.add_task_button);
+
+        intervalText = findViewById(R.id.add_task_interval);
+        leavingGroup = findViewById(R.id.add_task_leaving_group);
+        defenceGroup = findViewById(R.id.add_task_defence_group);
     }
 
     /**
@@ -122,13 +135,22 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
      * 发送post请求
      */
     private void sendPostRequest() {
+        getRadioType();
         String name = nameText.getText().toString().trim();
+        String interval = intervalText.getText().toString().trim();
         if (name.isEmpty()) {
             Toast.makeText(this, "任务名称不能为空！", Toast.LENGTH_SHORT).show();
+        } else if (interval.isEmpty()) {
+            Toast.makeText(this, "通讯间隔不能为空！", Toast.LENGTH_SHORT).show();
+        } else if (Integer.parseInt(interval) > 1800 || Integer.parseInt(interval) < 30) {
+            Toast.makeText(this, "通讯间隔必须在30到1800之间！", Toast.LENGTH_SHORT).show();
         } else {
-            JSONObject jsonObject = new JSONObject();
+            final JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("f_name", name);
+                jsonObject.put("f_upload_interval", interval);
+                jsonObject.put("f_use_dislocation", leavingType);
+                jsonObject.put("f_use_defense", defenceType);
                 dialog.show();
                 HttpUtil.sendPostRequestWithHttp(Util.URL + "box/" + id + "/task" + Util.TOKEN + token, jsonObject.toString(), new Callback() {
                     @Override
@@ -182,4 +204,19 @@ public class AddTaskActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
     }
+
+    public void getRadioType() {
+        if (leavingGroup.getCheckedRadioButtonId() == R.id.add_task_leaving_close_button) {
+            leavingType = 0;
+        } else {
+            leavingType = 1;
+        }
+
+        if (defenceGroup.getCheckedRadioButtonId() == R.id.add_task_defence_close_button) {
+            defenceType = 0;
+        } else {
+            defenceType = 1;
+        }
+    }
+
 }

@@ -74,8 +74,6 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
     private TextView textView4;
     private TextView textView5;
     private TextView textView6;
-    private TextView textView7;
-    private TextView textView8;
 
     private int taskId;
     private int processId;
@@ -114,8 +112,6 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
                         textView4.setText("0");
                         textView5.setText("0");
                         textView6.setText("0");
-                        textView7.setText("0");
-                        textView8.setText("0");
                     }
                 });
 
@@ -170,15 +166,13 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
     private void initPassword(DynamicPassword dynamicPassword) {
         if (dynamicPassword.getCode() != null) {
             char[] password = dynamicPassword.getCode().toCharArray();
-            if (password != null && password.length == 8) {
+            if (password != null && password.length == 6) {
                 textView1.setText(password[0] + "");
                 textView2.setText(password[1] + "");
                 textView3.setText(password[2] + "");
                 textView4.setText(password[3] + "");
                 textView5.setText(password[4] + "");
                 textView6.setText(password[5] + "");
-                textView7.setText(password[6] + "");
-                textView8.setText(password[7] + "");
                 progressBar.setProgress((int) ((120 - (float) dynamicPassword.getLeft()) / 120 * 1000));
                 mHandler.sendEmptyMessage(MSG_PROGRESS_UPDATE);
 
@@ -206,8 +200,6 @@ public class DynamicPasswordActivity extends BaseActivity implements View.OnClic
         textView4 = findViewById(R.id.password_text_4);
         textView5 = findViewById(R.id.password_text_5);
         textView6 = findViewById(R.id.password_text_6);
-        textView7 = findViewById(R.id.password_text_7);
-        textView8 = findViewById(R.id.password_text_8);
     }
 
     /**

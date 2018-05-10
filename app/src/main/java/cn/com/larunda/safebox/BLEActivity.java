@@ -89,9 +89,10 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     final BluetoothAdapter.LeScanCallback callback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            Log.d("main", device.getName() + "");
             if (!bluetoothDeviceArrayList.containsKey(device.getAddress())) {
                 for (BoxBle boxBle : boxBleList) {
-                    if (boxBle.getCode().equals(device.getName())) {
+                    if (boxBle.getCode().contains(device.getName() + "")) {
                         bluetoothDeviceArrayList.put(device.getAddress(), device);
                         bluetoothDeviceList.add(device);
                         bleList.add(new MyBLE(device.getName(), 0, boxBle.getUrl(), boxBle.getName()));
@@ -213,7 +214,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         List<BluetoothDevice> deviceList = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
         for (BluetoothDevice device : deviceList) {
             for (BoxBle boxBle : boxBleList) {
-                if (boxBle.getCode().equals(device.getName())) {
+                if (boxBle.getCode().contains(device.getName() + "")) {
                     bluetoothDeviceArrayList.put(device.getAddress(), device);
                     bluetoothDeviceList.add(device);
                     bleList.add(new MyBLE(device.getName(), 2, boxBle.getUrl(), boxBle.getName()));

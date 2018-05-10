@@ -3,6 +3,7 @@ package cn.com.larunda.safebox;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -38,9 +40,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.larunda.safebox.adapter.DetailedSoundAdapter;
 import cn.com.larunda.safebox.adapter.TaskSoundAdapter;
 import cn.com.larunda.safebox.gson.TaskLogInfo;
 import cn.com.larunda.safebox.gson.TaskSoundInfo;
+import cn.com.larunda.safebox.recycler.Task;
 import cn.com.larunda.safebox.recycler.TaskSound;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.HttpUtil;
@@ -72,6 +76,10 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
     private LinearLayoutManager manager;
     private List<TaskSound> taskSoundList = new ArrayList<>();
     private TaskSoundAdapter adapter;
+
+    private MediaPlayer mediaPlayer;
+    private int lastId;
+    private CheckBox lastButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +152,86 @@ public class TaskSoundActivity extends AppCompatActivity implements View.OnClick
      * 初始化点击事件
      */
     private void initEvent() {
+
+        adapter.setTaskSoundOnClickListener(new TaskSoundAdapter.TaskSoundOnClickListener(){
+
+            @Override
+            public void onClick(View view, final String path, final int id, boolean isExist) {
+                final CheckBox checkBox = (CheckBox) view;
+                if (path != null && isExist) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (mediaPlayer == null) {
+                                    mediaPlayer = new MediaPlayer();
+                                    mediaPlayer.setDataSource(path);
+                                    mediaPlayer.prepare();
+                                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                        @Override
+                                        public void onCompletion(MediaPlayer mp) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    checkBox.setChecked(false);
+                                                }
+                                            });
+
+
+                                        }
+                                    });
+                                } else {
+                                    if (lastId != id) {
+                                        mediaPlayer.stop();
+                                        mediaPlayer = null;
+                                        lastButton.setChecked(false);
+                                        mediaPlayer = new MediaPlayer();
+                                        mediaPlayer.setDataSource(path);
+                                        mediaPlayer.prepare();
+                                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        checkBox.setChecked(false);
+                                                    }
+                                                });
+                                                mediaPlayer = null;
+                                            }
+                                        });
+                                    }
+
+                                }
+                                if (checkBox.isChecked()) {
+                                    lastId = id;
+                                    lastButton = checkBox;
+                                    mediaPlayer.start();
+
+                                } else {
+                                    lastId = id;
+                                    lastButton = checkBox;
+                                    mediaPlayer.pause();
+                                }
+
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(TaskSoundActivity.this,"录音不存在!",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            }
+                        }
+                    }).start();
+
+                }
+
+            }
+        });
 
         cancelButton.setOnClickListener(this);
         ensureButton.setOnClickListener(this);

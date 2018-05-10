@@ -14,7 +14,7 @@ public class VersionInfo {
      * updated_list : {"add":["增加了指纹识别功能"],"fix":["修复了部分页面按钮点击事件无效的问题"]}
      */
 
-    private String version;
+    private String version_number;
     private String url;
     private UpdatedListBean updated_list;
     private String message;
@@ -28,11 +28,11 @@ public class VersionInfo {
     }
 
     public String getVersion() {
-        return version;
+        return version_number;
     }
 
     public void setVersion(String version) {
-        this.version = version;
+        this.version_number = version;
     }
 
     public String getUrl() {

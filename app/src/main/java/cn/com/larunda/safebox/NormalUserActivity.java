@@ -1,15 +1,19 @@
 package cn.com.larunda.safebox;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +25,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.larunda.safebox.R;
+import com.larunda.selfdialog.UpdateDialog;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +40,16 @@ import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.CollectorFragment;
 import cn.com.larunda.safebox.fragment.CourierFragment;
 import cn.com.larunda.safebox.fragment.SystemLogFragment;
+import cn.com.larunda.safebox.gson.VersionInfo;
 import cn.com.larunda.safebox.service.AutoUpdateService;
+import cn.com.larunda.safebox.service.DownloadService;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
+import cn.com.larunda.safebox.util.HttpUtil;
+import cn.com.larunda.safebox.util.Util;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class NormalUserActivity extends BaseActivity implements View.OnClickListener {
 
@@ -53,6 +69,30 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
     private LinearLayout bleButton;
 
+    private UpdateDialog updateDialog;
+    private boolean isUpdate;
+    public static final String VERSION_CHECK = Util.URL + "version" + Util.TOKEN;
+
+    private DownloadService service;
+    private DownloadService.DownloadBinder binder;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            isBind = true;
+            binder = (DownloadService.DownloadBinder) service;
+            binder.startDownload(Util.PATH + updateUrl);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBind = false;
+        }
+    };
+
+    private String updateUrl;
+    private boolean isBind = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +110,10 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
         startService(serviceIntent);
 
         initView();
+        isUpdate = preferences.getBoolean("isUpdate", true);
         initTabs();
         initEvent();
+        sendVersionRequest();
     }
 
     /**
@@ -106,6 +148,25 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
         backButton = findViewById(R.id.normal_user_menu_back_button);
 
         bleButton = findViewById(R.id.normal_user_ble_layout);
+
+        updateDialog = new UpdateDialog(this);
+        updateDialog.setYesOnclickListener(new UpdateDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(View v) {
+                preferences.edit().putBoolean("isUpdate", false).commit();
+                Intent intent = new Intent(NormalUserActivity.this, DownloadService.class);
+                bindService(intent, connection, BIND_AUTO_CREATE);
+                updateDialog.cancel();
+            }
+        });
+        updateDialog.setNoOnclickListener(new UpdateDialog.onNoOnclickListener() {
+            @Override
+            public void onNoClick(View v) {
+                preferences.edit().putBoolean("isUpdate", false).commit();
+                updateDialog.cancel();
+            }
+        });
+
     }
 
     //初始化Tab；
@@ -305,4 +366,74 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                 break;
         }
     }
+
+    /**
+     * 发送版本验证请求
+     */
+    private void sendVersionRequest() {
+        /*JSONObject jsonObject = new JSONObject();
+            HttpUtil.sendGetRequestWithHttp(VERSION_CHECK + token, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String content = response.body().string();
+                    Log.d("main", content);
+                    if (Util.isGoodJson(content)) {
+                        parseVersion(content);
+                    }
+                }
+            });
+*/
+    }
+
+    /**
+     * 解析版本信息
+     *
+     * @param content
+     */
+    private void parseVersion(final String content) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                VersionInfo versionInfo = Util.handleVersionInfo(content);
+                if (versionInfo.getUrl() != null) {
+                    updateUrl = versionInfo.getUrl();
+                    showUpdateDialog(versionInfo);
+                }
+            }
+        });
+
+    }
+
+
+    /**
+     * 显示更新弹窗
+     */
+    private void showUpdateDialog(VersionInfo versionInfo) {
+        if (isUpdate) {
+            if (updateDialog != null) {
+                updateDialog.setTitleText("发现新版本" + versionInfo.getVersion());
+                StringBuilder content = new StringBuilder();
+                if (versionInfo.getUpdated_list().getAdd() != null && versionInfo.getUpdated_list().getAdd().size() != 0) {
+                    for (int i = 0; i < versionInfo.getUpdated_list().getAdd().size(); i++) {
+                        content.append("【新增】" + versionInfo.getUpdated_list().getAdd().get(i) + "\n");
+                    }
+                }
+                if (versionInfo.getUpdated_list().getFix() != null && versionInfo.getUpdated_list().getFix().size() != 0) {
+                    for (int i = 0; i < versionInfo.getUpdated_list().getFix().size(); i++) {
+                        content.append("【修复】" + versionInfo.getUpdated_list().getFix().get(i) + "\n");
+                    }
+                }
+                content.append("为了不影响您的正常使用,请尽快更新最新版本");
+                updateDialog.setContentText(content.toString());
+                updateDialog.show();
+            }
+            updateDialog.show();
+        }
+    }
+
 }

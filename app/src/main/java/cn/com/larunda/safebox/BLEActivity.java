@@ -23,6 +23,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,6 +33,10 @@ import android.widget.Toast;
 import com.larunda.safebox.R;
 import com.larunda.titlebar.TitleBar;
 import com.larunda.titlebar.TitleListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,12 +91,12 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (!bluetoothDeviceArrayList.containsKey(device.getAddress())) {
                 for (BoxBle boxBle : boxBleList) {
-                    /*if (boxBle.getCode().equals(device.getName())) {*/
+                    if (boxBle.getCode().equals(device.getName())) {
                         bluetoothDeviceArrayList.put(device.getAddress(), device);
                         bluetoothDeviceList.add(device);
                         bleList.add(new MyBLE(device.getName(), 0, boxBle.getUrl(), boxBle.getName()));
                         adapter.notifyDataSetChanged();
-                    //}
+                    }
                 }
             }
 
@@ -99,7 +104,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     };
     private BluetoothDevice bluetoothDevice;
     private int lastPosition;
-    private static final String MENU_URI = Util.URL + "app/user_info" + Util.TOKEN;
+    private static final String URL = Util.URL + "user/box" + Util.TOKEN;
     private List<BoxBle> boxBleList = new ArrayList<>();
 
 
@@ -131,42 +136,37 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
      * 发送网络请求
      */
     private void sendRequest() {
-        HttpUtil.sendGetRequestWithHttp(MENU_URI + token, new Callback() {
+        HttpUtil.sendGetRequestWithHttp(URL + token, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
+                        Toast.makeText(BLEActivity.this, "网络异常!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String content = response.body().string();
-                if (Util.isGoodJson(content)) {
-                    final MenuUserInfo menuUserInfo = Util.handleMenuUserInfo(content);
-                    if (menuUserInfo != null && menuUserInfo.error == null) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                               // parseContent(menuUserInfo);
-                                preferences.edit().putString("menuInfo", content).apply();
-                            }
-                        });
-
-                    } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(BLEActivity.this, LoginActivity.class);
-                                intent.putExtra("token_timeout", "登录超时");
-                                preferences.edit().putString("token", null).commit();
-                                startActivity(intent);
-                                ActivityCollector.finishAllActivity();
-
-                            }
-                        });
+                final int code = response.code();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (code == 200) {
+                            parseContent(content);
+                        } else if (code == 401 || code == 412) {
+                            Intent intent = new Intent(BLEActivity.this, LoginActivity.class);
+                            intent.putExtra("token_timeout", "登录超时");
+                            preferences.edit().putString("token", null).commit();
+                            startActivity(intent);
+                            ActivityCollector.finishAllActivity();
+                        }
                     }
-                }
-
+                });
             }
         });
 
@@ -175,11 +175,23 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
     /**
      * 解析服务器返回信息
      *
-     * @param menuUserInfo
+     * @param content
      */
-    private void parseContent(MenuUserInfo menuUserInfo) {
+    private void parseContent(String content) {
         boxBleList.clear();
-        for (RelatedBox relatedBox : menuUserInfo.boxList) {
+        try {
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                BoxBle boxBle = new BoxBle();
+                boxBle.setCode(jsonObject.getString("f_sn"));
+                boxBle.setName(jsonObject.getString("f_alias"));
+                boxBleList.add(boxBle);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        /*for (RelatedBox relatedBox : menuUserInfo.boxList) {
             BoxBle boxBle = new BoxBle();
             if (relatedBox.code != null && relatedBox.code.length() == 24) {
                 boxBle.setCode(relatedBox.code.substring(12, 24));
@@ -197,7 +209,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                 boxBle.setUrl("");
             }
             boxBleList.add(boxBle);
-        }
+        }*/
         List<BluetoothDevice> deviceList = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
         for (BluetoothDevice device : deviceList) {
             for (BoxBle boxBle : boxBleList) {

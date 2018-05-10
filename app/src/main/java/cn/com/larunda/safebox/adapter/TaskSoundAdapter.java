@@ -48,6 +48,16 @@ public class TaskSoundAdapter extends RecyclerView.Adapter<TaskSoundAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_task_sound, parent, false);
         final ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //viewHolder.isDownloadView.setVisibility(View.GONE);
+                TaskSound taskSound = taskSoundList.get(viewHolder.getAdapterPosition());
+                if(taskSoundOnClickListener!=null){
+                    taskSoundOnClickListener.onClick(v,taskSound.getPath(),taskSound.getId(),true);
+                }
+            }
+        });
         return viewHolder;
     }
 
@@ -70,7 +80,7 @@ public class TaskSoundAdapter extends RecyclerView.Adapter<TaskSoundAdapter.View
     }
 
     public interface TaskSoundOnClickListener {
-        void onClick(View view, String path, String id, boolean isExist);
+        void onClick(View view, String path, int id, boolean isExist);
     }
 
     public void setTaskSoundOnClickListener(TaskSoundOnClickListener taskSoundOnClickListener) {

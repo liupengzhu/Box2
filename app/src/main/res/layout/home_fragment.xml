@@ -1,103 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swiper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true">
 
-    <FrameLayout
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/home_ok_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusableInTouchMode="true">
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/home_ok_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusableInTouchMode="true">
-
-            <LinearLayout
-                android:id="@+id/fragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/login_error"
-                android:focusableInTouchMode="true"
-                android:orientation="vertical">
-
-                <include layout="@layout/home_info_item" />
-
-                <include layout="@layout/home_alarm_item" />
-
-                <include layout="@layout/home_over_view_item" />
-
-                <include layout="@layout/log_layout" />
-
-                <Button
-                    android:id="@+id/home_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="更多日志"
-                    android:textColor="@color/list_text_n" />
-                <com.example.circletextview.CircleTextView
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    android:background="@color/black"
-                    android:layout_marginTop="10dp"
-                    app:circleAngle="120"
-                    app:backgroundCircleColor="@color/line"
-                    app:circleRadius="60dp"
-                    app:circleStroke="15dp"
-                    />
-
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
-
-        <RelativeLayout
-            android:id="@+id/loading_error_layout"
+        <LinearLayout
+            android:id="@+id/fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/login_error"
-            android:visibility="gone">
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <include layout="@layout/home_info_item" />
+
+            <include layout="@layout/home_alarm_item" />
+
+            <include layout="@layout/home_over_view_item" />
+
+            <include layout="@layout/log_layout" />
+
+            <Button
+
+                android:id="@+id/home_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="更多日志"
+                android:textColor="@color/list_text_n" />
+
+            <com.example.circletextview.CircleTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:orientation="vertical">
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@color/black"
+                android:visibility="gone"
+                app:backgroundCircleColor="@color/line"
+                app:circleAngle="120"
+                app:circleRadius="60dp"
+                app:circleStroke="15dp" />
 
-                <ImageView
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_gravity="center"
-                    android:src="@mipmap/loading_error" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
-                <TextView
-                    android:id="@+id/loading_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="网络链接异常"
-                    android:textSize="20sp" />
-            </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/loading_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/login_error"
+        android:visibility="gone">
 
-        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/loading_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/login_error"
-            android:visibility="gone" />
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/loading_error" />
+
+            <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="网络链接异常"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/login_error"
+        android:visibility="gone" />
 
 
-    </FrameLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
-
+</FrameLayout>
 

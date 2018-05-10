@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ import cn.com.larunda.safebox.adapter.HomeAdapter;
 import cn.com.larunda.safebox.fragment.CollectorFragment;
 import cn.com.larunda.safebox.fragment.CourierFragment;
 import cn.com.larunda.safebox.fragment.SystemLogFragment;
+import cn.com.larunda.safebox.service.AutoUpdateService;
 import cn.com.larunda.safebox.util.ActivityCollector;
 import cn.com.larunda.safebox.util.BaseActivity;
 
@@ -49,6 +51,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
 
     private DrawerLayout drawerLayout;
 
+    private LinearLayout bleButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +66,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
+        Intent serviceIntent = new Intent(this, AutoUpdateService.class);
+        startService(serviceIntent);
 
         initView();
         initTabs();
@@ -73,6 +79,7 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
      */
     private void initEvent() {
         backButton.setOnClickListener(this);
+        bleButton.setOnClickListener(this);
     }
 
     //初始化控件
@@ -97,6 +104,8 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
         tabLayout.setupWithViewPager(viewPager);
 
         backButton = findViewById(R.id.normal_user_menu_back_button);
+
+        bleButton = findViewById(R.id.normal_user_ble_layout);
     }
 
     //初始化Tab；
@@ -289,6 +298,10 @@ public class NormalUserActivity extends BaseActivity implements View.OnClickList
                 preferences.edit().putString("token", null).commit();
                 startActivity(intent);
                 ActivityCollector.finishAllActivity();
+                break;
+            case R.id.normal_user_ble_layout:
+                Intent bleIntent = new Intent(this, BLEActivity.class);
+                startActivity(bleIntent);
                 break;
         }
     }

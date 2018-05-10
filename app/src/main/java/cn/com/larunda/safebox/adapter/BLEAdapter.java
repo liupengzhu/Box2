@@ -35,7 +35,6 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
         TextView bleName;
         TextView statusText;
         RelativeLayout layout;
-        ImageView imageView;
         TextView boxName;
 
         public ViewHolder(View itemView) {
@@ -43,7 +42,6 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
             bleName = itemView.findViewById(R.id.ble_name);
             statusText = itemView.findViewById(R.id.ble_status);
             layout = itemView.findViewById(R.id.ble_item_layout);
-            imageView = itemView.findViewById(R.id.ble_img);
             boxName = itemView.findViewById(R.id.ble_box_name);
         }
     }
@@ -79,15 +77,9 @@ public class BLEAdapter extends RecyclerView.Adapter<BLEAdapter.ViewHolder> {
                 holder.statusText.setText("已连接");
                 break;
         }
-        holder.bleName.setText(ble.getBleName());
-        holder.boxName.setText(ble.getName() + "");
-        if (ble.getUrl() != null) {
-            Glide.with(context).load(ble.getUrl())
-                    .placeholder(R.drawable.company_bull)
-                    .error(R.drawable.company_bull).into(holder.imageView);
-        } else {
-            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.company_bull));
-        }
+        holder.bleName.setText(ble.getBleName() != null ? ble.getBleName() : "");
+        holder.boxName.setText(ble.getName() != null ? ble.getName() : "");
+
     }
 
     @Override

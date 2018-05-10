@@ -86,12 +86,12 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (!bluetoothDeviceArrayList.containsKey(device.getAddress())) {
                 for (BoxBle boxBle : boxBleList) {
-                    if (boxBle.getCode().equals(device.getName())) {
+                    /*if (boxBle.getCode().equals(device.getName())) {*/
                         bluetoothDeviceArrayList.put(device.getAddress(), device);
                         bluetoothDeviceList.add(device);
                         bleList.add(new MyBLE(device.getName(), 0, boxBle.getUrl(), boxBle.getName()));
                         adapter.notifyDataSetChanged();
-                    }
+                    //}
                 }
             }
 
@@ -147,7 +147,7 @@ public class BLEActivity extends BaseActivity implements View.OnClickListener {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                parseContent(menuUserInfo);
+                               // parseContent(menuUserInfo);
                                 preferences.edit().putString("menuInfo", content).apply();
                             }
                         });

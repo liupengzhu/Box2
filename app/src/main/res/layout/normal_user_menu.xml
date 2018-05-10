@@ -69,133 +69,11 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <!--<LinearLayout
-            android:id="@+id/user_info_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:text="用户管理"
-                android:textColor="@color/menu_t_color"
-                android:textSize="20dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/right_icon" />
-
-
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line" />
-
         <LinearLayout
-            android:id="@+id/enclosure_layout"
+            android:id="@+id/normal_user_ble_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:text="地理围栏"
-                android:textColor="@color/menu_t_color"
-                android:textSize="20dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/right_icon" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/leaving_alarm_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:text="离位警告"
-                android:textColor="@color/menu_t_color"
-                android:textSize="20dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/right_icon" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/sound_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:text="录音列表"
-                android:textColor="@color/menu_t_color"
-                android:textSize="20dp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/right_icon" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/line" />
-
-        <LinearLayout
-            android:id="@+id/ble_layout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:background="@drawable/card_background"
             android:orientation="horizontal">
 
             <TextView
@@ -219,7 +97,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/line" />-->
+            android:background="@color/line" />
 
     </LinearLayout>
 
